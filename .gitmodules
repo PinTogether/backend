@@ -1,0 +1,3 @@
+[submodule "be-config"]
+	path = be-config
+	url = git@github.com:PinTogether/be-config.git
