@@ -1,8 +1,8 @@
 package com.pintogether.backend.auth;
 
-import com.pintogether.backend.domain.User;
-import com.pintogether.backend.domain.enums.RegistrationSource;
-import com.pintogether.backend.repository.UserRepository;
+import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.enums.RegistrationSource;
+import com.pintogether.backend.repository.MemberRepository;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -32,7 +32,7 @@ import java.util.Optional;
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
     @Value("${jwt.signing.key}")
     private String signingKey;
     @Value("${frontend.url}")
@@ -43,12 +43,17 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
+<<<<<<< HEAD
         String registrationKey="";
+=======
+        String registrationId="";
+>>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = principal.getAttributes();
 
         if ("google".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
+<<<<<<< HEAD
             registrationKey = attributes.getOrDefault("email", "").toString();
         } else if ("naver".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
             Map<String, Object> responseNaver = (Map<String, Object>) attributes.get("response");
@@ -64,15 +69,37 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             sendJwtByCookie(user, registrationKey, response);
+=======
+            registrationId = attributes.getOrDefault("email", "").toString();
+        } else if ("naver".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
+            Map<String, Object> responseNaver = (Map<String, Object>) attributes.get("response");
+            registrationId = responseNaver.getOrDefault("id", "").toString();
+            String name = responseNaver.getOrDefault("name", "").toString();
+            System.out.println("registrationId : " + registrationId);
+        } else if ("kakao".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
+            registrationId = attributes.getOrDefault("id", "").toString();
+        }
+
+        Optional<Member> foundUser = memberRepository.findByRegistrationId(registrationId);
+        if (foundUser.isPresent()) {
+            sendJwtByCookie(registrationId, response);
+>>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
         } else {
             String newNickname = RandomNicknameGenerator.generateNickname();
-            User user = User.builder()
+            Member user = Member.builder()
                     .nickname(newNickname)
                     .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
+<<<<<<< HEAD
                     .registrationPk(registrationKey)
                     .build();
             userRepository.save(user);
             sendJwtByCookie(user, registrationKey, response);
+=======
+                    .registrationId(registrationId)
+                    .build();
+            memberRepository.save(user);
+            sendJwtByCookie(registrationId, response);
+>>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
 
         }
         this.setAlwaysUseDefaultTargetUrl(true);
@@ -81,10 +108,17 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
     }
 
+<<<<<<< HEAD
     public void sendJwtByCookie(User user, String registrationKey, HttpServletResponse response) {
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
                 .setClaims(Map.of("id", user.getId(), "registrationKey", registrationKey, "Role", "Role_USER"))
+=======
+    public void sendJwtByCookie(String registrationId, HttpServletResponse response) {
+        SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
+        String jwt = Jwts.builder()
+                .setClaims(Map.of("registrationId", registrationId,  "role", "ROLE_USER"))
+>>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
                 .signWith(key)
                 .compact();
         ResponseCookie cookie = ResponseCookie

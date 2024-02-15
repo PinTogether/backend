@@ -1,8 +1,8 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.auth.JwtService;
-import com.pintogether.backend.domain.User;
-import com.pintogether.backend.repository.UserRepository;
+import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,7 +18,7 @@ public class MainController {
     private JwtService jwtService;
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     /**
      *
@@ -27,11 +27,19 @@ public class MainController {
      */
     @GetMapping("/test")
     public Map<String, String> test(@RequestHeader(value = "Authorization") String jwt) {
+<<<<<<< HEAD
         String registrationPk = jwtService.getRegistrationKey(jwt);
         Map<String, String> map = new HashMap<>();
         Optional<User> user = userRepository.findByRegistrationKey(registrationPk);
         if (user.isPresent()) {
             map.put("nickname", user.get().getNickname());
+=======
+        String registrationId = jwtService.getRegistrationId(jwt);
+        Map<String, String> map = new HashMap<>();
+        Optional<Member> member = memberRepository.findByRegistrationId(registrationId);
+        if (member.isPresent()) {
+            map.put("nickname", member.get().getNickname());
+>>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
         } else {
             map.put("nickname", "AnonymousUser");
         }
