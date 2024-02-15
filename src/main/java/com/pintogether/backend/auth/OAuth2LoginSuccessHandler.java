@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,38 +37,42 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     private String signingKey;
     @Value("${frontend.url}")
     private String frontendUrl;
+    @Value("${frontend.cookie.url}")
+    private String cookieUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
-        String registrationPk="";
+        String registrationKey="";
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = principal.getAttributes();
 
         if ("google".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
-            registrationPk = attributes.getOrDefault("email", "").toString();
+            registrationKey = attributes.getOrDefault("email", "").toString();
         } else if ("naver".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
             Map<String, Object> responseNaver = (Map<String, Object>) attributes.get("response");
-            registrationPk = responseNaver.getOrDefault("id", "").toString();
+            registrationKey = responseNaver.getOrDefault("id", "").toString();
             String name = responseNaver.getOrDefault("name", "").toString();
-            System.out.println("registrationPk : " + registrationPk);
+            System.out.println("registrationKey : " + registrationKey);
         } else if ("kakao".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
-            registrationPk = attributes.getOrDefault("id", "").toString();
+            registrationKey = attributes.getOrDefault("id", "").toString();
         }
 
-        Optional<User> foundUser = userRepository.findByRegistrationPk(registrationPk);
-        if (foundUser.isPresent()) {
-            sendJwtByCookie(registrationPk, response);
+        Optional<User> userOptional = userRepository.findByRegistrationKey(registrationKey);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            sendJwtByCookie(user, registrationKey, response);
         } else {
             String newNickname = RandomNicknameGenerator.generateNickname();
             User user = User.builder()
                     .nickname(newNickname)
                     .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
-                    .registrationPk(registrationPk)
+                    .registrationPk(registrationKey)
                     .build();
             userRepository.save(user);
-            sendJwtByCookie(registrationPk, response);
+            sendJwtByCookie(user, registrationKey, response);
 
         }
         this.setAlwaysUseDefaultTargetUrl(true);
@@ -75,19 +81,24 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
     }
 
-    public void sendJwtByCookie(String registrationPk, HttpServletResponse response) {
+    public void sendJwtByCookie(User user, String registrationKey, HttpServletResponse response) {
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
-                .setClaims(Map.of("registrationPk", registrationPk,  "role", "ROLE_USER"))
+                .setClaims(Map.of("id", user.getId(), "registrationKey", registrationKey, "Role", "Role_USER"))
                 .signWith(key)
                 .compact();
-        Cookie cookie = new Cookie("Authorization", jwt);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(30*60);
-        cookie.setSecure(true);
-        response.setHeader("Authorization", jwt);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie
+                .from("Authorization", jwt)
+                .domain(cookieUrl)
+                .path("/")
+                .httpOnly(false)
+                .secure(true)
+                .maxAge(Duration.ofDays(30))
+                .sameSite("None")
+                .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
+        System.out.println("========Sended Cookie ==========");
     }
 }
 

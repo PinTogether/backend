@@ -29,8 +29,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private RegistrationSource registrationSource;
 
-    @Column(name = "registration_pk")
-    private String registrationPk;
+    @Column(name = "registration_key")
+    private String registrationKey;
 
     @Builder
     public User(String nickname, RegistrationSource registrationSource, String registrationPk) {
@@ -39,7 +39,7 @@ public class User {
         this.collectionCnt = 0;
         this.likesCollectionCnt = 0;
         this.registrationSource = registrationSource;
-        this.registrationPk = registrationPk;
+        this.registrationKey = registrationKey;
     }
 
 }

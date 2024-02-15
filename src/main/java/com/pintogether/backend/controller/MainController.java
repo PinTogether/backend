@@ -27,9 +27,9 @@ public class MainController {
      */
     @GetMapping("/test")
     public Map<String, String> test(@RequestHeader(value = "Authorization") String jwt) {
-        String registrationPk = jwtService.getRegistrationPk(jwt);
+        String registrationPk = jwtService.getRegistrationKey(jwt);
         Map<String, String> map = new HashMap<>();
-        Optional<User> user = userRepository.findByRegistrationPk(registrationPk);
+        Optional<User> user = userRepository.findByRegistrationKey(registrationPk);
         if (user.isPresent()) {
             map.put("nickname", user.get().getNickname());
         } else {
