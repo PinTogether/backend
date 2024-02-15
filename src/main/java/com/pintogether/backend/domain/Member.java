@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class User {
+public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +32,7 @@ public class User {
     private String registrationId;
 
     @Builder
-    public User(String nickname, RegistrationSource registrationSource, String registrationId) {
+    public Member(String nickname, RegistrationSource registrationSource, String registrationId) {
         this.nickname = nickname;
         this.avatar = "";
         this.collectionCnt = 0;

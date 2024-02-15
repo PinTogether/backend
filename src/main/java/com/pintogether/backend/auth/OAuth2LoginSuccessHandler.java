@@ -1,8 +1,8 @@
 package com.pintogether.backend.auth;
 
-import com.pintogether.backend.domain.User;
+import com.pintogether.backend.domain.Member;
 import com.pintogether.backend.domain.enums.RegistrationSource;
-import com.pintogether.backend.repository.UserRepository;
+import com.pintogether.backend.repository.MemberRepository;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
     @Value("${jwt.signing.key}")
     private String signingKey;
     @Value("${frontend.url}")
@@ -55,17 +55,17 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             registrationId = attributes.getOrDefault("id", "").toString();
         }
 
-        Optional<User> foundUser = userRepository.findByregistrationId(registrationId);
+        Optional<Member> foundUser = memberRepository.findByRegistrationId(registrationId);
         if (foundUser.isPresent()) {
             sendJwtByCookie(registrationId, response);
         } else {
             String newNickname = RandomNicknameGenerator.generateNickname();
-            User user = User.builder()
+            Member user = Member.builder()
                     .nickname(newNickname)
                     .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
                     .registrationId(registrationId)
                     .build();
-            userRepository.save(user);
+            memberRepository.save(user);
             sendJwtByCookie(registrationId, response);
 
         }
