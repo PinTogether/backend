@@ -1,8 +1,8 @@
 package com.pintogether.backend.auth;
 
-import com.pintogether.backend.domain.User;
-import com.pintogether.backend.domain.enums.RegistrationSource;
-import com.pintogether.backend.repository.UserRepository;
+import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.enums.RegistrationSource;
+import com.pintogether.backend.repository.MemberRepository;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
     @Value("${jwt.signing.key}")
     private String signingKey;
     @Value("${frontend.url}")
@@ -39,34 +39,34 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
-        String registrationPk="";
+        String registrationId="";
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = principal.getAttributes();
 
         if ("google".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
-            registrationPk = attributes.getOrDefault("email", "").toString();
+            registrationId = attributes.getOrDefault("email", "").toString();
         } else if ("naver".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
             Map<String, Object> responseNaver = (Map<String, Object>) attributes.get("response");
-            registrationPk = responseNaver.getOrDefault("id", "").toString();
+            registrationId = responseNaver.getOrDefault("id", "").toString();
             String name = responseNaver.getOrDefault("name", "").toString();
-            System.out.println("registrationPk : " + registrationPk);
+            System.out.println("registrationId : " + registrationId);
         } else if ("kakao".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
-            registrationPk = attributes.getOrDefault("id", "").toString();
+            registrationId = attributes.getOrDefault("id", "").toString();
         }
 
-        Optional<User> foundUser = userRepository.findByRegistrationPk(registrationPk);
+        Optional<Member> foundUser = memberRepository.findByRegistrationId(registrationId);
         if (foundUser.isPresent()) {
-            sendJwtByCookie(registrationPk, response);
+            sendJwtByCookie(registrationId, response);
         } else {
             String newNickname = RandomNicknameGenerator.generateNickname();
-            User user = User.builder()
+            Member user = Member.builder()
                     .nickname(newNickname)
                     .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
-                    .registrationPk(registrationPk)
+                    .registrationId(registrationId)
                     .build();
-            userRepository.save(user);
-            sendJwtByCookie(registrationPk, response);
+            memberRepository.save(user);
+            sendJwtByCookie(registrationId, response);
 
         }
         this.setAlwaysUseDefaultTargetUrl(true);
@@ -75,10 +75,10 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
     }
 
-    public void sendJwtByCookie(String registrationPk, HttpServletResponse response) {
+    public void sendJwtByCookie(String registrationId, HttpServletResponse response) {
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
-                .setClaims(Map.of("registrationPk", registrationPk,  "role", "ROLE_USER"))
+                .setClaims(Map.of("registrationId", registrationId,  "role", "ROLE_USER"))
                 .signWith(key)
                 .compact();
         Cookie cookie = new Cookie("Authorization", jwt);

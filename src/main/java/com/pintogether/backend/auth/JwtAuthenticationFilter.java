@@ -36,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .parseClaimsJws(jwt)
                 .getBody();
 
-        String registrationPk = String.valueOf(claims.get("registrationPk"));
+        String registrationId = String.valueOf(claims.get("registrationId"));
         String role = String.valueOf(claims.get("role"));
 
         GrantedAuthority a = new SimpleGrantedAuthority(role);
-        var auth = new UsernamePasswordAuthenticationToken(registrationPk, null, List.of(a));
+        var auth = new UsernamePasswordAuthenticationToken(registrationId, null, List.of(a));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().equals("/login");
+//        return request.getServletPath().equals("/login");
+        return true;
     }
 }
