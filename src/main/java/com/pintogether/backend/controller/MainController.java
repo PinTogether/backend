@@ -1,7 +1,7 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.auth.JwtService;
-import com.pintogether.backend.domain.Member;
+import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.pintogether.backend.domain.enums;
+package com.pintogether.backend.entity.enums;
 
 public enum RegistrationSource {
 

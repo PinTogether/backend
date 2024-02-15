@@ -1,6 +1,6 @@
 package com.pintogether.backend.repository;
 
-import com.pintogether.backend.domain.Member;
+import com.pintogether.backend.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

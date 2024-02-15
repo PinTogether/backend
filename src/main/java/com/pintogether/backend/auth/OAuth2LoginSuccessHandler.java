@@ -1,7 +1,7 @@
 package com.pintogether.backend.auth;
 
-import com.pintogether.backend.domain.Member;
-import com.pintogether.backend.domain.enums.RegistrationSource;
+import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.repository.MemberRepository;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import io.jsonwebtoken.Jwts;

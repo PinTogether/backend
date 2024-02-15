@@ -1,6 +1,6 @@
-package com.pintogether.backend.domain;
+package com.pintogether.backend.entity;
 
-import com.pintogether.backend.domain.enums.RegistrationSource;
+import com.pintogether.backend.entity.enums.RegistrationSource;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
