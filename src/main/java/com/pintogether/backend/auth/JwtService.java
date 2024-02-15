@@ -17,21 +17,6 @@ public class JwtService {
     @Value("${jwt.signing.key}")
     private String signingKey;
 
-<<<<<<< HEAD
-    public String getRegistrationKey(String jwt) {
-=======
-    public String getRegistrationId(String jwt) {
->>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
-        SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(jwt)
-                .getBody();
-<<<<<<< HEAD
-        return String.valueOf(claims.get("registrationKey"));
-    }
-
     public Long getId(String jwt) {
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         Claims claims = Jwts.parserBuilder()
@@ -40,9 +25,6 @@ public class JwtService {
                 .parseClaimsJws(jwt)
                 .getBody();
         return Long.parseLong(String.valueOf(claims.get("id")));
-=======
-        return String.valueOf(claims.get("registrationId"));
->>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
     }
 
 }

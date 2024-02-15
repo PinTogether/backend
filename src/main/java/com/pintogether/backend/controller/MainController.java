@@ -27,19 +27,11 @@ public class MainController {
      */
     @GetMapping("/test")
     public Map<String, String> test(@RequestHeader(value = "Authorization") String jwt) {
-<<<<<<< HEAD
-        String registrationPk = jwtService.getRegistrationKey(jwt);
-        Map<String, String> map = new HashMap<>();
-        Optional<User> user = userRepository.findByRegistrationKey(registrationPk);
-        if (user.isPresent()) {
-            map.put("nickname", user.get().getNickname());
-=======
         String registrationId = jwtService.getRegistrationId(jwt);
         Map<String, String> map = new HashMap<>();
         Optional<Member> member = memberRepository.findByRegistrationId(registrationId);
         if (member.isPresent()) {
             map.put("nickname", member.get().getNickname());
->>>>>>> ddc274eded8d2db9c3079834de119c732b70390d
         } else {
             map.put("nickname", "AnonymousUser");
         }

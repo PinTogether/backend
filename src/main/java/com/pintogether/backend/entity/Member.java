@@ -28,13 +28,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private RegistrationSource registrationSource;
 
-<<<<<<< HEAD:src/main/java/com/pintogether/backend/domain/User.java
-    @Column(name = "registration_key")
-    private String registrationKey;
-=======
     @Column(name = "registration_id")
     private String registrationId;
->>>>>>> ddc274eded8d2db9c3079834de119c732b70390d:src/main/java/com/pintogether/backend/entity/Member.java
 
     @Builder
     public Member(String nickname, RegistrationSource registrationSource, String registrationId) {
@@ -43,11 +38,7 @@ public class Member {
         this.collectionCnt = 0;
         this.scrappedCollectionCnt = 0;
         this.registrationSource = registrationSource;
-<<<<<<< HEAD:src/main/java/com/pintogether/backend/domain/User.java
-        this.registrationKey = registrationKey;
-=======
         this.registrationId = registrationId;
->>>>>>> ddc274eded8d2db9c3079834de119c732b70390d:src/main/java/com/pintogether/backend/entity/Member.java
     }
 
 }
