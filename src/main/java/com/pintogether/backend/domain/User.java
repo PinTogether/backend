@@ -11,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nickname;
@@ -22,24 +21,24 @@ public class User {
     @Column(name = "collection_cnt")
     private int collectionCnt;
 
-    @Column(name = "likes_collection_cnt")
-    private int likesCollectionCnt;
+    @Column(name = "scrapped_collection_cnt")
+    private int scrappedCollectionCnt;
 
     @Column(name = "registration_source")
     @Enumerated(EnumType.STRING)
     private RegistrationSource registrationSource;
 
-    @Column(name = "registration_pk")
-    private String registrationPk;
+    @Column(name = "registration_id")
+    private String registrationId;
 
     @Builder
-    public User(String nickname, RegistrationSource registrationSource, String registrationPk) {
+    public User(String nickname, RegistrationSource registrationSource, String registrationId) {
         this.nickname = nickname;
         this.avatar = "";
         this.collectionCnt = 0;
-        this.likesCollectionCnt = 0;
+        this.scrappedCollectionCnt = 0;
         this.registrationSource = registrationSource;
-        this.registrationPk = registrationPk;
+        this.registrationId = registrationId;
     }
 
 }

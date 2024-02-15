@@ -15,14 +15,14 @@ public class JwtService {
     @Value("${jwt.signing.key}")
     private String signingKey;
 
-    public String getRegistrationPk(String jwt) {
+    public String getRegistrationId(String jwt) {
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-        return String.valueOf(claims.get("registrationPk"));
+        return String.valueOf(claims.get("registrationId"));
     }
 
 }
