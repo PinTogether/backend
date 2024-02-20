@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,6 +37,8 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     private String signingKey;
     @Value("${frontend.url}")
     private String frontendUrl;
+    @Value("${frontend.cookie.url}")
+    private String cookieUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
@@ -57,7 +61,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         Optional<Member> foundUser = memberRepository.findByRegistrationId(registrationId);
         if (foundUser.isPresent()) {
-            sendJwtByCookie(registrationId, response);
+            sendJwtByCookie(foundUser.get(), response);
         } else {
             String newNickname = RandomNicknameGenerator.generateNickname();
             Member user = Member.builder()
@@ -66,8 +70,10 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                     .registrationId(registrationId)
                     .build();
             memberRepository.save(user);
-            sendJwtByCookie(registrationId, response);
-
+            Member newMember = memberRepository.findByRegistrationId(registrationId).orElseThrow(
+                    ()->new IllegalArgumentException("Error occured while creating new member.")
+            );
+            sendJwtByCookie(newMember, response);
         }
         this.setAlwaysUseDefaultTargetUrl(true);
         this.setDefaultTargetUrl(frontendUrl);
@@ -75,19 +81,24 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
     }
 
-    public void sendJwtByCookie(String registrationId, HttpServletResponse response) {
+    public void sendJwtByCookie(Member member, HttpServletResponse response) {
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
-                .setClaims(Map.of("registrationId", registrationId,  "role", "ROLE_USER"))
+                .setClaims(Map.of("id", member.getId(),  "role", "ROLE_MEMBER"))
                 .signWith(key)
                 .compact();
-        Cookie cookie = new Cookie("Authorization", jwt);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(30*60);
-        cookie.setSecure(true);
-        response.setHeader("Authorization", jwt);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie
+                .from("Authorization", jwt)
+                .domain(cookieUrl)
+                .path("/")
+                .httpOnly(false)
+                .secure(true)
+                .maxAge(Duration.ofDays(30))
+                .sameSite("None")
+                .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
+        System.out.println("========Sended Cookie ==========");
     }
 }
 
