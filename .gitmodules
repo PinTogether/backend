@@ -1,3 +1,6 @@
 [submodule "be-config"]
 	path = be-config
 	url = https://github.com/PinTogether/be-config.git
+[submodule "src/main/resources"]
+	path = src/main/resources
+	url = https://github.com/PinTogether/backend-resources.git
