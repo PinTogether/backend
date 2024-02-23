@@ -91,19 +91,6 @@ public final class RandomNicknameGenerator {
         adjectives.add("짜증나는");
         adjectives.add("피곤한");
         adjectives.add("깊은");
-        adjectives2.add("검은");
-        adjectives2.add("푸른");
-        adjectives2.add("붉은");
-        adjectives2.add("주황색의");
-        adjectives2.add("노란");
-        adjectives2.add("보라색의");
-        adjectives2.add("하얀");
-        adjectives2.add("갈색의");
-        adjectives2.add("회색의");
-        adjectives2.add("금빛의");
-        adjectives2.add("은빛의");
-        adjectives2.add("동색의");
-        adjectives2.add("적색의");
         adjectives.add("갈증나는");
         adjectives.add("힘든");
         adjectives.add("무거운");
@@ -111,6 +98,21 @@ public final class RandomNicknameGenerator {
         adjectives.add("신뢰할 수 있는");
         adjectives.add("혼란스러운");
         adjectives.add("날카로운");
+
+
+        adjectives2.add("검은 빛의");
+        adjectives2.add("푸른");
+        adjectives2.add("붉은");
+        adjectives2.add("주황색의");
+        adjectives2.add("노오란");
+        adjectives2.add("보라빛의");
+        adjectives2.add("하얀");
+        adjectives2.add("갈색의");
+        adjectives2.add("회색빛의");
+        adjectives2.add("금빛의");
+        adjectives2.add("은빛의");
+        adjectives2.add("동색의");
+        adjectives2.add("적색의");
 
         List<String> animalNames = getStrings();
 
@@ -122,7 +124,7 @@ public final class RandomNicknameGenerator {
         idx = random.nextInt(3);
         if (idx==1) {
             idx = random.nextInt(adjectives2.size());
-            builder.append(" ").append(adjectives2.size());
+            builder.append(" ").append(adjectives2.get(idx));
         }
         idx = random.nextInt(animalNames.size());
         builder.append(" ").append(animalNames.get(idx));
