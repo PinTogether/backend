@@ -47,3 +47,11 @@ tasks.named('test') {
 jar {
 	enabled = false
 }
+
+task copyPrivate(type: Copy) {
+	copy {
+		from './backend-config'
+		include "*.properties"
+		into 'src/main/resources'
+	}
+}
