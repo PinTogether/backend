@@ -27,8 +27,4 @@ public class CollectionComment extends BaseEntity {
 
     @NotNull
     private String contents;
-
-    public void updateContents(String contents) {
-        this.contents = contents;
-    }
 }

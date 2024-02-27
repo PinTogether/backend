@@ -18,7 +18,7 @@ public class CollectionRequest {
     private String thumbnail;
 
     @NotNull
-    @Size(max = 250, message = "The maximum number of details is 1000.")
+    @Size(max = 250, message = "The maximum number of details is 250.")
     private String details;
 
     @NotNull

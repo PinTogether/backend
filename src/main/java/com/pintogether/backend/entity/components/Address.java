@@ -2,10 +2,11 @@ package com.pintogether.backend.entity.components;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Embeddable
 @NoArgsConstructor
@@ -21,8 +22,8 @@ public class Address {
 
     private String zipcode;
     @Column(nullable = false)
-    private float x;
+    private BigDecimal x;
 
     @Column(nullable = false)
-    private float y;
+    private BigDecimal y;
 }
