@@ -21,8 +21,7 @@ public class CollectionComment extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Collection collection;
 
-    @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE) // 이거 중복으로 필요한가?
+    @ManyToOne()
     private Member member;
 
     @NotNull
