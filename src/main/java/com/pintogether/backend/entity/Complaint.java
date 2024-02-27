@@ -35,12 +35,15 @@ public class Complaint extends BaseEntity{
     private String reason;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Pin pin;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Collection collection;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private  CollectionComment collectionComment;
 
 }
