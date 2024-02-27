@@ -22,6 +22,7 @@ public class CollectionComment extends BaseEntity {
     private Collection collection;
 
     @ManyToOne()
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member member;
 
     @NotNull
