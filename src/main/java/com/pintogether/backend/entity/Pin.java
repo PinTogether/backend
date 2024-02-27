@@ -22,8 +22,7 @@ public class Pin extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne()
     private Place place;
 
     @ManyToOne(optional = false)
