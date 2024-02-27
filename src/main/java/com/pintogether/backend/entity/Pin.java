@@ -38,5 +38,11 @@ public class Pin extends BaseEntity {
 
     @OneToMany(mappedBy = "pin", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PinImage> pinImages = new ArrayList<>();
-    public void updateReview(String review) { this.review = review; }
+    public void updateReview(String review) {
+        this.review = review;
+    }
+
+    public void changeCollection(Collection collection) {
+        this.collection = collection;
+    }
 }
