@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @NoArgsConstructor
@@ -18,9 +20,11 @@ public class Complaint extends BaseEntity{
     private Long id;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member reporter;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member picked;
 
     @Enumerated(value = EnumType.STRING)
