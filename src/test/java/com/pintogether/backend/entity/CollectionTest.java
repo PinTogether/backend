@@ -1,6 +1,7 @@
 package com.pintogether.backend.entity;
 
 import com.pintogether.backend.entity.components.Address;
+import com.pintogether.backend.entity.enums.PlaceSource;
 import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import jakarta.persistence.EntityManager;
@@ -52,18 +53,22 @@ class CollectionTest {
 
         // 더미 Place 생성
         Address address = Address.builder()
-                .registrationSource("LOCALDATE")
-                .roadNumberAddress("123 Baker Street")
-                .zipcode("12345")
-                .x(37.5656F)
-                .y(126.9780F)
+                .numberAddress("123 Baker Street")
+                .latitude(37.5656F)
+                .longitude(126.9780F)
                 .build();
-        place = Place.builder().address(address).localManageCode("123").name("GOOKBAB").category("restruant").build();
+        place = Place.builder()
+                .address(address)
+                .placeSource(PlaceSource.LOCAL_DATA)
+                .placeSourceId("123")
+                .name("GOOKBAB")
+                .category("restruant").build();
+
         entityManager.persist(place);
 
         // 더미 collection 생성
         collection = Collection.builder()
-                .writer(member)
+                .member(member)
                 .title("My favorite")
                 .thumbnail("thumbnailUrl")
                 .details("My favorite restaurant in Gangnam")

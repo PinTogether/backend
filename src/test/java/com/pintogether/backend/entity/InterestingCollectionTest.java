@@ -41,7 +41,7 @@ class InterestingCollectionTest {
 
         // 더미 collection 생성
         collection = Collection.builder()
-                .writer(member)
+                .member(member)
                 .title("My favorite")
                 .thumbnail("thumbnailUrl")
                 .details("My favorite restaurant in Gangnam")

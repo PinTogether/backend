@@ -1,27 +1,31 @@
 package com.pintogether.backend.entity;
 
 import com.pintogether.backend.entity.components.Address;
+import com.pintogether.backend.entity.enums.PlaceSource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import javax.xml.transform.Source;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-public class Place {
+@ToString
+@Setter
+public class Place extends BaseUpdatedAtEntity {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Embedded
     private Address address;
 
-    @NotNull
-    private String localManageCode;
+    private PlaceSource placeSource;
+
+    private String placeSourceId;
 
     private String phone;
 
@@ -32,4 +36,5 @@ public class Place {
     private String category;
 
     private String businessHour;
+
 }

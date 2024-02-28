@@ -13,18 +13,15 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class Address {
-    @Column(nullable = false)
-    private String registrationSource;
 
     private String roadNameAddress;
 
-    private String roadNumberAddress;
-
-    private String zipcode;
+    private String numberAddress;
 
     @Column(nullable = false)
-    private BigDecimal x;
+    private double latitude;
 
     @Column(nullable = false)
-    private BigDecimal y;
+    private double longitude;
+
 }

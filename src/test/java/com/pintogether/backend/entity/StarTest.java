@@ -1,6 +1,7 @@
 package com.pintogether.backend.entity;
 
 import com.pintogether.backend.entity.components.Address;
+import com.pintogether.backend.entity.enums.PlaceSource;
 import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import jakarta.persistence.EntityManager;
@@ -29,21 +30,25 @@ class StarTest {
                 .nickname("spew11")
                 .registrationSource(RegistrationSource.GOOGLE)
                 .registrationId("dhbdg11@gmail.com")
-                .roleType(RoleType.ROLE_MEMBER)
-                .build();
+                .roleType(RoleType.ROLE_MEMBER).build();
+
         entityManager.persist(member);
 
         // 더미 Place 생성
         Address address = Address.builder()
-                .registrationSource("LOCALDATE")
-                .roadNumberAddress("123 Baker Street")
-                .zipcode("12345")
-                .x(37.5656F)
-                .y(126.9780F)
+                .numberAddress("123 Baker Street")
+                .latitude(37.5656F)
+                .longitude(126.9780F)
                 .build();
 
 
-        place = Place.builder().address(address).localManageCode("123").name("GOOKBAB").category("음식점").build();
+        place = Place.builder()
+                .address(address)
+                .placeSource(PlaceSource.LOCAL_DATA)
+                .placeSourceId("123")
+                .name("GOOKBAB")
+                .category("음식점").build();
+
         entityManager.persist(place);
 
         star = Star.builder().member(member).place(place).build();
