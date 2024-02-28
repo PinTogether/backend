@@ -16,11 +16,11 @@ public class Following {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member follower;
 
-    @ManyToOne()
+    @ManyToOne(optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member followee;
 }

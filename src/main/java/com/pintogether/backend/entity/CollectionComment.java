@@ -18,7 +18,6 @@ public class CollectionComment extends BaseEntity {
     private Long id;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Collection collection;
 
     @ManyToOne()

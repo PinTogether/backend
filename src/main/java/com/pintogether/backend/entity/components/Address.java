@@ -21,6 +21,7 @@ public class Address {
     private String roadNumberAddress;
 
     private String zipcode;
+
     @Column(nullable = false)
     private BigDecimal x;
 

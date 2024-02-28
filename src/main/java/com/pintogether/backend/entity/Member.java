@@ -35,6 +35,9 @@ public class Member {
     @NotNull
     private RoleType roleType;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private final List<Collection> collections = new ArrayList<>();
+
     @Builder
     public Member(String nickname, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
         this.nickname = nickname; // 닉네임 생성기로 생성

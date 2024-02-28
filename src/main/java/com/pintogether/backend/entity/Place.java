@@ -32,5 +32,4 @@ public class Place {
     private String category;
 
     private String businessHour;
-    // 수정자 추가해야 됌.
 }

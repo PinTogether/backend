@@ -24,10 +24,8 @@ public class Collection extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name="writer_id")
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Member writer;
+    private Member member;
 
     @NotNull
     private String title;
@@ -41,8 +39,15 @@ public class Collection extends BaseEntity {
     @OneToMany(mappedBy = "collection", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<CollectionTag> collectionTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
+    private final List<CollectionComment> collectionComments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.REMOVE)
+    private final List<Pin> pins = new ArrayList<>();
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
     public void updateCollection(String title, String thumbnail, String details) {
         this.title = title;
         this.thumbnail = thumbnail;

@@ -23,11 +23,9 @@ public class Pin extends BaseEntity {
     private Long id;
 
     @ManyToOne()
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Place place;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Collection collection;
 
     @NotNull
