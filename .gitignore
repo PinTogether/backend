@@ -29,3 +29,6 @@ replay_pid*
 # env variable
 application.properties
 application.yml
+
+
+build/

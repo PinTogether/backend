@@ -19,6 +19,7 @@ import java.util.List;
 @Builder
 @Getter
 public class Pin extends BaseEntity {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -43,4 +44,7 @@ public class Pin extends BaseEntity {
     public void changeCollection(Collection collection) {
         this.collection = collection;
     }
+
+    public void deletePlace() { this.place = null; }
+
 }
