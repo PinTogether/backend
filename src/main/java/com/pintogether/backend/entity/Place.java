@@ -12,7 +12,6 @@ import javax.xml.transform.Source;
 @AllArgsConstructor
 @Builder
 @Getter
-@Setter
 public class Place extends BaseUpdatedAtEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
