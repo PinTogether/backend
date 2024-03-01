@@ -9,11 +9,9 @@ import lombok.*;
 import javax.xml.transform.Source;
 
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-@ToString
 @Setter
 public class Place extends BaseUpdatedAtEntity {
 
@@ -23,6 +21,7 @@ public class Place extends BaseUpdatedAtEntity {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     private PlaceSource placeSource;
 
     private String placeSourceId;
