@@ -45,4 +45,6 @@ public class Pin extends BaseEntity {
         this.collection = collection;
     }
 
+    public void deletePlace() { this.place = null; }
+
 }

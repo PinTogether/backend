@@ -31,4 +31,4 @@ application.properties
 application.yml
 
 
-build
+build/

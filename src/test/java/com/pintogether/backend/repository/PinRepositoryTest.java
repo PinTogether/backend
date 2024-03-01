@@ -90,7 +90,7 @@ class PinRepositoryTest {
         //then
         Assertions.assertSame(pinRepository.findAll().get(0), pin);
 
-        pinRepository.findAll().get(0).setPlace(null);
+        pinRepository.findAll().get(0).deletePlace();
         placeRepository.deleteAll();
 
         assert(pinRepository.findAll().get(0).getPlace() == null);
