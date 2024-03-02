@@ -37,13 +37,6 @@ out/
 application.properties
 application.yml
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-
-build/
-=======
-=======
->>>>>>> Stashed changes
 ##############################
 ## Gradle
 ##############################
@@ -64,9 +57,4 @@ gradle-app.setting
 *.ear
 *.nar
 hs_err_pid*
-<<<<<<< Updated upstream
 replay_pid*
->>>>>>> Stashed changes
-=======
-replay_pid*
->>>>>>> Stashed changes
