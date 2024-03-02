@@ -1,17 +1,17 @@
 package com.pintogether.backend.entity;
 
+import com.pintogether.backend.dto.SearchPlaceResponseDto;
 import com.pintogether.backend.entity.components.Address;
 import com.pintogether.backend.entity.enums.PlaceSource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import javax.xml.transform.Source;
-
 @Entity
 @AllArgsConstructor
 @Builder
 @Getter
+@NoArgsConstructor
 public class Place extends BaseUpdatedAtEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +35,9 @@ public class Place extends BaseUpdatedAtEntity {
 
     private String businessHour;
 
+    SearchPlaceResponseDto toSearchPlaceReponseDto() {
+        return SearchPlaceResponseDto.builder()
+
+                .build();
+    }
 }
