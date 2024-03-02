@@ -23,12 +23,43 @@
 hs_err_pid*
 replay_pid*
 
-# vscode
-.idea
+##############################
+## IntelliJ
+##############################
+out/
+.idea/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
 
 # env variable
 application.properties
 application.yml
 
+<<<<<<< Updated upstream
 
 build/
+=======
+##############################
+## Gradle
+##############################
+bin/
+build/
+.gradle
+.gradletasknamecache
+gradle-app.setting
+!gradle-wrapper.jar
+
+##############################
+## Java
+##############################
+.mtj.tmp/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+>>>>>>> Stashed changes
