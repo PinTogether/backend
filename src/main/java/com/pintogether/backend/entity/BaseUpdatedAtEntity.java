@@ -19,4 +19,3 @@ public abstract class BaseUpdatedAtEntity extends BaseEntity {
     private LocalDateTime updatedAt;
 
 }
-
