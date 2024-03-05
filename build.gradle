@@ -48,7 +48,7 @@ jar {
 	enabled = false
 }
 
-task copyPrivate(type: Copy) {
+tasks.register('copyPrivate', Copy) {
 	copy {
 		from './backend-config'
 		include "*.properties"
