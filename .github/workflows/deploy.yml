@@ -39,14 +39,8 @@ jobs:
 #
 #      - run: mysql -D testdb -e 'SELECT VERSION()'
 
-      - name: checking properties from submodule
-        run: cat ./backend-config/application.properties
-
       - name: copy and paste applcation.properties
         run: cp ./backend-config/application.properties ./src/main/resources/application.properties
-
-      - name: checking properties from resources
-        run: cat ./src/main/resources/application.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -61,9 +55,11 @@ jobs:
         with:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
+
       # 3 배포용 패키지 경로 저장
       - name: Set artifact
         run: echo "artifact=$(ls ./build/libs)" >> $GITHUB_ENV
+
       # 4 빈스토크 배포
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v20
