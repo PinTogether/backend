@@ -4,6 +4,8 @@ import com.pintogether.backend.auth.JwtService;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,5 +41,9 @@ public class MainController {
     }
 
 
+    @GetMapping("/")
+    public String asdf() {
+        return "asdf";
+    }
 
 }
