@@ -48,10 +48,10 @@ jar {
 	enabled = false
 }
 
-tasks.register('copyPrivate', Copy) {
-	copy {
-		from './backend-config'
-		include "*.properties"
-		into 'src/main/resources'
-	}
-}
+//tasks.register('copyPrivate', Copy) {
+//	copy {
+//		from './backend-config'
+//		include "*.properties"
+//		into 'src/main/resources'
+//	}
+//}
