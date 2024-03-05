@@ -16,12 +16,12 @@ jobs:
       - name: Checkout submodules
         uses: actions/checkout@v3
         with:
-          submodules: recursive
+          submodules: true
           token: ${{ secrets.ACTION_TOKEN }}
 
-#      - name: Init config submodule
-#        run: |
-#          git submodule foreach git pull
+      - name: Init config submodule
+        run: |
+          git submodule foreach git pull
       - name: Update config submodule
         run: |
           git submodule update --remote
