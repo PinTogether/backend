@@ -39,13 +39,6 @@ jobs:
 #
 #      - run: mysql -D testdb -e 'SELECT VERSION()'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
-
-
       - name: checking properties from submodule
         run: cat ./backend-config/application.properties
 
@@ -54,6 +47,13 @@ jobs:
 
       - name: checking properties from resources
         run: cat ./src/main/resources/application.properties
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
       #2 현재시간가져오기
       - name: Get current time
         uses: josStorer/get-current-time@v2.0.2
