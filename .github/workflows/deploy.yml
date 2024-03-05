@@ -22,6 +22,7 @@ jobs:
       - name: Init config submodule
         run: |
           git submodule foreach git pull
+
       - name: Update config submodule
         run: |
           git submodule update --remote
