@@ -45,6 +45,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
+      - name: checking properties from submodule
+        run: cat ./backend-config/application.properties
+
+      - name: checking properties from resources
+        run: cat ./src/main/resources/application.properties
       #2 현재시간가져오기
       - name: Get current time
         uses: josStorer/get-current-time@v2.0.2
