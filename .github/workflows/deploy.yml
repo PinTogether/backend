@@ -21,8 +21,7 @@ jobs:
 
       - name: Init config submodule
         run: |
-          git config pull.rebase true
-          git submodule foreach git pull origin main
+          git submodule foreach git pull origin main --rebase
 
       - name: Update config submodule
         run: |
