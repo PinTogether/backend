@@ -36,7 +36,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     private MemberRepository memberRepository;
     @Value("${jwt.signing.key}")
     private String signingKey;
-    @Value("${frontend.url}")
+    @Value("${frontend.login.success.url}")
     private String frontendUrl;
     @Value("${frontend.cookie.url}")
     private String cookieUrl;
