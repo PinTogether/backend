@@ -5,11 +5,11 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class TestController {
-
-    @Value("test")
-    private String test;
-    public String test(){
-        System.out.println("test = " + test);
-        return "index";
-    }
+//
+//    @Value("test")
+//    private String test;
+//    public String test(){
+//        System.out.println("test = " + test);
+//        return "index";
+//    }
 }
