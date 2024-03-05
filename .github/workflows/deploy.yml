@@ -19,9 +19,9 @@ jobs:
           submodules: true
           token: ${{ secrets.ACTION_TOKEN }}
 
-      - name: Init config submodule
-        run: |
-          git submodule foreach git pull
+#      - name: Init config submodule
+#        run: |
+#          git submodule foreach git pull
       - name: Update config submodule
         run: |
           git submodule update --remote
