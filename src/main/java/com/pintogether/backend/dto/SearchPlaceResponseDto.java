@@ -19,4 +19,8 @@ public class SearchPlaceResponseDto {
 
     private double longitude;
 
+    private String category;
+
+    private boolean starred;
+
 }
