@@ -1,15 +1,12 @@
 package com.pintogether.backend.controller;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
+import com.pintogether.backend.dto.CoordinateDto;
+import com.pintogether.backend.util.CoordinateConverter;
+import org.locationtech.proj4j.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class TestController {
-//
-//    @Value("test")
-//    private String test;
-//    public String test(){
-//        System.out.println("test = " + test);
-//        return "index";
-//    }
 }
