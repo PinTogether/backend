@@ -44,6 +44,8 @@ public class SqlPlaceSearchImpl implements SearchService {
                             .name(place.getName())
                             .roadNameAddress(place.getAddress().getRoadNameAddress())
                             .pinCnt(0)
+                            .category(place.getCategory())
+                            .starred(false)
                             .latitude(dto.getLatitude())
                             .longitude(dto.getLongitude())
                             .build();
