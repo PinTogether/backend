@@ -21,7 +21,7 @@ jobs:
 
       - name: Init config submodule
         run: |
-          git submodule foreach git pull origin main
+          git submodule foreach 'git pull --strategy recursive -X theirs origin main'
 
       - name: Update config submodule
         run: |
