@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader("Authorization");
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies.length == 0) {
+            response.setStatus(400);
+            return;
+        }
+        String jwt = cookies[0].getValue();
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -36,11 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .parseClaimsJws(jwt)
                 .getBody();
 
-        String registrationId = String.valueOf(claims.get("registrationId"));
+        String id = String.valueOf(claims.get("id"));
         String role = String.valueOf(claims.get("role"));
 
         GrantedAuthority a = new SimpleGrantedAuthority(role);
-        var auth = new UsernamePasswordAuthenticationToken(registrationId, null, List.of(a));
+        var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
@@ -48,7 +55,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-//        return request.getServletPath().equals("/login");
-        return true;
+
+        /**
+         * Authorization by JwtAuthenticationFilter
+         * : /members/me/**
+         *
+         * Authorization from PreAuthorize Annotation
+         * : members/{memberId},
+         *
+         */
+
+        String requestURI = request.getRequestURI();
+        String[] includePaths = {
+//                "/search/history"
+        };
+
+        String[] excludedPaths = {
+                "/",
+//                "/oauth2/authorization/google",
+//                "/oauth2/authorization/kakao",
+//                "/oauth2/authorization/naver",
+//                "/members/*",
+        };
+        for (String path : excludedPaths) {
+            if (requestURI.equals(path)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
