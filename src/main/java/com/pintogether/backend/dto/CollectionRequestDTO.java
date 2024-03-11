@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CollectionRequest {
+public class CollectionRequestDTO {
     @NotNull
     @Size(min = 1, max = 20, message = "TThe title must be between 1 and 20 characters long.")
     private String title;

@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberUpdateRequest {
+public class MemberUpdateRequestDTO {
     @NotNull @NonNull
     @Size(min = 1, max = 10, message = "The nickname must be between 1 and 10 characters long.")
     private String nickname;
