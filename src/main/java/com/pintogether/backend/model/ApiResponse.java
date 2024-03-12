@@ -19,9 +19,13 @@ public class ApiResponse<T> {
 
     // 생성자 - 정상 응답
     public ApiResponse(List<T> results) {
-        this.status = new Status(ErrorCode.OK.getCode(), ErrorCode.OK.getMessage());
+        this.status = new Status(StatusCode.OK.getCode(), StatusCode.OK.getMessage());
         this.results = results;
         this.metadata = new Metadata(results.size());
+    }
+
+    public ApiResponse(int code, String message) {
+        this.status = new Status(code, message);
     }
 
     // 생성자 - 예외 응답
