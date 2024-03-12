@@ -5,7 +5,11 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
     OK(200, "OK", HttpStatus.OK),
-    BAD_REQUEST(500, "BAD REQUEST", HttpStatus.OK)
+    BAD_REQUEST(400, "BAD REQUEST", HttpStatus.OK),
+
+    CREATED(201, "CREATED", HttpStatus.CREATED),
+
+    NO_CONTENT(204, "NO_CONTENT", HttpStatus.NO_CONTENT)
     ;
 
     @Getter
