@@ -1,6 +1,6 @@
 package com.pintogether.backend.util;
 
-import com.pintogether.backend.dto.CoordinateDto;
+import com.pintogether.backend.dto.CoordinateDTO;
 import org.locationtech.proj4j.*;
 
 /**
@@ -19,7 +19,7 @@ public final class CoordinateConverter {
     private static String wgs84Proj = "+proj=longlat +datum=WGS84 +no_defs";
     private static CoordinateReferenceSystem wgs84System = crsFactory.createFromParameters(wgs84Name, wgs84Proj);
 
-    public static CoordinateDto convert(double longitude, double latitude) {
+    public static CoordinateDTO convert(double longitude, double latitude) {
 
         ProjCoordinate p = new ProjCoordinate();
         p.x = latitude;
@@ -30,7 +30,7 @@ public final class CoordinateConverter {
         CoordinateTransform coordinateTransform = ctFactory.createTransform(espg5174System, wgs84System);
         ProjCoordinate projCoordinate = coordinateTransform.transform(p, p2);
 
-        return CoordinateDto.builder()
+        return CoordinateDTO.builder()
                 .latitude(projCoordinate.y)
                 .longitude(projCoordinate.x)
                 .build();
