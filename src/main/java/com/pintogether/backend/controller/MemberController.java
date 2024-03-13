@@ -5,6 +5,7 @@ import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
+import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.CollectionService;
 import com.pintogether.backend.service.FollowingService;
@@ -70,7 +71,7 @@ public class MemberController {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Member targetMember = memberService.findOneById(targetId);
         if (targetMember == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, "존재하지 않는 멤버입니다.");
+            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         ShowOtherMemberResponseDTO showOtherMemberResponseDTO = ShowOtherMemberResponseDTO.builder()
                 .nickname(targetMember.getNickname())
@@ -89,7 +90,7 @@ public class MemberController {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Member targetMember = memberService.findOneById(targetId);
         if (targetMember == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, "존재하지 않는 멤버입니다.");
+            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.follow(memberId, targetId);
         return makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage());
@@ -100,7 +101,7 @@ public class MemberController {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Member targetMember = memberService.findOneById(targetId);
         if (targetMember == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, "존재하지 않는 멤버입니다.");
+            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.unfollow(memberId, targetId);
         return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage());
