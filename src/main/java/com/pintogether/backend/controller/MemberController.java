@@ -6,9 +6,7 @@ import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
-import com.pintogether.backend.service.CollectionService;
 import com.pintogether.backend.service.FollowingService;
-import com.pintogether.backend.service.InterestingCollectionService;
 import com.pintogether.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +22,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/members")
 public class MemberController {
     private final MemberService memberService;
-    private final CollectionService collectionService;
-    private final InterestingCollectionService interestingCollectionService;
     private final FollowingService followingService;
 
     @GetMapping("/me")
@@ -39,10 +34,10 @@ public class MemberController {
                 .registrationSource(foundMember.getRegistrationSource())
                 .role(foundMember.getRoleType())
                 .avatar(foundMember.getAvatar())
-                .collectionCnt(collectionService.getCollectionCnt(id))
-                .scrappedCollectionCnt(interestingCollectionService.getScrappedCollectionCnt(id))
-                .followerCnt(followingService.getFollowerCnt(id))
-                .followingCnt(followingService.getFolloweeCnt(id))
+                .collectionCnt(memberService.getCollectionCnt(id))
+                .scrappedCollectionCnt(memberService.getScrappedCollectionCnt(id))
+                .followerCnt(memberService.getFollowerCnt(id))
+                .followingCnt(memberService.getFolloweeCnt(id))
                 .build();
         return ApiResponse.makeResponse(showMemberResponseDTO);
     }
@@ -71,11 +66,11 @@ public class MemberController {
         ShowOtherMemberResponseDTO showOtherMemberResponseDTO = ShowOtherMemberResponseDTO.builder()
                 .nickname(targetMember.getNickname())
                 .avatar(targetMember.getAvatar())
-                .collectionCnt(collectionService.getCollectionCnt(targetId))
-                .scrappedCollectionCnt(interestingCollectionService.getScrappedCollectionCnt(targetId))
+                .collectionCnt(memberService.getCollectionCnt(targetId))
+                .scrappedCollectionCnt(memberService.getScrappedCollectionCnt(targetId))
                 .isFollowed(followingService.checkIfFollow(memberId, targetId))
-                .followerCnt(followingService.getFollowerCnt(targetId))
-                .followingCnt(followingService.getFolloweeCnt(targetId))
+                .followerCnt(memberService.getFollowerCnt(targetId))
+                .followingCnt(memberService.getFolloweeCnt(targetId))
                 .build();
         return ApiResponse.makeResponse(showOtherMemberResponseDTO);
     }
@@ -111,7 +106,7 @@ public class MemberController {
                         .id(f.getId())
                         .nickname(f.getNickname())
                         .avatar(f.getAvatar())
-                        .collectionCnt(collectionService.getCollectionCnt(f.getId()))
+                        .collectionCnt(memberService.getCollectionCnt(f.getId()))
                         .build())
                 .collect(Collectors.toList());
         return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
@@ -126,7 +121,7 @@ public class MemberController {
                         .id(f.getId())
                         .nickname(f.getNickname())
                         .avatar(f.getAvatar())
-                        .collectionCnt(collectionService.getCollectionCnt(f.getId()))
+                        .collectionCnt(memberService.getCollectionCnt(f.getId()))
                         .build())
                 .collect(Collectors.toList());
         return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
