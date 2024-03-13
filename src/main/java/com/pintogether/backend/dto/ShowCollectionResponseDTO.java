@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -13,6 +15,8 @@ public class ShowCollectionResponseDTO {
     private Long id;
 
     private String title;
+
+    private String details;
 
     private Long writerId;
 
@@ -29,4 +33,6 @@ public class ShowCollectionResponseDTO {
     private boolean isScrapped;
 
     private boolean isLiked;
+
+    private List<String> tags;
 }
