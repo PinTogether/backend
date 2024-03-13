@@ -32,7 +32,7 @@ public class MemberController {
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Member foundMember = memberService.findOneById(id);
+        Member foundMember = memberService.getMember(id);
         ShowMemberResponseDTO showMemberResponseDTO = ShowMemberResponseDTO.builder()
                 .id(foundMember.getId())
                 .nickname(foundMember.getNickname())
@@ -64,7 +64,7 @@ public class MemberController {
     @GetMapping("/{targetId}")
     public ApiResponse getOtherMemberInformation(@PathVariable Long targetId) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Member targetMember = memberService.findOneById(targetId);
+        Member targetMember = memberService.getMember(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
@@ -83,7 +83,7 @@ public class MemberController {
     @PostMapping("/{targetId}/follow")
     public ApiResponse followMember(@PathVariable Long targetId, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Member targetMember = memberService.findOneById(targetId);
+        Member targetMember = memberService.getMember(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
@@ -94,7 +94,7 @@ public class MemberController {
     @DeleteMapping("/{targetId}/follow")
     public ApiResponse unfollowMember(@PathVariable Long targetId, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Member targetMember = memberService.findOneById(targetId);
+        Member targetMember = memberService.getMember(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }

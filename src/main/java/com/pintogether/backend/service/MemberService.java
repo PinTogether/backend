@@ -19,16 +19,16 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public Member findOneById(Long id) {
+    public Member getMember(Long id) {
         return memberRepository.findOneById(id).orElse(null);
     }
     public void update(Long id, UpdateMemberRequestDTO updateMemberRequestDTO) {
-        Member foundMember = this.findOneById(id);
+        Member foundMember = this.getMember(id);
         foundMember.updateMember(updateMemberRequestDTO);
     }
 
     public void delete(Long id) {
-        Member foundMember = this.findOneById(id);
+        Member foundMember = this.getMember(id);
         memberRepository.delete(foundMember);
     }
 

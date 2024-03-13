@@ -43,8 +43,8 @@ public class FollowingService {
             throw new CustomException(StatusCode.BAD_REQUEST, "이미 팔로우 되어 있습니다.");
         }
         Following following = Following.builder()
-                .follower(memberService.findOneById(followerId))
-                .followee(memberService.findOneById(followeeId))
+                .follower(memberService.getMember(followerId))
+                .followee(memberService.getMember(followeeId))
                 .build();
         followingRepository.save(following);
     }
