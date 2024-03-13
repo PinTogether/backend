@@ -44,21 +44,21 @@ public class MemberController {
                 .followerCnt(followingService.getFollowerCnt(id))
                 .followingCnt(followingService.getFolloweeCnt(id))
                 .build();
-        return makeResponse(showMemberResponseDTO);
+        return ApiResponse.makeResponse(showMemberResponseDTO);
     }
 
     @PutMapping("/me")
     public ApiResponse updateMemberInformation(@RequestBody @Valid UpdateMemberRequestDTO updateMemberRequestDTO, HttpServletResponse response) {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         memberService.update(id, updateMemberRequestDTO);
-        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @DeleteMapping("/me")
     public ApiResponse deleteMemberAccount(HttpServletResponse response) {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         memberService.delete(id);
-        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @GetMapping("/{targetId}")
@@ -77,7 +77,7 @@ public class MemberController {
                 .followerCnt(followingService.getFollowerCnt(targetId))
                 .followingCnt(followingService.getFolloweeCnt(targetId))
                 .build();
-        return makeResponse(showOtherMemberResponseDTO);
+        return ApiResponse.makeResponse(showOtherMemberResponseDTO);
     }
 
     @PostMapping("/{targetId}/follow")
@@ -88,7 +88,7 @@ public class MemberController {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.follow(memberId, targetId);
-        return makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @DeleteMapping("/{targetId}/follow")
@@ -99,7 +99,7 @@ public class MemberController {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.unfollow(memberId, targetId);
-        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @GetMapping("/me/followers")
@@ -114,10 +114,9 @@ public class MemberController {
                         .collectionCnt(collectionService.getCollectionCnt(f.getId()))
                         .build())
                 .collect(Collectors.toList());
-        return makeResponse(showSimpleMemberResponseDTOs);
+        return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
     }
 
-    // 반환 DTO 만들고 반환하기
     @GetMapping("/me/followings")
     public ApiResponse getFollowings() {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -130,17 +129,6 @@ public class MemberController {
                         .collectionCnt(collectionService.getCollectionCnt(f.getId()))
                         .build())
                 .collect(Collectors.toList());
-        return makeResponse(showSimpleMemberResponseDTOs);
-    }
-    public <T> ApiResponse<T> makeResponse(List<T> result) {
-        return new ApiResponse<>(result);
-    }
-
-    public <T> ApiResponse<T> makeResponse(T result) {
-        return makeResponse(Collections.singletonList(result));
-    }
-
-    public ApiResponse makeResponse(int code, String message, HttpServletResponse response) {
-        return new ApiResponse(code, message, response);
+        return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
     }
 }
