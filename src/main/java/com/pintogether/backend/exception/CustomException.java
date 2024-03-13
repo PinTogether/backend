@@ -1,31 +1,23 @@
 package com.pintogether.backend.exception;
 
-import com.pintogether.backend.model.ErrorCode;
+import com.pintogether.backend.model.StatusCode;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
-
-import java.util.AbstractMap;
-import java.util.Map;
-
 public class CustomException extends RuntimeException {
     @Getter
-    private final ErrorCode errorCode;
+    private final StatusCode statusCode;
     private String message;
-    @Getter
-    private Map.Entry<String, Object> data;
 
     // 생성자
-    public CustomException(ErrorCode errorCode, String message, Object data) {
-        this.errorCode = errorCode;
+    public CustomException(StatusCode statusCode, String message) {
+        this.statusCode = statusCode;
         this.message = message;
-        this.data = new AbstractMap.SimpleEntry<>(data.getClass().getSimpleName(), data);
     }
 
     public String getMessage() {
         if(StringUtils.hasLength(this.message)) {
             return this.message;
         }
-        return errorCode.getMessage();
+        return statusCode.getMessage();
     }
-
 }
