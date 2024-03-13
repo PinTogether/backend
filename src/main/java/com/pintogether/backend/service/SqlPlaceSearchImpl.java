@@ -3,6 +3,7 @@ package com.pintogether.backend.service;
 import com.pintogether.backend.dto.CoordinateDTO;
 import com.pintogether.backend.dto.PlaceResponseDTO;
 import com.pintogether.backend.entity.Place;
+import com.pintogether.backend.repository.PinRepository;
 import com.pintogether.backend.repository.PlaceRepository;
 import com.pintogether.backend.util.CoordinateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +20,14 @@ public class SqlPlaceSearchImpl implements SearchService {
     @Autowired
     private PlaceRepository placeRepository;
 
+    @Autowired
+    private PinRepository pinRepository;
+
     public List<PlaceResponseDTO> searchPlace(String query, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
-//        List<SearchPlaceResponseDto> dtoList = new ArrayList<>();
-//        for (Place x : foundPlace) {
-//            CoordinateDto dto = CoordinateConverter.convert(x.getAddress().getLongitude(), x.getAddress().getLatitude());
-//            dtoList.add(SearchPlaceResponseDto.builder()
-//                    .id(x.getId())
-//                    .name(x.getName())
-//                    .roadNameAddress(x.getAddress().getRoadNameAddress())
-//                    .pinCnt(0)
-//                    .latitude(dto.getLatitude())
-//                    .longitude(dto.getLongitude())
-//                    .build());
-//        }
+
         List<PlaceResponseDTO> dtoList = foundPlace.stream()
                 .map(place -> {
                     CoordinateDTO dto = CoordinateConverter.convert(place.getAddress().getLongitude(), place.getAddress().getLatitude());
@@ -42,7 +35,7 @@ public class SqlPlaceSearchImpl implements SearchService {
                             .id(place.getId())
                             .name(place.getName())
                             .roadNameAddress(place.getAddress().getRoadNameAddress())
-                            .pinCnt(0)
+                            .pinCnt(pinRepository.countByPlaceId(place.getId()))
                             .category(place.getCategory())
                             .starred(false)
                             .latitude(dto.getLatitude())

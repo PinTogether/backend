@@ -13,7 +13,7 @@ public class PlaceResponseDTO {
 
     private String roadNameAddress;
 
-    private int pinCnt;
+    private Long pinCnt;
 
     private double latitude;
 

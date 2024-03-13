@@ -22,8 +22,7 @@ public class PlaceController {
 
     @GetMapping("/{placeId}")
     public ApiResponse loadPlaceById(@PathVariable Long placeId) {
-        Place place = placeService.loadPlaceById(placeId);
-        return makeResponse(place.toPlaceReponseDto());
+        return makeResponse(placeService.loadPlaceById(placeId));
     }
 
     public <T> ApiResponse<T> makeResponse(List<T> result) {
@@ -34,7 +33,7 @@ public class PlaceController {
         return makeResponse(Collections.singletonList(result));
     }
 
-    public ApiResponse makeResponse(int code, String message) {
-        return new ApiResponse(code, message);
-    }
+//    public ApiResponse makeResponse(int code, String message) {
+//        return new ApiResponse(code, message);
+//    }
 }

@@ -37,13 +37,13 @@ public class Place extends BaseUpdatedAtEntity {
 
     private String businessHour;
 
-    public PlaceResponseDTO toPlaceReponseDto() {
+    public PlaceResponseDTO toPlaceReponseDto(Long pinCnt) {
         CoordinateDTO convertedCoordinate = CoordinateConverter.convert(this.getAddress().getLongitude(), this.getAddress().getLatitude());
         return PlaceResponseDTO.builder()
                 .id(this.getId())
                 .name(this.getName())
                 .roadNameAddress(this.getAddress().getRoadNameAddress())
-                .pinCnt(0)
+                .pinCnt(pinCnt)
                 .category(this.getCategory())
                 .starred(false)
                 .latitude(convertedCoordinate.getLatitude())
