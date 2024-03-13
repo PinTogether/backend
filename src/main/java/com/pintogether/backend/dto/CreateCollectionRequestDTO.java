@@ -22,5 +22,5 @@ public class CreateCollectionRequestDTO {
     private String details;
 
     @Size(max = 5, message = "태그는 5개 이내만 가능합니다.")
-    private List<@Size(max = 30, message = "각 태그는 30자 이내로 작성해주세요.") String> tags;
+    private List<@Size(max = 20, message = "각 태그는 20자 이내로 작성해주세요.") String> tags;
 }
