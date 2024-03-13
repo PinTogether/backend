@@ -1,6 +1,6 @@
 package com.pintogether.backend.controller;
 
-import com.pintogether.backend.dto.SearchPlaceResponseDto;
+import com.pintogether.backend.dto.SearchPlaceResponseDTO;
 import com.pintogether.backend.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class SearchController {
     private SearchService searchService;
 
     @GetMapping("/place")
-    public List<SearchPlaceResponseDto> searchPlace(
+    public List<SearchPlaceResponseDTO> searchPlace(
             @RequestParam("query") String query,
             @RequestParam("page") int page,
             @RequestParam("size") int size

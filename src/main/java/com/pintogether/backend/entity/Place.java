@@ -1,6 +1,6 @@
 package com.pintogether.backend.entity;
 
-import com.pintogether.backend.dto.SearchPlaceResponseDto;
+import com.pintogether.backend.dto.SearchPlaceResponseDTO;
 import com.pintogether.backend.entity.components.Address;
 import com.pintogether.backend.entity.enums.PlaceSource;
 import jakarta.persistence.*;
@@ -35,8 +35,8 @@ public class Place extends BaseUpdatedAtEntity {
 
     private String businessHour;
 
-    SearchPlaceResponseDto toSearchPlaceReponseDto() {
-        return SearchPlaceResponseDto.builder()
+    SearchPlaceResponseDTO toSearchPlaceReponseDto() {
+        return SearchPlaceResponseDTO.builder()
 
                 .build();
     }

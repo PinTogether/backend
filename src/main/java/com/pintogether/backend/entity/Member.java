@@ -1,6 +1,6 @@
 package com.pintogether.backend.entity;
 
-import com.pintogether.backend.dto.MemberUpdateRequest;
+import com.pintogether.backend.dto.UpdateMemberRequestDTO;
 import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import jakarta.persistence.*;
@@ -47,8 +47,8 @@ public class Member {
         this.roleType = roleType;
     }
 
-    public void updateMember(final MemberUpdateRequest memberUpdateRequest) {
-        this.nickname = memberUpdateRequest.getNickname();
-        this.avatar = memberUpdateRequest.getAvatar();
+    public void updateMember(final UpdateMemberRequestDTO updateMemberRequestDTO) {
+        this.nickname = updateMemberRequestDTO.getNickname();
+        this.avatar = updateMemberRequestDTO.getAvatar();
     }
 }
