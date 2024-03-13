@@ -1,6 +1,5 @@
 package com.pintogether.backend.controller;
 
-import com.pintogether.backend.auth.JwtService;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
@@ -11,9 +10,9 @@ import com.pintogether.backend.service.CollectionService;
 import com.pintogether.backend.service.FollowingService;
 import com.pintogether.backend.service.InterestingCollectionService;
 import com.pintogether.backend.service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +28,6 @@ public class MemberController {
     private final CollectionService collectionService;
     private final InterestingCollectionService interestingCollectionService;
     private final FollowingService followingService;
-
-    @Autowired
-    private JwtService jwtService;
 
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
@@ -52,18 +48,17 @@ public class MemberController {
     }
 
     @PutMapping("/me")
-    public ApiResponse updateMemberInformation(@RequestBody @Valid UpdateMemberRequestDTO updateMemberRequestDTO) {
+    public ApiResponse updateMemberInformation(@RequestBody @Valid UpdateMemberRequestDTO updateMemberRequestDTO, HttpServletResponse response) {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         memberService.update(id, updateMemberRequestDTO);
-        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage());
+        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
-    // 맨 나중에 테스트하자
     @DeleteMapping("/me")
-    public ApiResponse deleteMemberAccount() {
+    public ApiResponse deleteMemberAccount(HttpServletResponse response) {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         memberService.delete(id);
-        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage());
+        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @GetMapping("/{targetId}")
@@ -86,28 +81,27 @@ public class MemberController {
     }
 
     @PostMapping("/{targetId}/follow")
-    public ApiResponse followMember(@PathVariable Long targetId) {
+    public ApiResponse followMember(@PathVariable Long targetId, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Member targetMember = memberService.findOneById(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.follow(memberId, targetId);
-        return makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage());
+        return makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @DeleteMapping("/{targetId}/follow")
-    public ApiResponse unfollowMember(@PathVariable Long targetId) {
+    public ApiResponse unfollowMember(@PathVariable Long targetId, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Member targetMember = memberService.findOneById(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.unfollow(memberId, targetId);
-        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage());
+        return makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
-    // 반환 DTO 만들고 반환하기
     @GetMapping("/me/followers")
     public ApiResponse getFollowers() {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -146,7 +140,7 @@ public class MemberController {
         return makeResponse(Collections.singletonList(result));
     }
 
-    public ApiResponse makeResponse(int code, String message) {
-        return new ApiResponse(code, message);
+    public ApiResponse makeResponse(int code, String message, HttpServletResponse response) {
+        return new ApiResponse(code, message, response);
     }
 }
