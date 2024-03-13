@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/")
+                            .requestMatchers("/", "/places/{placeId}")
                             .permitAll()
                             .anyRequest()
                             .authenticated();

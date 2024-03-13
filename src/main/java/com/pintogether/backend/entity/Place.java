@@ -1,8 +1,10 @@
 package com.pintogether.backend.entity;
 
-import com.pintogether.backend.dto.SearchPlaceResponseDTO;
+import com.pintogether.backend.dto.CoordinateDTO;
+import com.pintogether.backend.dto.PlaceResponseDTO;
 import com.pintogether.backend.entity.components.Address;
 import com.pintogether.backend.entity.enums.PlaceSource;
+import com.pintogether.backend.util.CoordinateConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -35,9 +37,17 @@ public class Place extends BaseUpdatedAtEntity {
 
     private String businessHour;
 
-    SearchPlaceResponseDTO toSearchPlaceReponseDto() {
-        return SearchPlaceResponseDTO.builder()
-
+    public PlaceResponseDTO toPlaceReponseDto() {
+        CoordinateDTO convertedCoordinate = CoordinateConverter.convert(this.getAddress().getLongitude(), this.getAddress().getLatitude());
+        return PlaceResponseDTO.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .roadNameAddress(this.getAddress().getRoadNameAddress())
+                .pinCnt(0)
+                .category(this.getCategory())
+                .starred(false)
+                .latitude(convertedCoordinate.getLatitude())
+                .longitude(convertedCoordinate.getLongitude())
                 .build();
     }
 }
