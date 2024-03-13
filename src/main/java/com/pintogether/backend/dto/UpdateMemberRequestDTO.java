@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class UpdateMemberRequestDTO {
     @NotNull
-    @Size(min = 1, max = 10, message = "The nickname must be between 1 and 10 characters long.")
+    @Size(min = 1, max = 16, message = "닉네임은 16자 이내로 작성해주세요.")
     private String nickname;
     @NotNull
     private String avatar;
