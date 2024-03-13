@@ -2,6 +2,7 @@ package com.pintogether.backend.model;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -24,12 +25,14 @@ public class ApiResponse<T> {
         this.metadata = new Metadata(results.size());
     }
 
-    public ApiResponse(int code, String message) {
+    public ApiResponse(int code, String message, HttpServletResponse response) {
+        response.setStatus(code);
         this.status = new Status(code, message);
     }
 
     // 생성자 - 예외 응답
-    public ApiResponse(int code, String message, Object data) {
+    public ApiResponse(int code, String message, Object data, HttpServletResponse response) {
+        response.setStatus(code);
         this.status = new Status(code, message);
         this.data = data;
     }
