@@ -2,8 +2,12 @@ package com.pintogether.backend.service;
 
 import com.pintogether.backend.dto.UpdateMemberRequestDTO;
 import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
+import com.pintogether.backend.repository.CollectionRepository;
+import com.pintogether.backend.repository.FollowingRepository;
+import com.pintogether.backend.repository.InterestingCollectionRepository;
 import com.pintogether.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Query;
@@ -18,10 +22,14 @@ import java.util.Optional;
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final CollectionRepository collectionRepository;
+    private final InterestingCollectionRepository interestingCollectionRepository;
+    private final FollowingRepository followingRepository;
 
     public Member getMember(Long id) {
         return memberRepository.findOneById(id).orElse(null);
     }
+
     public void update(Long id, UpdateMemberRequestDTO updateMemberRequestDTO) {
         Member foundMember = this.getMember(id);
         foundMember.updateMember(updateMemberRequestDTO);
@@ -32,6 +40,22 @@ public class MemberService {
         memberRepository.delete(foundMember);
     }
 
+    public int getScrappedCollectionCnt(Long memberId) {
+        return interestingCollectionRepository.countByMemberIdAndInterestType(memberId, InterestType.SCRAP);
+    }
+
+    public int getLikeCollectionCnt(Long memberId) {
+        return interestingCollectionRepository.countByMemberIdAndInterestType(memberId, InterestType.LIKES);
+    }
+
+    public int getFollowerCnt(Long memberId) {
+        return followingRepository.countByFolloweeId(memberId);
+    }
+
+    public int getFolloweeCnt(Long memberId) {
+        return followingRepository.countByFollowerId(memberId);
+    }
+
     public List<Member> getFollowers(Long id) {
         return memberRepository.findAllFollowers(id);
     }
@@ -39,4 +63,9 @@ public class MemberService {
     public List<Member> getFollowings(Long id) {
         return memberRepository.findAllFollowings(id);
     }
+
+    public int getCollectionCnt(Long memberId) {
+        return collectionRepository.countByMemberId(memberId);
+    }
+
 }

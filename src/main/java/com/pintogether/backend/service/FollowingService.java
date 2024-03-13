@@ -23,16 +23,6 @@ public class FollowingService {
     private final FollowingRepository followingRepository;
     private final MemberService memberService;
 
-    // member를  따르는 사람들
-    public int getFollowerCnt(Long memberId) {
-        return followingRepository.countByFolloweeId(memberId);
-    }
-
-    // member가 따르는 사람들
-    public int getFolloweeCnt(Long memberId) {
-        return followingRepository.countByFollowerId(memberId);
-    }
-
     public boolean checkIfFollow(Long memberId, Long otherMemberId) {
         return followingRepository.existsByFollowerIdAndFolloweeId(memberId, otherMemberId);
     }

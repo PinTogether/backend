@@ -12,22 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InterestingCollectionService {
     private final InterestingCollectionRepository interestingCollectionRepository;
 
-    public int getScrappedCollectionCnt(Long memberId) {
-        return interestingCollectionRepository.countByMemberIdAndInterestType(memberId, InterestType.SCRAP);
-    }
-
-    public int getLikeCollectionCnt(Long memberId) {
-        return interestingCollectionRepository.countByMemberIdAndInterestType(memberId, InterestType.LIKES);
-    }
-
-    public int getScrappedCnt(Long collectionId) {
-        return interestingCollectionRepository.countByCollectionIdAndInterestType(collectionId, InterestType.SCRAP);
-    }
-
-    public int getLikeCnt(Long collectionId) {
-        return interestingCollectionRepository.countByCollectionIdAndInterestType(collectionId, InterestType.LIKES);
-    }
-
     public boolean isLikedByMember(Long memberId, Long collectionId) {
         return interestingCollectionRepository.existsByMemberIdAndCollectionIdAndInterestType(memberId, collectionId, InterestType.LIKES);
     }
