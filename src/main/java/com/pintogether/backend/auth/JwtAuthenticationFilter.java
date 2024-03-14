@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,11 +32,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         Cookie[] cookies = request.getCookies();
-        if (cookies.length == 0) {
-            response.setStatus(400);
-            return;
+
+        String jwt="";
+        for (Cookie x : cookies) {
+            if (x.getName().equals("Authorization")) {
+                jwt = x.getValue();
+                break;
+            }
         }
-        String jwt = cookies[0].getValue();
+        if (jwt.isEmpty()) {
+            throw new BadRequestException("jwt없음");
+        }
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
