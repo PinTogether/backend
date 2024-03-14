@@ -72,10 +72,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String[] excludedPaths = {
                 "/",
-                "/places/*"
+//                "/oauth2/authorization/google",
+//                "/oauth2/authorization/kakao",
+//                "/oauth2/authorization/naver",
+//                "/members/*",
         };
         for (String path : excludedPaths) {
-            if (requestURI.startsWith(path)) {
+            if (requestURI.equals(path)) {
                 return true;
             }
         }

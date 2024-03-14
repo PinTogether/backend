@@ -31,7 +31,7 @@ public class CollectionController {
     private final MemberService memberService;
     private final InterestingCollectionService interestingCollectionService;
 
-    @PostMapping("")
+    @PostMapping
     public ApiResponse createCollection(@RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         collectionService.CreateCollection(memberId, createCollectionRequestDTO);

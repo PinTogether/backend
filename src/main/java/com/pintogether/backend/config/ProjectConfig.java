@@ -13,9 +13,4 @@ public class ProjectConfig {
         return new SqlPlaceSearchImpl();
     }
 
-//    @Bean
-//    public PlaceRepository placeRepository() {
-//        return new PlaceRepository();
-//    }
-
 }

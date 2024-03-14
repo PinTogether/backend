@@ -24,4 +24,10 @@ public class Star extends BaseEntity {
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Place place;
+
+    @Builder
+    public Star(Member member, Place place) {
+        this.member = member;
+        this.place = place;
+    }
 }

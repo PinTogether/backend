@@ -1,11 +1,13 @@
 package com.pintogether.backend.entity;
 
+import com.pintogether.backend.entity.enums.RegistrationSource;
+import com.pintogether.backend.entity.enums.RoleType;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.CustomStatusMessage;
+import com.pintogether.backend.model.StatusCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -29,7 +31,7 @@ public class Pin extends BaseEntity {
     @ManyToOne(optional = false)
     private Collection collection;
 
-    @NotNull
+    @Column(length = 1000)
     private String review;
 
     @OneToMany(mappedBy = "pin", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -41,10 +43,39 @@ public class Pin extends BaseEntity {
         this.review = review;
     }
 
+    public void updateImage(String imagePath) {
+        if (this.pinImages.size() > 5) {
+            throw new CustomException(StatusCode.BAD_REQUEST, CustomStatusMessage.SIZE_EXCEEDED.getMessage());
+        }
+        PinImage.builder()
+                .imagePath(imagePath)
+                .pin(this)
+                .build();
+    }
+
+    public void updateTag(String tag) {
+        if (this.pinTags.size() > 5) {
+            throw new CustomException(StatusCode.BAD_REQUEST, CustomStatusMessage.SIZE_EXCEEDED.getMessage());
+        }
+        PinTag.builder()
+                .pin(this)
+                .tag(tag)
+                .build();
+    }
+
     public void changeCollection(Collection collection) {
         this.collection = collection;
     }
 
     public void deletePlace() { this.place = null; }
+
+    @Builder
+    public Pin(Place place, Collection collection, String review, List<PinTag> pinTags, List<PinImage> pinImages) {
+        this.place = place;
+        this.collection = collection;
+        this.review = review;
+        this.pinTags.addAll(pinTags);
+        this.pinImages.addAll(pinImages);
+    }
 
 }

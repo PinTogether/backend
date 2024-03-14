@@ -37,10 +37,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/", "/places/{placeId}")
-                            .permitAll()
+//                            .requestMatchers("/", "/places/{placeId}")
+//                                .permitAll()
                             .anyRequest()
-                            .authenticated();
+                                .authenticated();
                 })
                 .addFilterAfter(
                         jwtAuthenticationFilter,
