@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class SearchPlaceResponseDTO {
+public class PlaceResponseDTO {
 
     private Long id;
 
@@ -13,7 +13,7 @@ public class SearchPlaceResponseDTO {
 
     private String roadNameAddress;
 
-    private int pinCnt;
+    private Long pinCnt;
 
     private double latitude;
 
