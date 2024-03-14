@@ -43,11 +43,9 @@ public class SqlPlaceSearchImpl implements SearchService {
         List<PlaceResponseDTO> dtoList = foundPlace.stream()
                 .map(place -> {
                     CoordinateDTO dto = CoordinateConverter.convert(place.getAddress().getLongitude(), place.getAddress().getLatitude());
-                    boolean starred = false;
-                    Optional<Star> optionalStar = starRepository.findByMemberId(memberId);
-                    if (optionalStar.isPresent()) {
-                        starred = true;
-                    }
+                    boolean starred;
+                    Optional<Star> optionalStar = starRepository.findByPlaceIdAndMemberId(place.getId(), memberId);
+                    starred = optionalStar.isPresent();
                     return PlaceResponseDTO.builder()
                             .id(place.getId())
                             .name(place.getName())
