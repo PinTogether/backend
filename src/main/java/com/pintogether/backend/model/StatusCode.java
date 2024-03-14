@@ -11,6 +11,8 @@ public enum StatusCode {
 
     NO_CONTENT(204, "NO_CONTENT", HttpStatus.NO_CONTENT),
 
+    FORBIDDEN(403, "FORBIDDEN", HttpStatus.FORBIDDEN),
+
     NOT_FOUND(404, "NOT_FOUND", HttpStatus.NOT_FOUND)
     ;
 

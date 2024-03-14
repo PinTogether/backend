@@ -23,16 +23,6 @@ public class FollowingService {
     private final FollowingRepository followingRepository;
     private final MemberService memberService;
 
-    // member를  따르는 사람들
-    public int getFollowerCnt(Long memberId) {
-        return followingRepository.countByFolloweeId(memberId);
-    }
-
-    // member가 따르는 사람들
-    public int getFolloweeCnt(Long memberId) {
-        return followingRepository.countByFollowerId(memberId);
-    }
-
     public boolean checkIfFollow(Long memberId, Long otherMemberId) {
         return followingRepository.existsByFollowerIdAndFolloweeId(memberId, otherMemberId);
     }
@@ -43,8 +33,8 @@ public class FollowingService {
             throw new CustomException(StatusCode.BAD_REQUEST, "이미 팔로우 되어 있습니다.");
         }
         Following following = Following.builder()
-                .follower(memberService.findOneById(followerId))
-                .followee(memberService.findOneById(followeeId))
+                .follower(memberService.getMember(followerId))
+                .followee(memberService.getMember(followeeId))
                 .build();
         followingRepository.save(following);
     }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InterestingCollectionRepository extends JpaRepository<InterestingCollection, Long> {
     int countByMemberIdAndInterestType(Long memberId, InterestType interestType);
@@ -16,4 +17,5 @@ public interface InterestingCollectionRepository extends JpaRepository<Interesti
 
     boolean existsByMemberIdAndCollectionIdAndInterestType(Long memberId, Long collectionId, InterestType interestType);
 
+    Optional<InterestingCollection> findOneByMemberIdAndCollectionIdAndInterestType(Long memberId, Long collectionId, InterestType interestType);
 }

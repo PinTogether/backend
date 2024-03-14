@@ -48,9 +48,19 @@ public class Collection extends BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public void updateCollection(String title, String thumbnail, String details) {
+    public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void updateThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public void updateDetails(String details) {
         this.details = details;
+    }
+
+    public void clearCollectionTags() {
+        collectionTags.clear();
     }
 }

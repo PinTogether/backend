@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -48,5 +49,17 @@ public class ApiResponse<T> {
     @AllArgsConstructor
     private static class Metadata {
         private int resultCount = 0;
+    }
+
+    public static <T> ApiResponse<T> makeResponse(List<T> result) {
+        return new ApiResponse<>(result);
+    }
+
+    public static <T> ApiResponse<T> makeResponse(T result) {
+        return makeResponse(Collections.singletonList(result));
+    }
+
+    public static ApiResponse makeResponse(int code, String message, HttpServletResponse response) {
+        return new ApiResponse(code, message, response);
     }
 }
