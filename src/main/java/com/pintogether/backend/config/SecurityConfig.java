@@ -37,8 +37,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth
-//                            .requestMatchers("/", "/places/{placeId}")
-//                                .permitAll()
+                            .requestMatchers("/", "/places/{placeId}")
+                                .permitAll()
                             .anyRequest()
                                 .authenticated();
                 })
@@ -48,9 +48,8 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth -> {
                     oauth
-                            .loginPage("/login").permitAll()
+                            .loginPage("/").permitAll()
                             .successHandler(oAuth2LoginSuccessHandler);
-                    ;
                 });
 
         return http.build();
