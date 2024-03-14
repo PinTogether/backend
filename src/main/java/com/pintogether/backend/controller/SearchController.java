@@ -1,6 +1,10 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.dto.PlaceResponseDTO;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.ApiResponse;
+import com.pintogether.backend.model.CustomStatusMessage;
+import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,17 +22,19 @@ public class SearchController {
     private SearchService searchService;
 
     @GetMapping("/place")
-    public List<PlaceResponseDTO> searchPlace(
-            @RequestParam("query") String query,
-            @RequestParam("page") int page,
-            @RequestParam("size") int size
+    public ApiResponse searchPlace(
+            @RequestParam(value = "query", defaultValue = "") String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "4") int size
     ) {
-        System.out.println("SearchPlaceController");
-        return searchService.searchPlace(query, page, size);
+        if (query.isEmpty()) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "검색어를 입력해주세요.");
+        }
+        if (query.length() > 20) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
+        }
+
+        return new ApiResponse(searchService.searchPlace(query, page, size));
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("조건에 맞는 결과를 찾을 수 없습니다.");
-    }
 }
