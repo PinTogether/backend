@@ -6,6 +6,8 @@ import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
+import com.pintogether.backend.service.AmazonS3Service;
+import com.pintogether.backend.service.DomainType;
 import com.pintogether.backend.service.FollowingService;
 import com.pintogether.backend.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class MemberController {
     private final MemberService memberService;
     private final FollowingService followingService;
+    private final AmazonS3Service amazonS3Service;
 
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
@@ -125,5 +128,12 @@ public class MemberController {
                         .build())
                 .collect(Collectors.toList());
         return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
+    }
+
+    @GetMapping("/me/avatar/presigned-url")
+    public ApiResponse getPresignedUrlForAvatar(@RequestBody @Valid S3MemberAvatarRequestDTO s3MemberAvatarRequestDTO) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        String contentType = s3MemberAvatarRequestDTO.getContentType();
+        return ApiResponse.makeResponse(memberService.getPresignedUrl(contentType, DomainType.Member.AVATAR.getName(), memberId));
     }
 }

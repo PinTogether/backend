@@ -1,20 +1,12 @@
 package com.pintogether.backend.service;
 
 import com.pintogether.backend.entity.Following;
-import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
-import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.FollowingRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @Transactional

@@ -1,21 +1,17 @@
 package com.pintogether.backend.controller;
 
-import com.pintogether.backend.dto.CreateCollectionRequestDTO;
-import com.pintogether.backend.dto.ShowCollectionResponseDTO;
-import com.pintogether.backend.dto.UpdateCollectionRequestDTO;
+import com.pintogether.backend.customAnnotations.CurrentCollection;
+import com.pintogether.backend.customAnnotations.CurrentCollectionComment;
+import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Collection;
+import com.pintogether.backend.entity.CollectionComment;
 import com.pintogether.backend.entity.CollectionTag;
-import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
-import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
-import com.pintogether.backend.service.CollectionService;
-import com.pintogether.backend.service.InterestingCollectionService;
-import com.pintogether.backend.service.MemberService;
+import com.pintogether.backend.service.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,35 +24,34 @@ import java.util.stream.Collectors;
 @RequestMapping("/collections")
 public class CollectionController {
     private final CollectionService collectionService;
-    private final MemberService memberService;
+    private final CollectionCommentService collectionCommentService;
     private final InterestingCollectionService interestingCollectionService;
+    private final PinService pinService;
 
-    @PostMapping
+    @PostMapping("")
     public ApiResponse createCollection(@RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        collectionService.CreateCollection(memberId, createCollectionRequestDTO);
+        collectionService.createCollection(memberId, createCollectionRequestDTO);
+
+
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @GetMapping("/{collectionId}")
-    public ApiResponse getCollection(@PathVariable Long collectionId) {
+    public ApiResponse getCollection(@CurrentCollection Collection collection) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
         ShowCollectionResponseDTO showCollectionResponseDTO = ShowCollectionResponseDTO.builder()
-                .id(collectionId)
+                .id(collection.getId())
                 .title(collection.getTitle())
                 .writerId(collection.getMember().getId())
                 .details(collection.getDetails())
                 .writer(collection.getMember().getNickname())
                 .thumbnail(collection.getThumbnail())
-                .likeCnt(collectionService.getLikeCnt(collectionId))
-                .pinCnt(collectionService.getPinCnt(collectionId))
-                .scrapCnt(collectionService.getScrappedCnt(collectionId))
-                .isScrapped(interestingCollectionService.isScrappedByMember(memberId, collectionId))
-                .isLiked(interestingCollectionService.isLikedByMember(memberId, collectionId))
+                .likeCnt(collectionService.getLikeCnt(collection.getId()))
+                .pinCnt(collectionService.getPinCnt(collection.getId()))
+                .scrapCnt(collectionService.getScrappedCnt(collection.getId()))
+                .isScrapped(interestingCollectionService.isScrappedByMember(memberId, collection.getId()))
+                .isLiked(interestingCollectionService.isLikedByMember(memberId, collection.getId()))
                 .tags(collection.getCollectionTags().stream()
                         .map(CollectionTag::getTag)
                         .collect(Collectors.toList()))
@@ -65,78 +60,52 @@ public class CollectionController {
     }
 
     @DeleteMapping("/{collectionId}")
-    public ApiResponse deleteCollection(@PathVariable Long collectionId, HttpServletResponse response) {
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
-        collectionService.deleteCollection(collection);
+    public ApiResponse deleteCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        collectionService.deleteCollection(memberId, collection);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @PostMapping("/{collectionId}/likes")
-    public ApiResponse likeOnCollection(@PathVariable Long collectionId, HttpServletResponse response) {
+    public ApiResponse likeOnCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
-        interestingCollectionService.likeOnCollection(memberId, collectionId);
+        interestingCollectionService.likeOnCollection(memberId, collection.getId());
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @PostMapping("/{collectionId}/scraps")
-    public ApiResponse scrapTheCollection(@PathVariable Long collectionId, HttpServletResponse response) {
+    public ApiResponse scrapTheCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
-        interestingCollectionService.scrapTheCollection(memberId, collectionId);
+        interestingCollectionService.scrapTheCollection(memberId, collection.getId());
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @DeleteMapping("/{collectionId}/likes")
-    public ApiResponse cancelLikeOnCollection(@PathVariable Long collectionId, HttpServletResponse response) {
+    public ApiResponse cancelLikeOnCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
-        interestingCollectionService.cancelLikeOnCollection(memberId, collectionId);
+        interestingCollectionService.cancelLikeOnCollection(memberId, collection.getId());
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @DeleteMapping("/{collectionId}/scraps")
-    public ApiResponse cancelScrapOnCollection(@PathVariable Long collectionId, HttpServletResponse response) {
+    public ApiResponse cancelScrapOnCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
-        interestingCollectionService.cancelScrapOnCollection(memberId, collectionId);
+        interestingCollectionService.cancelScrapOnCollection(memberId, collection.getId());
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @PutMapping("/{collectionId}")
-    public ApiResponse updateCollection(@PathVariable Long collectionId, @RequestBody @Valid UpdateCollectionRequestDTO updateCollectionRequestDTO,  HttpServletResponse response) {
+    public ApiResponse updateCollection(@CurrentCollection Collection collection, @RequestBody @Valid UpdateCollectionRequestDTO updateCollectionRequestDTO,  HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-
-        Collection collection = collectionService.getCollection(collectionId);
-        if (collection == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-        }
-        collectionService.updateCollection(memberId, collectionId, updateCollectionRequestDTO);
+        collectionService.updateCollection(memberId, collection.getId(), updateCollectionRequestDTO);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @GetMapping("/top")
-    public ApiResponse getTopLikeCollections(@Param("cnt") int cnt) {
+    public ApiResponse getTopLikeCollections(@RequestParam(value = "cnt", required = true) int cnt) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
         List<Collection> collections = collectionService.getTopLikeCollections(cnt);
-
-        System.out.println("**********" + collections.get(0).getTitle());
 
         List<ShowCollectionResponseDTO> showCollectionResponseDTOs = collections.stream()
                 .map(c -> ShowCollectionResponseDTO.builder()
@@ -160,15 +129,42 @@ public class CollectionController {
     }
 
 //    @GetMapping("/{collectionId}/pins")
-//    public void getPins(@PathVariable Long collectionId) {
+//    public void getPins(@CurrentCollection Collection collection) {
 //        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-//
-//        Collection collection = collectionService.getCollection(collectionId);
-//        if (collection == null) {
-//            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.COLLECTION_NOT_FOUND.getMessage());
-//        }
-//        collection.getPins();
+//        pinService.
 //    }
 
+    @PostMapping("/{collectionId}/comments")
+    public ApiResponse leaveCollectionComment(HttpServletResponse response, @CurrentCollection Collection collection, @RequestBody CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        collectionService.leaveAComment(memberId, collection, createCollectionCommentRequestDTO);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
+    }
+    @DeleteMapping("/comments/{commentId}")
+    public ApiResponse deleteCollectionComment(HttpServletResponse response, @CurrentCollectionComment CollectionComment collectionComment) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        collectionService.deleteComment(memberId, collectionComment);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
+    }
 
+    @GetMapping("/{collectionId}/comments")
+    public ApiResponse getCollectionComments(@CurrentCollection Collection collection) {
+        List<CollectionComment> collectionComments = collectionCommentService.getCollectionComments(collection.getId());
+        List<ShowCollectionCommentResponseDTO> showCollectionCommentResponseDTOs = collectionComments.stream()
+                .map(cc -> ShowCollectionCommentResponseDTO.builder()
+                        .id(cc.getId())
+                        .writerId(cc.getMember().getId())
+                        .writer(cc.getMember().getNickname())
+                        .contents(cc.getContents())
+                        .createdAt(cc.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(showCollectionCommentResponseDTOs);
+    }
+
+    @GetMapping("/{collectionId}/thumbnail/presigned-url")
+    public ApiResponse getPresignedUrlForThumbnail(@CurrentCollection Collection collection, @RequestBody @Valid S3CollectionThumbnailRequestDTO s3CollectionThumbnailRequestDTO) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(memberId, s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
+    }
 }

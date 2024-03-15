@@ -1,13 +1,15 @@
 package com.pintogether.backend.service;
 
+import com.pintogether.backend.dto.CreateCollectionCommentRequestDTO;
 import com.pintogether.backend.dto.CreateCollectionRequestDTO;
 import com.pintogether.backend.dto.UpdateCollectionRequestDTO;
 import com.pintogether.backend.entity.Collection;
+import com.pintogether.backend.entity.CollectionComment;
 import com.pintogether.backend.entity.CollectionTag;
-import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
+import com.pintogether.backend.repository.CollectionCommentRepository;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ public class CollectionService {
     private final CollectionRepository collectionRepository;
     private final InterestingCollectionRepository interestingCollectionRepository;
     private final MemberService memberService;
+    private final CollectionCommentRepository collectionCommentRepository;
+    private final AmazonS3Service amazonS3Service;
 
     public Collection getCollection(Long collectionId) {
         return collectionRepository.findOneById(collectionId).orElse(null);
@@ -41,10 +45,13 @@ public class CollectionService {
         return this.getCollection(collectionId).getPins().size();
     }
 
-    public void deleteCollection(Collection collection) {
+    public void deleteCollection(Long memberId, Collection collection) {
+        if (!memberId.equals(collection.getMember().getId())) {
+            throw new CustomException(StatusCode.FORBIDDEN, "컬렉션을 삭제할 권한이 없습니다.");
+        }
         this.collectionRepository.delete(collection);
     }
-    public void CreateCollection(Long memberId, CreateCollectionRequestDTO createCollectionRequestDTO) {
+    public void createCollection(Long memberId, CreateCollectionRequestDTO createCollectionRequestDTO) {
         Collection newCollection = Collection.builder()
                 .member(memberService.getMember(memberId))
                 .title(createCollectionRequestDTO.getTitle())
@@ -64,7 +71,7 @@ public class CollectionService {
     public void updateCollection(Long memberId, Long collectionId, UpdateCollectionRequestDTO updateCollectionRequestDTO) {
         Collection collection = this.getCollection(collectionId);
         if (!collection.getMember().getId().equals(memberId)) {
-            throw new CustomException(StatusCode.FORBIDDEN, "수정할 권한이 없습니다.");
+            throw new CustomException(StatusCode.FORBIDDEN, "컬렉션을 수정할 권한이 없습니다.");
         }
         collection.updateTitle(updateCollectionRequestDTO.getTitle());
         collection.updateDetails(updateCollectionRequestDTO.getDetails());
@@ -83,5 +90,32 @@ public class CollectionService {
 
     public List<Collection> getTopLikeCollections(int cnt) {
         return collectionRepository.findTopCollectionsByInterestType(InterestType.LIKES.getString(), cnt);
+    }
+
+    public void leaveAComment(Long memberId, Collection collection, CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
+        CollectionComment collectionComment = CollectionComment.builder()
+                .collection(collection)
+                .member(memberService.getMember(memberId))
+                .contents(createCollectionCommentRequestDTO.getContents())
+                .build();
+        collectionCommentRepository.save(collectionComment);
+    }
+
+    public void deleteComment(Long memberId, CollectionComment collectionComment) {
+        if (!memberId.equals(collectionComment.getMember().getId())) {
+            throw new CustomException(StatusCode.FORBIDDEN, "댓글을 삭제할 권한이 없습니다.");
+        }
+        collectionCommentRepository.delete(collectionComment);
+    }
+
+    public List<CollectionComment> getComments(Collection collection) {
+        return collection.getCollectionComments();
+    }
+
+    public AmazonS3Service.AmazonS3Response getPresignedUrlForThumbnail(Long memberId, String contentType, String domainType, Collection collection) {
+        if (!memberId.equals(collection.getMember().getId())) {
+            throw new CustomException(StatusCode.FORBIDDEN, "컬렉션 썸네일 presigned url을 요청할 권한이 없습니다.");
+        }
+        return amazonS3Service.getneratePresignedUrlAndImageUrl(contentType, domainType, collection.getId());
     }
 }
