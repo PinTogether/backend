@@ -21,7 +21,7 @@ jobs:
 
       - name: Init config submodule
         run: |
-          git submodule foreach --init --recursive
+          git submodule update --init --recursive
 
       - name: Update config submodule
         run: |
