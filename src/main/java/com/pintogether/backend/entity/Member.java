@@ -5,7 +5,9 @@ import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,7 +2,9 @@ package com.pintogether.backend.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter

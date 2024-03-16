@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,10 +19,16 @@ public class CollectionComment extends BaseEntity {
     @ManyToOne(optional = false)
     private Collection collection;
 
-    @ManyToOne()
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @ManyToOne(optional = false)
     private Member member;
 
     @NotNull
     private String contents;
+
+    CollectionComment(Collection collection, Member member, String contents) {
+        this.collection = collection;
+        this.member = member;
+        this.contents = contents;
+        this.collection.getCollectionComments().add(this);
+    }
 }
