@@ -30,17 +30,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+        String requestURI = request.getRequestURI();
         Cookie[] cookies = request.getCookies();
 
         String jwt="";
+        System.out.println("Executing REQUEST " + requestURI );
+        System.out.println("Method : " + request.getMethod());
         for (Cookie x : cookies) {
             if (x.getName().equals("Authorization")) {
                 jwt = x.getValue();
+                System.out.println("JWT " + jwt + " accepted.");
                 break;
             }
         }
         if (jwt.isEmpty()) {
+            System.out.println("JWT not found");
             throw new BadRequestException("jwt없음");
         }
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
@@ -80,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String[] excludedPaths = {
                 "/",
                 "/search/*",
-                "/members/*"
+                "/members/{memberId}"
 
 //                "/oauth2/authorization/google",
 //                "/oauth2/authorization/kakao",
