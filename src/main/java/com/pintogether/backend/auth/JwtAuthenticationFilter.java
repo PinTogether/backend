@@ -84,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String[] excludedPaths = {
                 "/",
                 "/search/*",
-                "/members/*"
+                "/members/3"
 
 //                "/oauth2/authorization/google",
 //                "/oauth2/authorization/kakao",
