@@ -1,6 +1,7 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.auth.JwtService;
+import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,8 @@ public class MainController {
 
 
     @GetMapping("/")
-    public String asdf() {
-        return "asdf";
+    public Long asdf(@ThisMember Long id) {
+        return id;
     }
 
 }
