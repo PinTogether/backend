@@ -2,10 +2,12 @@ package com.pintogether.backend.controller;
 
 import com.pintogether.backend.customAnnotations.CurrentCollection;
 import com.pintogether.backend.customAnnotations.CurrentCollectionComment;
+import com.pintogether.backend.customAnnotations.CurrentMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.CollectionComment;
 import com.pintogether.backend.entity.CollectionTag;
+import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
@@ -95,7 +97,7 @@ public class CollectionController {
     }
 
     @PutMapping("/{collectionId}")
-    public ApiResponse updateCollection(@CurrentCollection Collection collection, @RequestBody @Valid UpdateCollectionRequestDTO updateCollectionRequestDTO,  HttpServletResponse response) {
+    public ApiResponse updateCollection(@CurrentCollection Collection collection, @RequestBody @Valid UpdateCollectionRequestDTO updateCollectionRequestDTO, HttpServletResponse response) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         collectionService.updateCollection(memberId, collection.getId(), updateCollectionRequestDTO);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
@@ -140,6 +142,7 @@ public class CollectionController {
         collectionService.leaveAComment(memberId, collection, createCollectionCommentRequestDTO);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
+
     @DeleteMapping("/comments/{commentId}")
     public ApiResponse deleteCollectionComment(HttpServletResponse response, @CurrentCollectionComment CollectionComment collectionComment) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -166,5 +169,45 @@ public class CollectionController {
     public ApiResponse getPresignedUrlForThumbnail(@CurrentCollection Collection collection, @RequestBody @Valid S3CollectionThumbnailRequestDTO s3CollectionThumbnailRequestDTO) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(memberId, s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
+    }
+
+    @GetMapping("/{targetId}/collections")
+    public ApiResponse getCollectionsByMember(@CurrentMember Member targetMember, @RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        List<ShowCollectionsResponseDTO> collections = collectionService.getCollectionsByMemberIdWithPageable(targetMember.getId(), pageNumber, pageSize).get()
+                .map(c -> ShowCollectionsResponseDTO.builder()
+                        .id(c.getId())
+                        .title(c.getTitle())
+                        .writerId(c.getMember().getId())
+                        .writer(c.getMember().getNickname())
+                        .thumbnail(c.getThumbnail())
+                        .likeCnt(collectionService.getLikeCnt(c.getId()))
+                        .pinCnt(collectionService.getPinCnt(c.getId()))
+                        .scrapCnt(collectionService.getScrappedCnt(c.getId()))
+                        .isScrapped(!"anonymousUser".equals(memberId) ? interestingCollectionService.isScrappedByMember(memberId, c.getId()) : false)
+                        .isLiked(!"anonymousUser".equals(memberId) ? interestingCollectionService.isLikedByMember(memberId, c.getId()) : false)
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(collections);
+    }
+
+    @GetMapping("/{targetId}/scraps")
+    public ApiResponse getScrapCollectionsByMember(@CurrentMember Member targetMember, @RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
+        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        List<ShowCollectionsResponseDTO> collections = collectionService.getScrapCollectionsByMemberIdWithPageable(targetMember.getId(), pageNumber, pageSize).get()
+                .map(c -> ShowCollectionsResponseDTO.builder()
+                        .id(c.getId())
+                        .title(c.getTitle())
+                        .writerId(c.getMember().getId())
+                        .writer(c.getMember().getNickname())
+                        .thumbnail(c.getThumbnail())
+                        .likeCnt(collectionService.getLikeCnt(c.getId()))
+                        .pinCnt(collectionService.getPinCnt(c.getId()))
+                        .scrapCnt(collectionService.getScrappedCnt(c.getId()))
+                        .isScrapped(!"anonymousUser".equals(memberId) ? interestingCollectionService.isScrappedByMember(memberId, c.getId()) : false)
+                        .isLiked(!"anonymousUser".equals(memberId) ? interestingCollectionService.isLikedByMember(memberId, c.getId()) : false)
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(collections);
     }
 }

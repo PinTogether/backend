@@ -13,6 +13,11 @@ import com.pintogether.backend.repository.CollectionCommentRepository;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,5 +122,17 @@ public class CollectionService {
             throw new CustomException(StatusCode.FORBIDDEN, "컬렉션 썸네일 presigned url을 요청할 권한이 없습니다.");
         }
         return amazonS3Service.getneratePresignedUrlAndImageUrl(contentType, domainType, collection.getId());
+    }
+
+    public Page<Collection> getCollectionsByMemberIdWithPageable(Long memberId, int pageNumber, int pageSize) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        return collectionRepository.findByMemberId(memberId, pageable);
+    }
+
+    public Page<Collection> getScrapCollectionsByMemberIdWithPageable(Long memberId, int pageNumber, int pageSize) {
+//        Sort sort = Sort.by(Sort.Direction.DESC, "created_at");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return collectionRepository.findByMemberIdAndInterestType(memberId, InterestType.SCRAP.getString(), pageable);
     }
 }
