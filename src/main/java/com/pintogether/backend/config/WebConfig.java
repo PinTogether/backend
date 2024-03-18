@@ -3,6 +3,7 @@ package com.pintogether.backend.config;
 
 import com.pintogether.backend.handlerMethodArgumentResolver.CollectionArgumentResolver;
 import com.pintogether.backend.handlerMethodArgumentResolver.CollectionCommentArgumentResolver;
+import com.pintogether.backend.handlerMethodArgumentResolver.MemberArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -15,10 +16,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final CollectionArgumentResolver collectionArgumentResolver;
     private final CollectionCommentArgumentResolver collectionCommentArgumentResolver;
+    private final MemberArgumentResolver memberArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(collectionArgumentResolver);
         resolvers.add(collectionCommentArgumentResolver);
+        resolvers.add(memberArgumentResolver);
     }
 }
