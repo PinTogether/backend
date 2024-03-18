@@ -131,8 +131,8 @@ public class CollectionService {
     }
 
     public Page<Collection> getScrapCollectionsByMemberIdWithPageable(Long memberId, int pageNumber, int pageSize) {
-//        Sort sort = Sort.by(Sort.Direction.DESC, "created_at");
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Sort sort = Sort.by(Sort.Direction.DESC, "created_at");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         return collectionRepository.findByMemberIdAndInterestType(memberId, InterestType.SCRAP.getString(), pageable);
     }
 }
