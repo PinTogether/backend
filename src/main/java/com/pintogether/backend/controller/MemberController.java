@@ -1,5 +1,6 @@
 package com.pintogether.backend.controller;
 
+import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
