@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -67,6 +68,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
+        Cookie[] cookies = request.getCookies();
+        for (Cookie x : cookies) {
+            if (x.getName().equals("Authorization")) {
+                return false;
+            }
+        }
         /**
          * Authorization by JwtAuthenticationFilter
          * : /members/me/**
@@ -77,23 +84,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
          */
 
         String requestURI = request.getRequestURI();
-        String[] includePaths = {
-//                "/search/history"
+        String[] includePathsForGET = {
+                "/members/me"
+        };
+        String[] includePathsForPOST = {
+                "/members/"
+        };
+        String[] includePathsForDELETE = {
+                "/members/"
+        };
+        String[] includePathsForPATCH = {
+                "/members/me"
         };
 
-        String[] excludedPaths = {
+        String[] excludedPathsForGET = {
+                "/members/",
                 "/",
-                "/search/*",
-                "/members/3"
-
-//                "/oauth2/authorization/google",
-//                "/oauth2/authorization/kakao",
-//                "/oauth2/authorization/naver",
-//                "/members/*",
+                "/search/",
         };
-        for (String path : excludedPaths) {
-            if (requestURI.equals(path)) {
-                return true;
+        String[] excludedPathsForPOST = {
+                "/",
+                "/search/",
+                "/members/"
+        };
+        String[] excludedPathsForDELETE = {
+                "/",
+                "/search/",
+                "/members/"
+        };
+        String[] excludedPathsForPATCH = {
+                "/",
+                "/search/",
+                "/members/"
+        };
+
+        if (request.getMethod().equals("GET")) {
+            for (String path : excludedPathsForGET) {
+                if (requestURI.startsWith(path)) {
+                    return true;
+                }
+            }
+        }
+        else if (request.getMethod().equals("POST")) {
+            for (String path : excludedPathsForPOST) {
+                if (requestURI.startsWith(path)) {
+                    return true;
+                }
+            }
+        }
+        else if (request.getMethod().equals("DELETE")) {
+            for (String path : excludedPathsForDELETE) {
+                if (requestURI.startsWith(path)) {
+                    return true;
+                }
+            }
+        }
+        else if (request.getMethod().equals("PATCH")) {
+            for (String path : excludedPathsForPATCH) {
+                if (requestURI.startsWith(path)) {
+                    return true;
+                }
             }
         }
         return false;
