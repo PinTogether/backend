@@ -35,7 +35,6 @@ public class CollectionController {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         collectionService.createCollection(memberId, createCollectionRequestDTO);
 
-
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
