@@ -3,6 +3,7 @@ package com.pintogether.backend.service;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.CoordinateDTO;
 import com.pintogether.backend.dto.PlaceResponseDTO;
+import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.Place;
 import com.pintogether.backend.entity.Star;
 import com.pintogether.backend.exception.CustomException;
@@ -36,23 +37,22 @@ public class SqlPlaceSearchImpl implements SearchService {
     @Autowired
     private StarRepository starRepository;
 
-    public List<PlaceResponseDTO> searchPlace(@ThisMember Long memberId, String query, int page, int size) {
-//        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public List<PlaceResponseDTO> searchPlace(@ThisMember Member member, String query, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
         List<PlaceResponseDTO> dtoList = foundPlace.stream()
                 .map(place -> {
                     CoordinateDTO dto = CoordinateConverter.convert(place.getAddress().getLongitude(), place.getAddress().getLatitude());
                     boolean starred;
-                    Optional<Star> optionalStar = starRepository.findByPlaceIdAndMemberId(place.getId(), memberId);
-                    starred = optionalStar.isPresent();
+//                    Optional<Star> optionalStar = starRepository.findByPlaceIdAndMemberId(place.getId(), member.getId());
+//                    starred = optionalStar.isPresent();
                     return PlaceResponseDTO.builder()
                             .id(place.getId())
                             .name(place.getName())
                             .roadNameAddress(place.getAddress().getRoadNameAddress())
                             .pinCnt(pinRepository.countByPlaceId(place.getId()))
                             .category(place.getCategory())
-                            .starred(starred)
+                            .starred(member != null && starRepository.findByPlaceIdAndMemberId(place.getId(), member.getId()).isPresent())
                             .latitude(dto.getLatitude())
                             .longitude(dto.getLongitude())
                             .build();

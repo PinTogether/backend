@@ -37,7 +37,7 @@ public class Place extends BaseUpdatedAtEntity {
 
     private String businessHour;
 
-    public PlaceResponseDTO toPlaceReponseDto(Long pinCnt) {
+    public PlaceResponseDTO toPlaceReponseDto(boolean starred, Long pinCnt) {
         CoordinateDTO convertedCoordinate = CoordinateConverter.convert(this.getAddress().getLongitude(), this.getAddress().getLatitude());
         return PlaceResponseDTO.builder()
                 .id(this.getId())
@@ -45,7 +45,7 @@ public class Place extends BaseUpdatedAtEntity {
                 .roadNameAddress(this.getAddress().getRoadNameAddress())
                 .pinCnt(pinCnt)
                 .category(this.getCategory())
-                .starred(false)
+                .starred(starred)
                 .latitude(convertedCoordinate.getLatitude())
                 .longitude(convertedCoordinate.getLongitude())
                 .build();
