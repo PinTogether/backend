@@ -2,6 +2,7 @@ package com.pintogether.backend.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,6 +53,10 @@ public class AmazonS3Service {
         String presignedUrl = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
         String imageUrl = convertPresignedUrlToImageUrl(presignedUrl);
         return new AmazonS3Response(presignedUrl, imageUrl);
+    }
+
+    public void deleteS3Image(String objectKey) {
+        amazonS3.deleteObject(bucket, objectKey);
     }
 
     @AllArgsConstructor
