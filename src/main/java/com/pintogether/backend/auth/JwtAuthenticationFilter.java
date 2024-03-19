@@ -83,9 +83,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
-        for (Cookie x : cookies) {
-            if (x.getName().equals("Authorization")) {
-                return false;
+        if (cookies != null) {
+            for (Cookie x : cookies) {
+                if (x.getName().equals("Authorization")) {
+                    return false;
+                }
             }
         }
 
