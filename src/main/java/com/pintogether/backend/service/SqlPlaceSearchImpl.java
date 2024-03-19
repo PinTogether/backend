@@ -1,5 +1,6 @@
 package com.pintogether.backend.service;
 
+import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.CoordinateDTO;
 import com.pintogether.backend.dto.PlaceResponseDTO;
 import com.pintogether.backend.entity.Place;
@@ -26,7 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 public class SqlPlaceSearchImpl implements SearchService {
 
     @Autowired
@@ -36,8 +36,8 @@ public class SqlPlaceSearchImpl implements SearchService {
     @Autowired
     private StarRepository starRepository;
 
-    public List<PlaceResponseDTO> searchPlace(String query, int page, int size) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public List<PlaceResponseDTO> searchPlace(@ThisMember Long memberId, String query, int page, int size) {
+//        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
         List<PlaceResponseDTO> dtoList = foundPlace.stream()

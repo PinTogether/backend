@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface SearchService {
 
-    List<PlaceResponseDTO> searchPlace(String query, int page, int size);
+    List<PlaceResponseDTO> searchPlace(Long memberId, String query, int page, int size);
 
 }
