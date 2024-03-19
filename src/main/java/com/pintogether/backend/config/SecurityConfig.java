@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,8 +40,21 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> {
                     auth
-//                            .requestMatchers("/", "/places/{placeId}", "/members/**")
-//                                .permitAll()
+                            .requestMatchers(
+                                    new AntPathRequestMatcher("/"),
+                                    new AntPathRequestMatcher("/members/{member_id:\\d+}", "GET"),
+                                    new AntPathRequestMatcher("/members/{member_id:\\d+}/collections/**", "GET"),
+                                    new AntPathRequestMatcher("/members/{member_id:\\d+}/scraps/**", "GET"),
+                                    new AntPathRequestMatcher("/collections/{\\d+}"),
+                                    new AntPathRequestMatcher("/collections/top"),
+                                    new AntPathRequestMatcher("/collections/{\\d+}/pins"),
+                                    new AntPathRequestMatcher("/collections/{\\d+}/comments"),
+                                    new AntPathRequestMatcher("/pin/{pin_id}/images"),
+                                    new AntPathRequestMatcher("/places/{place_id}/pins/**"),
+                                    new AntPathRequestMatcher("/places/{place_id}"),
+                                    new AntPathRequestMatcher("/search/place/**")
+                            )
+                                .permitAll()
                             .anyRequest()
                                 .authenticated();
                 })

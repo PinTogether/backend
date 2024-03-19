@@ -1,8 +1,14 @@
 package com.pintogether.backend.auth;
 
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.ApiResponse;
+import com.pintogether.backend.model.CustomStatusMessage;
+import com.pintogether.backend.model.StatusCode;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -11,10 +17,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,6 +32,10 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import static com.pintogether.backend.model.ApiResponse.makeResponse;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -44,25 +58,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 break;
             }
         }
-        if (jwt.isEmpty()) {
-            System.out.println("JWT not found");
-            throw new BadRequestException("jwt없음");
-        }
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(jwt)
-                .getBody();
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(jwt)
+                    .getBody();
 
-        String id = String.valueOf(claims.get("id"));
-        String role = String.valueOf(claims.get("role"));
+            String id = String.valueOf(claims.get("id"));
+            String role = String.valueOf(claims.get("role"));
 
-        GrantedAuthority a = new SimpleGrantedAuthority(role);
-        var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
-        SecurityContextHolder.getContext().setAuthentication(auth);
+            GrantedAuthority a = new SimpleGrantedAuthority(role);
+            var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (JwtException e) {
+            makeResponse(403, "사용자 인증 실패", response);
+        }
     }
 
     @Override
@@ -74,76 +88,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return false;
             }
         }
-        /**
-         * Authorization by JwtAuthenticationFilter
-         * : /members/me/**
-         *
-         * Authorization from PreAuthorize Annotation
-         * : members/{memberId},
-         *
-         */
 
-        String requestURI = request.getRequestURI();
-        String[] includePathsForGET = {
-                "/members/me"
-        };
-        String[] includePathsForPOST = {
-                "/members/"
-        };
-        String[] includePathsForDELETE = {
-                "/members/"
-        };
-        String[] includePathsForPATCH = {
-                "/members/me"
+        String[] permitPaths = {
+                "/",
+                "/members/{member_id:\\d+}",
+                "/members/{member_id:\\d+}/collections/**",
+                "/members/{member_id:\\d+}/scraps/**",
+                "/collections/{\\d+}",
+                "/collections/top",
+                "/collections/{\\d+}/pins",
+                "/collections/{\\d+}/comments",
+                "/pin/{pin_id}/images",
+                "/places/{place_id}/pins/**",
+                "/places/{place_id}",
+                "/search/place/**"
         };
 
-        String[] excludedPathsForGET = {
-                "/members/",
-                "/",
-                "/search/",
-        };
-        String[] excludedPathsForPOST = {
-                "/",
-                "/search/",
-                "/members/"
-        };
-        String[] excludedPathsForDELETE = {
-                "/",
-                "/search/",
-                "/members/"
-        };
-        String[] excludedPathsForPATCH = {
-                "/",
-                "/search/",
-                "/members/"
-        };
-
-        if (request.getMethod().equals("GET")) {
-            for (String path : excludedPathsForGET) {
-                if (requestURI.startsWith(path)) {
-                    return true;
-                }
-            }
-        }
-        else if (request.getMethod().equals("POST")) {
-            for (String path : excludedPathsForPOST) {
-                if (requestURI.startsWith(path)) {
-                    return true;
-                }
-            }
-        }
-        else if (request.getMethod().equals("DELETE")) {
-            for (String path : excludedPathsForDELETE) {
-                if (requestURI.startsWith(path)) {
-                    return true;
-                }
-            }
-        }
-        else if (request.getMethod().equals("PATCH")) {
-            for (String path : excludedPathsForPATCH) {
-                if (requestURI.startsWith(path)) {
-                    return true;
-                }
+        for (String path : permitPaths) {
+            if (antMatcher(path).matches(request)) {
+                return true;
             }
         }
         return false;
