@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +29,14 @@ public class MemberService {
 
     public void update(Long id, UpdateMemberRequestDTO updateMemberRequestDTO) {
         Member foundMember = this.getMember(id);
+        Set<String> defaultImage = new HashSet<>(Arrays.asList(
+                "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png",
+                "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile2.png",
+                "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile3.png"
+        ));
+        if (!defaultImage.contains(foundMember.getAvatar()) && !foundMember.getAvatar().equals(updateMemberRequestDTO.getAvatar())) {
+            amazonS3Service.deleteS3Image(foundMember.getAvatar());
+        }
         foundMember.updateMember(updateMemberRequestDTO);
     }
 

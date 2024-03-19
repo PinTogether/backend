@@ -21,7 +21,10 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,18 +81,23 @@ public class CollectionService {
         if (!collection.getMember().getId().equals(memberId)) {
             throw new CustomException(StatusCode.FORBIDDEN, "컬렉션을 수정할 권한이 없습니다.");
         }
-        collection.updateTitle(updateCollectionRequestDTO.getTitle());
-        collection.updateDetails(updateCollectionRequestDTO.getDetails());
-        collection.updateThumbnail(updateCollectionRequestDTO.getThumbnail());
-        collection.clearCollectionTags();
 
+        Set<String> defaultImage = new HashSet<>(Arrays.asList(
+                "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/collection1.png"
+        ));
+        if (!defaultImage.contains(collection.getThumbnail()) && !collection.getThumbnail().equals(updateCollectionRequestDTO.getThumbnail())) {
+            amazonS3Service.deleteS3Image(collection.getThumbnail());
+        }
         List<CollectionTag> collectionTags = updateCollectionRequestDTO.getTags().stream()
                 .map(tag -> CollectionTag.builder()
                         .collection(collection)
                         .tag(tag)
                         .build())
                 .collect(Collectors.toList());
-
+        collection.updateTitle(updateCollectionRequestDTO.getTitle());
+        collection.updateDetails(updateCollectionRequestDTO.getDetails());
+        collection.updateThumbnail(updateCollectionRequestDTO.getThumbnail());
+        collection.clearCollectionTags();
         collectionRepository.save(collection);
     }
 
