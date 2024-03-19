@@ -1,5 +1,7 @@
 package com.pintogether.backend.controller;
 
+import com.pintogether.backend.customAnnotations.ThisMember;
+import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.Place;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.service.PlaceService;
@@ -21,8 +23,8 @@ public class PlaceController {
     private PlaceService placeService;
 
     @GetMapping("/{placeId}")
-    public ApiResponse loadPlaceById(@PathVariable Long placeId) {
-        return makeResponse(placeService.loadPlaceById(placeId));
+    public ApiResponse loadPlaceById(@ThisMember Member member, @PathVariable Long placeId) {
+        return makeResponse(placeService.loadPlaceById(member, placeId));
     }
 
     public <T> ApiResponse<T> makeResponse(List<T> result) {

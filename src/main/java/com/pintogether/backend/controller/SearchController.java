@@ -2,6 +2,7 @@ package com.pintogether.backend.controller;
 
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.PlaceResponseDTO;
+import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
@@ -24,7 +25,7 @@ public class SearchController {
 
     @GetMapping("/place")
     public ApiResponse searchPlace(
-            @ThisMember Long memberId,
+            @ThisMember Member member,
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
@@ -36,7 +37,7 @@ public class SearchController {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
         }
 
-        return new ApiResponse(searchService.searchPlace(memberId, query, page, size));
+        return new ApiResponse(searchService.searchPlace(member, query, page, size));
     }
 
 }
