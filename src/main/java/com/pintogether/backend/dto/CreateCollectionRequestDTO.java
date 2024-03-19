@@ -17,9 +17,6 @@ public class CreateCollectionRequestDTO {
     private String title;
 
     @NotNull
-    private String thumbnail;
-
-    @NotNull
     @Size(max = 250, message = "세부내용은 250자 이내로 작성해주세요.")
     private String details;
 

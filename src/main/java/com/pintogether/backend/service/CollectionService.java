@@ -63,7 +63,7 @@ public class CollectionService {
         Collection newCollection = Collection.builder()
                 .member(memberService.getMember(memberId))
                 .title(createCollectionRequestDTO.getTitle())
-                .thumbnail(createCollectionRequestDTO.getThumbnail())
+                .thumbnail("https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/collection1.png")
                 .details(createCollectionRequestDTO.getDetails())
                 .build();
 

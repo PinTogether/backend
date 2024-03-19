@@ -41,9 +41,9 @@ public class Member {
     private final List<Collection> collections = new ArrayList<>();
 
     @Builder
-    public Member(String nickname, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
-        this.nickname = nickname; // 닉네임 생성기로 생성
-        this.avatar = ""; // 추후에 defualt 이미지 주소로 대치
+    public Member(String nickname, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
+        this.nickname = nickname;
+        this.avatar = avatar;
         this.registrationSource = registrationSource;
         this.registrationId = registrationId;
         this.roleType = roleType;

@@ -3,10 +3,13 @@ package com.pintogether.backend.service;
 import com.pintogether.backend.dto.UpdateMemberRequestDTO;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.enums.InterestType;
+import com.pintogether.backend.entity.enums.RegistrationSource;
+import com.pintogether.backend.entity.enums.RoleType;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.FollowingRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
 import com.pintogether.backend.repository.MemberRepository;
+import com.pintogether.backend.util.RandomNicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,16 @@ public class MemberService {
     private final InterestingCollectionRepository interestingCollectionRepository;
     private final FollowingRepository followingRepository;
     private final AmazonS3Service amazonS3Service;
-
+    public Member createMember(RegistrationSource registrationSource, String registrationId) {
+        Member newMember = Member.builder()
+                .nickname(RandomNicknameGenerator.generateNickname())
+                .avatar("https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png")
+                .registrationSource(registrationSource)
+                .registrationId(registrationId)
+                .roleType(RoleType.ROLE_MEMBER)
+                .build();
+        return memberRepository.save(newMember);
+    }
     public Member getMember(Long id) {
         return memberRepository.findOneById(id).orElse(null);
     }
@@ -75,5 +87,9 @@ public class MemberService {
 
     public AmazonS3Service.AmazonS3Response getPresignedUrl(String contentType, String domainType, Long id) {
         return amazonS3Service.getneratePresignedUrlAndImageUrl(contentType, domainType, id);
+    }
+
+    public Member getMemberByRegistrationId(String registrationId) {
+        return memberRepository.findByRegistrationId(registrationId).orElse(null);
     }
 }

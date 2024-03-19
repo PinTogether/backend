@@ -4,6 +4,7 @@ import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import com.pintogether.backend.repository.MemberRepository;
+import com.pintogether.backend.service.MemberService;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -31,8 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberService memberService;
     @Value("${jwt.signing.key}")
     private String signingKey;
     @Value("${frontend.login.success.url}")
@@ -59,21 +59,11 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             registrationId = attributes.getOrDefault("id", "").toString();
         }
 
-        Optional<Member> foundUser = memberRepository.findByRegistrationId(registrationId);
-        if (foundUser.isPresent()) {
-            sendJwtByCookie(foundUser.get(), response);
+        Member foundUser = memberService.getMemberByRegistrationId(registrationId);
+        if (foundUser != null) {
+            sendJwtByCookie(foundUser, response);
         } else {
-            String newNickname = RandomNicknameGenerator.generateNickname();
-            Member user = Member.builder()
-                    .nickname(newNickname)
-                    .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
-                    .registrationId(registrationId)
-                    .roleType(RoleType.ROLE_MEMBER)
-                    .build();
-            memberRepository.save(user);
-            Member newMember = memberRepository.findByRegistrationId(registrationId).orElseThrow(
-                    ()->new IllegalArgumentException("Error occured while creating new member.")
-            );
+            Member newMember = memberService.createMember(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()), registrationId);
             sendJwtByCookie(newMember, response);
         }
         this.setAlwaysUseDefaultTargetUrl(true);
