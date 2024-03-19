@@ -61,8 +61,7 @@ public class MemberController {
     }
 
     @GetMapping("/{targetId}")
-    public ApiResponse getOtherMemberInformation(@PathVariable Long targetId) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ApiResponse getOtherMemberInformation(@ThisMember Member member, @PathVariable Long targetId) {
         Member targetMember = memberService.getMember(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
@@ -72,7 +71,7 @@ public class MemberController {
                 .avatar(targetMember.getAvatar())
                 .collectionCnt(memberService.getCollectionCnt(targetId))
                 .scrappedCollectionCnt(memberService.getScrappedCollectionCnt(targetId))
-                .isFollowed(followingService.checkIfFollow(memberId, targetId))
+                .isFollowed(member != null ? followingService.checkIfFollow(member.getId(), targetId) : false)
                 .followerCnt(memberService.getFollowerCnt(targetId))
                 .followingCnt(memberService.getFolloweeCnt(targetId))
                 .build();
