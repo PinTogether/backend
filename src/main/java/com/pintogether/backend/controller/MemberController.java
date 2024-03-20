@@ -1,5 +1,6 @@
 package com.pintogether.backend.controller;
 
+import com.pintogether.backend.customAnnotations.CurrentMember;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Member;
@@ -7,10 +8,7 @@ import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
-import com.pintogether.backend.service.AmazonS3Service;
-import com.pintogether.backend.service.DomainType;
-import com.pintogether.backend.service.FollowingService;
-import com.pintogether.backend.service.MemberService;
+import com.pintogether.backend.service.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,8 @@ import java.util.stream.Collectors;
 public class MemberController {
     private final MemberService memberService;
     private final FollowingService followingService;
+    private final CollectionService collectionService;
+    private final InterestingCollectionService interestingCollectionService;
     private final AmazonS3Service amazonS3Service;
 
     @GetMapping("/me")
@@ -128,6 +128,43 @@ public class MemberController {
                         .build())
                 .collect(Collectors.toList());
         return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
+    }
+    @GetMapping("/{targetId}/collections")
+    public ApiResponse getCollectionsByMember(@ThisMember Member member, @CurrentMember Member targetMember, @RequestParam(value="page", defaultValue = "0") int pageNumber, @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+        List<ShowCollectionsResponseDTO> collections = collectionService.getCollectionsByMemberIdWithPageable(targetMember.getId(), pageNumber, pageSize).get()
+                .map(c -> ShowCollectionsResponseDTO.builder()
+                        .id(c.getId())
+                        .title(c.getTitle())
+                        .writerId(c.getMember().getId())
+                        .writer(c.getMember().getNickname())
+                        .thumbnail(c.getThumbnail())
+                        .likeCnt(collectionService.getLikeCnt(c.getId()))
+                        .pinCnt(collectionService.getPinCnt(c.getId()))
+                        .scrapCnt(collectionService.getScrappedCnt(c.getId()))
+                        .isScrapped(member != null ? interestingCollectionService.isScrappedByMember(member.getId(), c.getId()) : false)
+                        .isLiked(member != null ? interestingCollectionService.isLikedByMember(member.getId(), c.getId()) : false)
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(collections);
+    }
+
+    @GetMapping("/{targetId}/scraps")
+    public ApiResponse getScrapCollectionsByMember(@ThisMember Member member, @CurrentMember Member targetMember,  @RequestParam(value="page", defaultValue = "0") int pageNumber, @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+        List<ShowCollectionsResponseDTO> collections = collectionService.getScrapCollectionsByMemberIdWithPageable(targetMember.getId(), pageNumber, pageSize).get()
+                .map(c -> ShowCollectionsResponseDTO.builder()
+                        .id(c.getId())
+                        .title(c.getTitle())
+                        .writerId(c.getMember().getId())
+                        .writer(c.getMember().getNickname())
+                        .thumbnail(c.getThumbnail())
+                        .likeCnt(collectionService.getLikeCnt(c.getId()))
+                        .pinCnt(collectionService.getPinCnt(c.getId()))
+                        .scrapCnt(collectionService.getScrappedCnt(c.getId()))
+                        .isScrapped(member!=null ? interestingCollectionService.isScrappedByMember(member.getId(), c.getId()) : false)
+                        .isLiked(member!=null ? interestingCollectionService.isLikedByMember(member.getId(), c.getId()) : false)
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(collections);
     }
 
     @GetMapping("/me/avatar/presigned-url")
