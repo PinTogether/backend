@@ -103,9 +103,7 @@ public class CollectionController {
     }
 
     @GetMapping("/top")
-    public ApiResponse getTopLikeCollections(@RequestParam(value = "cnt", required = true) int cnt) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-
+    public ApiResponse getTopLikeCollections(@ThisMember Member member, @RequestParam(value = "cnt", defaultValue = "10") int cnt) {
         List<Collection> collections = collectionService.getTopLikeCollections(cnt);
 
         List<ShowCollectionResponseDTO> showCollectionResponseDTOs = collections.stream()
@@ -119,8 +117,8 @@ public class CollectionController {
                         .likeCnt(collectionService.getLikeCnt(c.getId()))
                         .pinCnt(collectionService.getPinCnt(c.getId()))
                         .scrapCnt(collectionService.getScrappedCnt(c.getId()))
-                        .isScrapped(interestingCollectionService.isScrappedByMember(memberId, c.getId()))
-                        .isLiked(interestingCollectionService.isLikedByMember(memberId, c.getId()))
+                        .isScrapped(member!=null ? interestingCollectionService.isScrappedByMember(member.getId(), c.getId()) : false)
+                        .isLiked(member!=null ? interestingCollectionService.isLikedByMember(member.getId(), c.getId()) : false)
                         .tags(c.getCollectionTags().stream()
                                 .map(CollectionTag::getTag)
                                 .collect(Collectors.toList()))
