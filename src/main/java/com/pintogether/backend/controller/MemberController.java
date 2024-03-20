@@ -130,7 +130,7 @@ public class MemberController {
         return ApiResponse.makeResponse(showSimpleMemberResponseDTOs);
     }
     @GetMapping("/{targetId}/collections")
-    public ApiResponse getCollectionsByMember(@ThisMember Member member, @CurrentMember Member targetMember, @RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
+    public ApiResponse getCollectionsByMember(@ThisMember Member member, @CurrentMember Member targetMember, @RequestParam(value="page", defaultValue = "0") int pageNumber, @RequestParam(value = "size", defaultValue = "10") int pageSize) {
         List<ShowCollectionsResponseDTO> collections = collectionService.getCollectionsByMemberIdWithPageable(targetMember.getId(), pageNumber, pageSize).get()
                 .map(c -> ShowCollectionsResponseDTO.builder()
                         .id(c.getId())
@@ -149,7 +149,7 @@ public class MemberController {
     }
 
     @GetMapping("/{targetId}/scraps")
-    public ApiResponse getScrapCollectionsByMember(@ThisMember Member member, @CurrentMember Member targetMember, @RequestParam("page") int pageNumber, @RequestParam("size") int pageSize) {
+    public ApiResponse getScrapCollectionsByMember(@ThisMember Member member, @CurrentMember Member targetMember,  @RequestParam(value="page", defaultValue = "0") int pageNumber, @RequestParam(value = "size", defaultValue = "10") int pageSize) {
         List<ShowCollectionsResponseDTO> collections = collectionService.getScrapCollectionsByMemberIdWithPageable(targetMember.getId(), pageNumber, pageSize).get()
                 .map(c -> ShowCollectionsResponseDTO.builder()
                         .id(c.getId())
