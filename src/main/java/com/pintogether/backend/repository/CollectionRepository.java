@@ -27,9 +27,6 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
             nativeQuery = true)
     Page<Collection> findByMemberIdAndInterestType(@Param("memberId") Long memberId, @Param("interestType") String interestType, Pageable pageable);
 
-//    @Query("select x from Place x where x.title like %:query% or x.details like %:query%")
-//    Page<Collection> searchByQuery(Pageable pageable, String query);
-
     Page<Collection> findByTitleLike(Pageable pageable, String pattern);
 
 }
