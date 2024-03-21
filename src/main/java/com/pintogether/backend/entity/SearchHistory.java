@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class SearchHistory extends BaseEntity {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,4 +22,5 @@ public class SearchHistory extends BaseEntity {
 
     @NotNull
     private String keyword;
+
 }
