@@ -1,22 +1,16 @@
 package com.pintogether.backend.controller;
 
-import com.pintogether.backend.customAnnotations.CurrentCollection;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
-import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.Member;
-import com.pintogether.backend.entity.Pin;
 import com.pintogether.backend.entity.PinImage;
-import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
-import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.DomainType;
 import com.pintogether.backend.service.PinService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,15 +23,26 @@ public class PinController {
     private final PinService pinService;
 
     @PostMapping
-    public ApiResponse createPin(@ThisMember Member member, @RequestBody CreatePinRequestDTO createPinRequestDTO, HttpServletResponse response) {
+    public ApiResponse createPin(@ThisMember Member member,
+                                 @RequestBody @Valid CreatePinRequestDTO createPinRequestDTO,
+                                 HttpServletResponse response) {
         pinService.createPin(member, createPinRequestDTO);
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
-    @PostMapping("/selected")
-    public ApiResponse createSelectedPins(@ThisMember Member member, @RequestBody CreateSelectedPinsRequestDTO dto,
+    @PostMapping("/selected-places")
+    public ApiResponse createSelectedPins(@ThisMember Member member,
+                                          @RequestBody @Valid CreatePinSelectedPlacesRequestDTO dto,
                                           HttpServletResponse response) {
-        pinService.createSelectedPins(member, dto);
+        pinService.createSelectedPlaces(member, dto);
+        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+    }
+
+    @PostMapping("/selected-collections")
+    public ApiResponse createPinsSelectedPlaces(@ThisMember Member member,
+                                                @RequestBody @Valid CreatePinsSelectedCollectionsRequestDTO dto,
+                                                HttpServletResponse response) {
+        pinService.createSelectedCollections(member, dto);
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
@@ -61,7 +66,9 @@ public class PinController {
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse deletePin(@ThisMember Member member, @PathVariable("id") Long id, HttpServletResponse response) {
+    public ApiResponse deletePin(@ThisMember Member member,
+                                 @PathVariable("id") Long id,
+                                 HttpServletResponse response) {
         pinService.deletePin(member, id);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }

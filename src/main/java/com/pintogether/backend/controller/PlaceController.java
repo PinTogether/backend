@@ -41,4 +41,5 @@ public class PlaceController {
         };
         return ApiResponse.makeResponse(showPinResponseDTOList);
     }
+
 }
