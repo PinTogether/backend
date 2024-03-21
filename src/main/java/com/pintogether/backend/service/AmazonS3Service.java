@@ -52,7 +52,7 @@ public class AmazonS3Service {
                 .withContentType(contentType);
         String presignedUrl = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
         String imageUrl = convertPresignedUrlToImageUrl(presignedUrl);
-        return new AmazonS3Response(presignedUrl, imageUrl);
+        return new AmazonS3Response(id, presignedUrl, imageUrl);
     }
 
     public void deleteS3Image(String objectKey) {
@@ -62,6 +62,7 @@ public class AmazonS3Service {
     @AllArgsConstructor
     @Getter
     public static class AmazonS3Response {
+        private Long id;
         private String presignedUrl;
         private String imageUrl;
     }

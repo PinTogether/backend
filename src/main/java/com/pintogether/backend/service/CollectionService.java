@@ -12,6 +12,7 @@ import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.CollectionCommentRepository;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,7 @@ public class CollectionService {
         }
         this.collectionRepository.delete(collection);
     }
-    public void createCollection(Long memberId, CreateCollectionRequestDTO createCollectionRequestDTO) {
+    public Collection createCollection(Long memberId, CreateCollectionRequestDTO createCollectionRequestDTO) {
         Collection newCollection = Collection.builder()
                 .member(memberService.getMember(memberId))
                 .title(createCollectionRequestDTO.getTitle())
@@ -74,6 +75,7 @@ public class CollectionService {
                         .build())
                 .collect(Collectors.toList());
         collectionRepository.save(newCollection);
+        return newCollection;
     }
 
     public void updateCollection(Long memberId, Long collectionId, UpdateCollectionRequestDTO updateCollectionRequestDTO) {
