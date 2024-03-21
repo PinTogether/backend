@@ -167,7 +167,7 @@ public class MemberController {
         return ApiResponse.makeResponse(collections);
     }
 
-    @GetMapping("/me/avatar/presigned-url")
+    @PostMapping("/me/avatar/presigned-url")
     public ApiResponse getPresignedUrlForAvatar(@RequestBody @Valid S3MemberAvatarRequestDTO s3MemberAvatarRequestDTO) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         String contentType = s3MemberAvatarRequestDTO.getContentType();
