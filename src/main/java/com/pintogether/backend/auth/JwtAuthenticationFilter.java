@@ -101,16 +101,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/collections/{\\d+}/pins",
                 "/collections/{\\d+}/comments",
                 "/pin/{pin_id}/images",
-                "/places/{place_id}/pins/**",
+                "/places/{\\d+}/pins",
+                "/places/**",
                 "/places/{place_id}",
                 "/search/place/**"
         };
 
         for (String path : permitPaths) {
             if (antMatcher(path).matches(request)) {
+                System.out.println("filter dismiss");
                 return true;
             }
         }
+        System.out.println("to filter");
         return false;
     }
 }

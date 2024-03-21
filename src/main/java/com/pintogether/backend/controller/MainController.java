@@ -3,7 +3,9 @@ package com.pintogether.backend.controller;
 import com.pintogether.backend.auth.JwtService;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.repository.MemberRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,23 +30,23 @@ public class MainController {
      * jwt 로 닉네임 받아보는 테스트.
      *
      */
-    @GetMapping("/test")
-    public Map<String, String> test(@RequestHeader(value = "Authorization") String jwt) {
-        Long id = jwtService.getId(jwt);
-        Map<String, String> map = new HashMap<>();
-        Optional<Member> member = memberRepository.findById(id);
-        if (member.isPresent()) {
-            map.put("nickname", member.get().getNickname());
-        } else {
-            map.put("nickname", "AnonymousUser");
-        }
-        return map;
-    }
-
 
     @GetMapping("/")
-    public Long asdf(@ThisMember Long id) {
-        return id;
+    public Long asdf(@ThisMember Member member) {
+        return member.getId();
     }
 
+    @GetMapping("/1")
+    public ApiResponse sdf() {
+        return ApiResponse.makeResponse(new String());
+    }
+
+    @Data
+    static class dto {
+        String a;
+
+        dto(String a) {
+            this.a = a;
+        }
+    }
 }

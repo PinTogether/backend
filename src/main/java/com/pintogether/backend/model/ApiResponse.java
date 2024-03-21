@@ -14,7 +14,7 @@ public class ApiResponse<T> {
     private Status status;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Metadata metadata;
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private List<T> results;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Object data;

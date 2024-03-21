@@ -50,7 +50,8 @@ public class SecurityConfig {
                                     new AntPathRequestMatcher("/collections/{\\d+}/pins"),
                                     new AntPathRequestMatcher("/collections/{\\d+}/comments"),
                                     new AntPathRequestMatcher("/pin/{pin_id}/images"),
-                                    new AntPathRequestMatcher("/places/{place_id}/pins/**"),
+                                    new AntPathRequestMatcher("/places"),
+                                    new AntPathRequestMatcher("/places/{\\d+}/pins"),
                                     new AntPathRequestMatcher("/places/{place_id}"),
                                     new AntPathRequestMatcher("/search/place/**")
                             )
