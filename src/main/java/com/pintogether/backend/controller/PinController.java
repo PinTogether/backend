@@ -82,7 +82,7 @@ public class PinController {
     }
 
 
-    @GetMapping("/{id}/images/presigned-url")
+    @PostMapping("/{id}/images/presigned-url")
     public ApiResponse getPresignedUrlForPinImage(@ThisMember Member member,
                                                   @PathVariable("id") Long id,
                                                   @RequestBody @Valid S3PinImageRequestDTO dto) {
