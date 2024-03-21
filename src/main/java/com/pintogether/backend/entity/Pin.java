@@ -1,19 +1,11 @@
 package com.pintogether.backend.entity;
 
-import com.pintogether.backend.entity.enums.RegistrationSource;
-import com.pintogether.backend.entity.enums.RoleType;
-import com.pintogether.backend.exception.CustomException;
-import com.pintogether.backend.model.CustomStatusMessage;
-import com.pintogether.backend.model.StatusCode;
+import com.pintogether.backend.dto.PinDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @NoArgsConstructor
@@ -44,9 +36,6 @@ public class Pin extends BaseEntity {
     }
 
     public void updateImage(String imagePath) {
-        if (this.pinImages.size() > 5) {
-            throw new CustomException(StatusCode.BAD_REQUEST, CustomStatusMessage.SIZE_EXCEEDED.getMessage());
-        }
         PinImage.builder()
                 .imagePath(imagePath)
                 .pin(this)
@@ -54,9 +43,6 @@ public class Pin extends BaseEntity {
     }
 
     public void updateTag(String tag) {
-        if (this.pinTags.size() > 5) {
-            throw new CustomException(StatusCode.BAD_REQUEST, CustomStatusMessage.SIZE_EXCEEDED.getMessage());
-        }
         PinTag.builder()
                 .pin(this)
                 .tag(tag)
@@ -76,6 +62,33 @@ public class Pin extends BaseEntity {
         this.review = review;
         this.pinTags.addAll(pinTags);
         this.pinImages.addAll(pinImages);
+    }
+
+    public PinDTO toPinDTO() {
+        String[] images = new String[this.pinImages.size()];
+        String[] tags = new String[this.pinTags.size()];
+        for (int i = 0; i < this.pinImages.size(); i++) {
+            images[i] = this.pinImages.get(i).getImagePath();
+        }
+        for (int i = 0; i < this.pinTags.size(); i++) {
+            tags[i] = this.pinTags.get(i).getTag();
+        }
+        return PinDTO.builder()
+                .id(this.id)
+                .collectionId(this.getCollection().getId())
+                .collectionTitle(this.getCollection().getTitle())
+                .writer(this.getCollection().getMember().getNickname())
+                .avatarImage(this.getCollection().getMember().getAvatar())
+                .review(this.review)
+                .createdAt(this.getCreatedAt())
+                .imagePaths(images)
+                .tags(tags)
+                .build();
+    }
+
+    public void clearPinTagsAndImages() {
+        pinTags.clear();
+        pinImages.clear();
     }
 
 }

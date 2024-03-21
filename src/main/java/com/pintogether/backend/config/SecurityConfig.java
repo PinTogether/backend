@@ -2,6 +2,7 @@ package com.pintogether.backend.config;
 
 import com.pintogether.backend.auth.JwtAuthenticationFilter;
 import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
+import com.pintogether.backend.auth.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -49,8 +50,9 @@ public class SecurityConfig {
                                     new AntPathRequestMatcher("/collections/top"),
                                     new AntPathRequestMatcher("/collections/{\\d+}/pins"),
                                     new AntPathRequestMatcher("/collections/{\\d+}/comments"),
-                                    new AntPathRequestMatcher("/pin/{pin_id}/images"),
-                                    new AntPathRequestMatcher("/places/{place_id}/pins/**"),
+                                    new AntPathRequestMatcher("/pins/{pin_id}/images"),
+                                    new AntPathRequestMatcher("/places"),
+                                    new AntPathRequestMatcher("/places/{\\d+}/pins"),
                                     new AntPathRequestMatcher("/places/{place_id}"),
                                     new AntPathRequestMatcher("/search/place/**")
                             )
@@ -62,9 +64,11 @@ public class SecurityConfig {
                         jwtAuthenticationFilter,
                         BasicAuthenticationFilter.class
                 )
+                .exceptionHandling(e ->
+                        e.authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                )
                 .oauth2Login(oauth -> {
                     oauth
-                            .loginPage("/").permitAll()
                             .successHandler(oAuth2LoginSuccessHandler);
                 });
 
