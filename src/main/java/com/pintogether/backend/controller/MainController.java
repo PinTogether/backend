@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
 
     @GetMapping("/")
-    public Long asdf() {
-        return 1L;
+    public String home() {
+        return "home";
     }
 
 }
