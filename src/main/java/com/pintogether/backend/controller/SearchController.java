@@ -16,8 +16,8 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
-    @GetMapping("/place")
-    public ApiResponse searchPlace(
+    @GetMapping("/places")
+    public ApiResponse searchPlaces(
             @ThisMember Member member,
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -30,7 +30,24 @@ public class SearchController {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
         }
 
-        return new ApiResponse(searchService.searchPlace(member, query, page, size));
+        return new ApiResponse(searchService.searchPlaces(member, query, page, size));
+    }
+
+    @GetMapping("/collections")
+    public ApiResponse searchCollections(
+            @ThisMember Member member,
+            @RequestParam(value = "query", defaultValue = "") String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "4") int size
+    ) {
+        if (query.isEmpty()) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "검색어를 입력해주세요.");
+        }
+        if (query.length() > 20) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
+        }
+
+        return new ApiResponse(searchService.searchCollections(member, query, page, size));
     }
 
 }
