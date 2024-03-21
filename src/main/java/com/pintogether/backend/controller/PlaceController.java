@@ -1,12 +1,11 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.customAnnotations.ThisMember;
-import com.pintogether.backend.dto.PinDTO;
+import com.pintogether.backend.dto.ShowPinResponseDTO;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.Pin;
 import com.pintogether.backend.entity.Place;
 import com.pintogether.backend.model.ApiResponse;
-import com.pintogether.backend.service.PinService;
 import com.pintogether.backend.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +35,10 @@ public class PlaceController {
                                         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                         @RequestParam(value = "size", required = false, defaultValue = "0") int size) {
         List<Pin> pinList = placeService.getPinsPageListByPlaceId(placeId, page, size);
-        List<PinDTO> pinDTOList = new ArrayList<>();
+        List<ShowPinResponseDTO> showPinResponseDTOList = new ArrayList<>();
         for (Pin x : pinList) {
-            pinDTOList.add(x.toPinDTO());
+            showPinResponseDTOList.add(x.toPinResponseDTO());
         };
-        return ApiResponse.makeResponse(pinDTOList);
+        return ApiResponse.makeResponse(showPinResponseDTOList);
     }
 }

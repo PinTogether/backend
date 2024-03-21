@@ -17,6 +17,7 @@ public class PinTag {
     private Pin pin;
 
     @NotNull
+    @Column(length = 20)
     private String tag;
 
     @Builder

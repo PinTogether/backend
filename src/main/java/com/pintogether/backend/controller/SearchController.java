@@ -1,20 +1,13 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.customAnnotations.ThisMember;
-import com.pintogether.backend.dto.PlaceResponseDTO;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
-import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/search")
