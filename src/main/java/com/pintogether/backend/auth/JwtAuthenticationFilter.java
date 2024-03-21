@@ -1,30 +1,19 @@
 package com.pintogether.backend.auth;
 
-import com.pintogether.backend.exception.CustomException;
-import com.pintogether.backend.model.ApiResponse;
-import com.pintogether.backend.model.CustomStatusMessage;
-import com.pintogether.backend.model.StatusCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SecurityException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,7 +21,6 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static com.pintogether.backend.model.ApiResponse.makeResponse;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -74,8 +62,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             filterChain.doFilter(request, response);
-        } catch (JwtException e) {
-            makeResponse(403, "사용자 인증 실패", response);
+        } catch (JwtException | IllegalArgumentException e) {
+            makeResponse(401, "사용자 인증 실패", response);
         }
     }
 
@@ -100,7 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/collections/top",
                 "/collections/{\\d+}/pins",
                 "/collections/{\\d+}/comments",
-                "/pin/{pin_id}/images",
+                "/pins/{pin_id}/images",
                 "/places/{\\d+}/pins",
                 "/places/**",
                 "/places/{place_id}",
