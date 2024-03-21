@@ -1,9 +1,6 @@
 package com.pintogether.backend.service;
 
-import com.pintogether.backend.dto.CreatePinRequestDTO;
-import com.pintogether.backend.dto.CreateSelectedPinsRequestDTO;
-import com.pintogether.backend.dto.DeleteSelectedPinsRequestDTO;
-import com.pintogether.backend.dto.UpdatePinReqeustDTO;
+import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.*;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.CustomStatusMessage;
@@ -14,9 +11,6 @@ import com.pintogether.backend.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,11 +59,21 @@ public class PinService {
         pinRepository.save(pin);
     }
 
-    public void createSelectedPins(Member member, CreateSelectedPinsRequestDTO dto) {
+    public void createSelectedPlaces(Member member, CreatePinSelectedPlacesRequestDTO dto) {
         for (Long placeId : dto.getPlaceId()) {
             createPin(member, CreatePinRequestDTO.builder()
                     .collectionId(dto.getCollectionId())
                     .placeId(placeId)
+                    .review("")
+                    .build());
+        }
+    }
+
+    public void createSelectedCollections(Member member, CreatePinsSelectedCollectionsRequestDTO dto) {
+        for (Long collectionId : dto.getCollectionId()) {
+            createPin(member, CreatePinRequestDTO.builder()
+                    .collectionId(collectionId)
+                    .placeId(dto.getPlaceId())
                     .review("")
                     .build());
         }

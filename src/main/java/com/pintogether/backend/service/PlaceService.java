@@ -28,12 +28,9 @@ public class PlaceService {
     private final PinRepository pinRepository;
     private final StarRepository starRepository;
 
-//    public PlaceResponseDTO loadPlaceById(Member member, Long placeId) {
     public Place getPlace(Long placeId) {
         return placeRepository.findOneById(placeId)
                 .orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.PLACE_NOT_FOUND.getMessage()));
-//        return place.toPlaceReponseDto(member != null && starRepository.findByPlaceIdAndMemberId(place.getId(), member.getId()).isPresent(),
-//                                            pinRepository.countByPlaceId(placeId));
     }
 
     public List<Pin> getPinsPageListByPlaceId(Long placeId, int page, int size) {
