@@ -164,7 +164,7 @@ public class CollectionController {
         return ApiResponse.makeResponse(showCollectionCommentResponseDTOs);
     }
 
-    @GetMapping("/{collectionId}/thumbnail/presigned-url")
+    @PostMapping("/{collectionId}/thumbnail/presigned-url")
     public ApiResponse getPresignedUrlForThumbnail(@CurrentCollection Collection collection, @RequestBody @Valid S3CollectionThumbnailRequestDTO s3CollectionThumbnailRequestDTO) {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(memberId, s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
