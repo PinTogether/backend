@@ -32,11 +32,13 @@ public class CollectionController {
     private final PinService pinService;
 
     @PostMapping("")
-    public ApiResponse createCollection(@RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        collectionService.createCollection(memberId, createCollectionRequestDTO);
-
-        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+    public ApiResponse createCollection(@ThisMember Member member, @RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO) {
+        Collection newCollection = collectionService.createCollection(member.getId(), createCollectionRequestDTO);
+        if (createCollectionRequestDTO.getContentType() == null) {
+            return ApiResponse.makeResponse(CreateCollectionResponseDTO.builder().id(newCollection.getId()).build());
+        } else {
+            return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(member.getId(), createCollectionRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), newCollection));
+        }
     }
 
     @GetMapping("/{collectionId}")
