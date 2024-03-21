@@ -66,7 +66,7 @@ public class PinController {
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/selected")
     public ApiResponse deleteSelectedPins(@ThisMember Member member,
                                           @RequestBody DeleteSelectedPinsRequestDTO dto,
                                           HttpServletResponse response) {

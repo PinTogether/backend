@@ -1,20 +1,17 @@
 package com.pintogether.backend.dto;
 
-import com.pintogether.backend.entity.PinImage;
-import com.pintogether.backend.entity.PinTag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PinDTO {
+public class PinResponseDTO {
 
     private Long id;
 
