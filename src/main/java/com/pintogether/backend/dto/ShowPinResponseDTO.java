@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PinResponseDTO {
+public class ShowPinResponseDTO {
 
     private Long id;
 

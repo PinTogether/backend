@@ -1,6 +1,6 @@
 package com.pintogether.backend.entity;
 
-import com.pintogether.backend.dto.PinResponseDTO;
+import com.pintogether.backend.dto.ShowPinResponseDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,7 +64,7 @@ public class Pin extends BaseEntity {
         this.pinImages.addAll(pinImages);
     }
 
-    public PinResponseDTO toPinResponseDTO() {
+    public ShowPinResponseDTO toPinResponseDTO() {
         String[] images = new String[this.pinImages.size()];
         String[] tags = new String[this.pinTags.size()];
         for (int i = 0; i < this.pinImages.size(); i++) {
@@ -73,7 +73,7 @@ public class Pin extends BaseEntity {
         for (int i = 0; i < this.pinTags.size(); i++) {
             tags[i] = this.pinTags.get(i).getTag();
         }
-        return PinResponseDTO.builder()
+        return ShowPinResponseDTO.builder()
                 .id(this.id)
                 .collectionId(this.getCollection().getId())
                 .collectionTitle(this.getCollection().getTitle())

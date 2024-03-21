@@ -1,7 +1,7 @@
 package com.pintogether.backend.controller;
 
 import com.pintogether.backend.customAnnotations.ThisMember;
-import com.pintogether.backend.dto.PinResponseDTO;
+import com.pintogether.backend.dto.ShowPinResponseDTO;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.Pin;
 import com.pintogether.backend.entity.Place;
@@ -35,10 +35,10 @@ public class PlaceController {
                                         @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                         @RequestParam(value = "size", required = false, defaultValue = "0") int size) {
         List<Pin> pinList = placeService.getPinsPageListByPlaceId(placeId, page, size);
-        List<PinResponseDTO> pinResponseDTOList = new ArrayList<>();
+        List<ShowPinResponseDTO> showPinResponseDTOList = new ArrayList<>();
         for (Pin x : pinList) {
-            pinResponseDTOList.add(x.toPinResponseDTO());
+            showPinResponseDTOList.add(x.toPinResponseDTO());
         };
-        return ApiResponse.makeResponse(pinResponseDTOList);
+        return ApiResponse.makeResponse(showPinResponseDTOList);
     }
 }
