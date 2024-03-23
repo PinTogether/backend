@@ -64,7 +64,7 @@ public class Pin extends BaseEntity {
         this.pinImages.addAll(pinImages);
     }
 
-    public ShowPinResponseDTO toPinResponseDTO() {
+    public ShowPinResponseDTO toShowPinResponseDTO() {
         String[] images = new String[this.pinImages.size()];
         String[] tags = new String[this.pinTags.size()];
         for (int i = 0; i < this.pinImages.size(); i++) {
