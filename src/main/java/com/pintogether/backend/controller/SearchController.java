@@ -29,9 +29,6 @@ public class SearchController {
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }
-        if (query.isEmpty()) {
-            throw new CustomException(StatusCode.BAD_REQUEST, "검색어를 입력해주세요.");
-        }
         if (query.length() > 20) {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
         }
@@ -48,9 +45,6 @@ public class SearchController {
     ) {
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
-        }
-        if (query.isEmpty()) {
-            throw new CustomException(StatusCode.BAD_REQUEST, "검색어를 입력해주세요.");
         }
         if (query.length() > 20) {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
@@ -69,9 +63,6 @@ public class SearchController {
     ) {
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
-        }
-        if (query.isEmpty()) {
-            throw new CustomException(StatusCode.BAD_REQUEST, "검색어를 입력해주세요.");
         }
         if (query.length() > 20) {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");

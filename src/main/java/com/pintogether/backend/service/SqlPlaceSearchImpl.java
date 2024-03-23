@@ -50,8 +50,7 @@ public class SqlPlaceSearchImpl implements SearchService {
     public List<ShowCollectionResponseDTO> searchCollections(@ThisMember Member member, String query, int page, int size) {
         this.saveHistory(member, query, SearchType.COLLECTION);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Collection> foundCollections = collectionRepository.findByTitleLike(pageable,"%" + query + "%");
-
+        Page<Collection> foundCollections = collectionRepository.findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(pageable, query, query);
         return foundCollections.stream()
                 .map(c -> ShowCollectionResponseDTO.builder()
                         .id(c.getId())
