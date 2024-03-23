@@ -21,6 +21,8 @@ public class ShowPinResponseDTO {
 
     private String writer;
 
+    private Long writerId;
+
     private String avatarImage;
 
     private String review;
