@@ -26,7 +26,7 @@ public class PlaceController {
         Place place = placeService.getPlace(placeId);
         Long pinCnt = placeService.getPlacePinCnt(placeId);
         boolean starred = placeService.getStarred(member, placeId);
-        return ApiResponse.makeResponse(place.toPlaceReponseDto(starred, pinCnt));
+        return ApiResponse.makeResponse(place.toShowPlaceReponseDto(starred, pinCnt));
     }
 
     @GetMapping("/{placeId}/pins")
@@ -37,7 +37,7 @@ public class PlaceController {
         List<Pin> pinList = placeService.getPinsPageListByPlaceId(placeId, page, size);
         List<ShowPinResponseDTO> showPinResponseDTOList = new ArrayList<>();
         for (Pin x : pinList) {
-            showPinResponseDTOList.add(x.toPinResponseDTO());
+            showPinResponseDTOList.add(x.toShowPinResponseDTO());
         };
         return ApiResponse.makeResponse(showPinResponseDTOList);
     }

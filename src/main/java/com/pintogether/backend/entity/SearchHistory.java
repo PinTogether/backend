@@ -1,5 +1,6 @@
 package com.pintogether.backend.entity;
 
+import com.pintogether.backend.entity.enums.SearchType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,9 @@ public class SearchHistory extends BaseEntity {
     @ManyToOne
     private Member member;
 
-    @NotNull
-    private String keyword;
+    private String query;
+
+    @Enumerated(value = EnumType.STRING)
+    private SearchType searchType;
 
 }

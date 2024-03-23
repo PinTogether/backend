@@ -1,23 +1,15 @@
 package com.pintogether.backend.service;
 
 import com.pintogether.backend.customAnnotations.ThisMember;
-import com.pintogether.backend.dto.CoordinateDTO;
-import com.pintogether.backend.dto.ShowCollectionResponseDTO;
-import com.pintogether.backend.dto.ShowPlaceResponseDTO;
-import com.pintogether.backend.entity.Collection;
-import com.pintogether.backend.entity.CollectionTag;
-import com.pintogether.backend.entity.Member;
-import com.pintogether.backend.entity.Place;
-import com.pintogether.backend.repository.CollectionRepository;
-import com.pintogether.backend.repository.PinRepository;
-import com.pintogether.backend.repository.PlaceRepository;
-import com.pintogether.backend.repository.StarRepository;
-import com.pintogether.backend.util.CoordinateConverter;
-import lombok.RequiredArgsConstructor;
+import com.pintogether.backend.dto.*;
+import com.pintogether.backend.entity.*;
+import com.pintogether.backend.entity.enums.SearchType;
+import com.pintogether.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,38 +29,28 @@ public class SqlPlaceSearchImpl implements SearchService {
     private CollectionService collectionService;
     @Autowired
     private InterestingCollectionService interestingCollectionService;
-
+    @Autowired
+    private SearchHistoryRepository searchHistoryRepository;
+    @Autowired
+    private PlaceService placeService;
+    
     public List<ShowPlaceResponseDTO> searchPlaces(@ThisMember Member member, String query, int page, int size) {
-
+        this.saveHistory(member, query, SearchType.PLACE);
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
         List<ShowPlaceResponseDTO> dtoList = foundPlace.stream()
-                .map(place -> {
-                    CoordinateDTO dto = CoordinateConverter.convert(place.getAddress().getLongitude(), place.getAddress().getLatitude());
-                    boolean starred;
-                    return ShowPlaceResponseDTO.builder()
-                            .id(place.getId())
-                            .name(place.getName())
-                            .roadNameAddress(place.getAddress().getRoadNameAddress())
-                            .pinCnt(pinRepository.countByPlaceId(place.getId()))
-                            .category(place.getCategory())
-                            .starred(member != null && starRepository.findByPlaceIdAndMemberId(place.getId(), member.getId()).isPresent())
-                            .latitude(dto.getLatitude())
-                            .longitude(dto.getLongitude())
-                            .build();
-                })
-                .collect(Collectors.toList());
-
+                .map(p -> p.toShowPlaceReponseDto(placeService.getStarred(member, p.getId()), placeService.getPlacePinCnt(p.getId()))
+                ).toList();
         if (dtoList.isEmpty()) {
-            return new ArrayList<ShowPlaceResponseDTO>();
+            return new ArrayList<>();
         }
         return dtoList;
     }
 
     public List<ShowCollectionResponseDTO> searchCollections(@ThisMember Member member, String query, int page, int size) {
+        this.saveHistory(member, query, SearchType.COLLECTION);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Collection> foundCollections = collectionRepository.findByTitleLike(pageable,"%" + query + "%");
-
+        Page<Collection> foundCollections = collectionRepository.findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(pageable, query, query);
         return foundCollections.stream()
                 .map(c -> ShowCollectionResponseDTO.builder()
                         .id(c.getId())
@@ -89,4 +71,33 @@ public class SqlPlaceSearchImpl implements SearchService {
                 .toList();
     }
 
+    public List<ShowPinResponseDTO> searchPins(@ThisMember Member member, String query, int page, int size) {
+        this.saveHistory(member, query, SearchType.PIN);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Pin> foundPins = pinRepository.findPinsByReviewContainingOrPinTagsTagContainingOrderByIdDesc(pageable, query, query);
+        return foundPins.stream()
+                .map(Pin::toShowPinResponseDTO)
+                .toList();
+    }
+
+    public List<ShowSearchHistoryResponseDTO> getSearchHistory(@ThisMember Member member, SearchType searchType) {
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<SearchHistory> foundHistories = searchHistoryRepository.findByMemberIdOrderByIdDesc(pageable, member.getId());
+        return foundHistories.stream()
+                .map(h -> ShowSearchHistoryResponseDTO.builder()
+                        .id(h.getId())
+                        .query(h.getQuery())
+                        .build())
+                .toList();
+    }
+
+    @Transactional
+    public void saveHistory(Member member, String query, SearchType searchType) {
+        if (member != null) {
+            searchHistoryRepository.save(SearchHistory.builder()
+                    .searchType(SearchType.PLACE)
+                    .query(query)
+                    .member(member).build());
+        }
+    }
 }

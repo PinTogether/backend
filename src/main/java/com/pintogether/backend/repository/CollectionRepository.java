@@ -1,10 +1,8 @@
 package com.pintogether.backend.repository;
 
 import com.pintogether.backend.entity.Collection;
-import com.pintogether.backend.entity.Place;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +13,7 @@ import java.util.Optional;
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
 
     Optional<Collection> findOneById(Long id);
+
     int countByMemberId(Long memberId);
 
     @Query(value = "SELECT c.*, COUNT(ic.collection_id) AS interest_count FROM collection c INNER JOIN interesting_collection ic ON c.id = ic.collection_id WHERE ic.interest_type = :interestType GROUP BY c.id ORDER BY interest_count DESC LIMIT :cnt", nativeQuery = true)
@@ -27,6 +26,6 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
             nativeQuery = true)
     Page<Collection> findByMemberIdAndInterestType(@Param("memberId") Long memberId, @Param("interestType") String interestType, Pageable pageable);
 
-    Page<Collection> findByTitleLike(Pageable pageable, String pattern);
+    Page<Collection> findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(Pageable pageable, String query1, String query2);
 
 }
