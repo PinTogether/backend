@@ -25,7 +25,7 @@ public class ShowPinResponseDTO {
 
     private String review;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     private String[] imagePaths;
 
