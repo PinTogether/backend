@@ -1,6 +1,7 @@
 package com.pintogether.backend.entity;
 
 import com.pintogether.backend.dto.ShowPinResponseDTO;
+import com.pintogether.backend.util.DateConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -80,7 +81,7 @@ public class Pin extends BaseEntity {
                 .writer(this.getCollection().getMember().getNickname())
                 .avatarImage(this.getCollection().getMember().getAvatar())
                 .review(this.review)
-                .createdAt(this.getCreatedAt())
+                .createdAt(DateConverter.convert(this.getCreatedAt()))
                 .imagePaths(images)
                 .tags(tags)
                 .build();
