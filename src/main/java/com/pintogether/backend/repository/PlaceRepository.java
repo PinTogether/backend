@@ -10,7 +10,8 @@ import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    @Query("select x from Place x where x.name like %:query%")
+    @Query(value = "SELECT p.*, COUNT(pin.id) as pinCount FROM place p LEFT JOIN pin pin ON p.id = pin.place_id " +
+            "WHERE p.name LIKE %:query% GROUP BY p.id ORDER BY pinCount DESC", nativeQuery = true)
     Page<Place> findByQuery(Pageable pageable, String query);
 
     Optional<Place> findOneById(Long placeId);
