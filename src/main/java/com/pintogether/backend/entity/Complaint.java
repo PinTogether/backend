@@ -51,7 +51,7 @@ public class Complaint extends BaseEntity{
                      ComplaintCategory complaintCategory, String reason, Long targetId) {
         this.reporter = reporter;
         this.targetMember = targetMember;
-        this.progress = Progress.ACCEPTED;
+        this.progress = Progress.RECEIVED;
         this.platformType = platformType;
         this.complaintCategory = complaintCategory;
         this.reason = reason;
