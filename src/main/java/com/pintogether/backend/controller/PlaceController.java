@@ -24,7 +24,7 @@ public class PlaceController {
     @GetMapping("/{placeId}")
     public ApiResponse loadPlaceById(@ThisMember Member member, @PathVariable Long placeId) {
         Place place = placeService.getPlace(placeId);
-        Long pinCnt = placeService.getPlacePinCnt(placeId);
+        int pinCnt = placeService.getPlacePinCnt(placeId);
         boolean starred = placeService.getStarred(member, placeId);
         return ApiResponse.makeResponse(place.toShowPlaceReponseDto(starred, pinCnt));
     }

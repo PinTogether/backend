@@ -1,6 +1,7 @@
 package com.pintogether.backend.repository;
 
 import com.pintogether.backend.entity.Collection;
+import com.pintogether.backend.entity.Pin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,7 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
     Page<Collection> findByMemberIdAndInterestType(@Param("memberId") Long memberId, @Param("interestType") String interestType, Pageable pageable);
 
     Page<Collection> findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(Pageable pageable, String query1, String query2);
+
+    List<Collection> findByMemberId(Long memberId);
 
 }

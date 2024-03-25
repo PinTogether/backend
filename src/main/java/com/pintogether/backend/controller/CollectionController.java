@@ -5,13 +5,11 @@ import com.pintogether.backend.customAnnotations.CurrentCollectionComment;
 import com.pintogether.backend.customAnnotations.CurrentMember;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
-import com.pintogether.backend.entity.Collection;
-import com.pintogether.backend.entity.CollectionComment;
-import com.pintogether.backend.entity.CollectionTag;
-import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.*;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
+import com.pintogether.backend.util.DateConverter;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,7 @@ public class CollectionController {
     private final CollectionCommentService collectionCommentService;
     private final InterestingCollectionService interestingCollectionService;
     private final PinService pinService;
+    private final PlaceService placeService;
 
     @PostMapping("")
     public ApiResponse createCollection(@ThisMember Member member, @RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO) {
@@ -129,11 +128,37 @@ public class CollectionController {
         return ApiResponse.makeResponse(showCollectionResponseDTOs);
     }
 
-//    @GetMapping("/{collectionId}/pins")
-//    public void getPins(@CurrentCollection Collection collection) {
-//        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-//        pinService.
-//    }
+    @GetMapping("/{collectionId}/pins")
+    public ApiResponse getPins(@ThisMember Member member, @CurrentCollection Collection collection) {
+        List<Pin> pins = collectionService.getPins(collection.getId());
+        List<ShowPinsResponseDTO> showPinsResponseDTOs = pins.stream()
+                .map(p-> ShowPinsResponseDTO.builder()
+                        .id(p.getId())
+                        .collectionId(collection.getId())
+                        .collectionTitle(collection.getTitle())
+                        .writerId(collection.getMember().getId())
+                        .writer(collection.getMember().getNickname())
+                        .avatarImage(collection.getMember().getAvatar())
+                        .review(p.getReview())
+                        .imagePaths(p.getPinImages().stream()
+                                .map(PinImage::getImagePath)
+                                .collect(Collectors.toList()))
+                        .tags(p.getPinTags().stream()
+                                .map(PinTag::getTag)
+                                .collect(Collectors.toList()))
+                        .createdAt(DateConverter.convert(p.getCreatedAt()))
+                        .placeId(p.getPlace().getId())
+                        .placeName(p.getPlace().getName())
+                        .category(p.getPlace().getCategory())
+                        .address(p.getPlace().getAddress().getRoadNameAddress())
+                        .latitude(p.getPlace().getAddress().getLatitude())
+                        .longitude(p.getPlace().getAddress().getLongitude())
+                        .saveCnt(placeService.getPlacePinCnt(p.getId()))
+                        .starred(placeService.getStarred(member, p.getPlace().getId()))
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(showPinsResponseDTOs);
+    }
 
     @PostMapping("/{collectionId}/comments")
     public ApiResponse leaveCollectionComment(HttpServletResponse response, @CurrentCollection Collection collection, @RequestBody CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
@@ -169,4 +194,5 @@ public class CollectionController {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(memberId, s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
     }
+
 }
