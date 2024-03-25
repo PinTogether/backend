@@ -92,7 +92,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/places/{\\d+}/pins",
                 "/places/**",
                 "/places/{place_id}",
-                "/search/place/**"
+                "/search/**"
         };
 
         for (String path : permitPaths) {

@@ -15,6 +15,8 @@ public class ShowPinResponseDTO {
 
     private Long id;
 
+    private Long placeId;
+
     private Long collectionId;
 
     private String collectionTitle;
