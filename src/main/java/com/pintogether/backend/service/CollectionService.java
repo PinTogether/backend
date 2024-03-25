@@ -6,12 +6,14 @@ import com.pintogether.backend.dto.UpdateCollectionRequestDTO;
 import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.CollectionComment;
 import com.pintogether.backend.entity.CollectionTag;
+import com.pintogether.backend.entity.Pin;
 import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.CollectionCommentRepository;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
+import com.pintogether.backend.repository.PinRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ public class CollectionService {
     private final InterestingCollectionRepository interestingCollectionRepository;
     private final MemberService memberService;
     private final CollectionCommentRepository collectionCommentRepository;
+    private final PinRepository pinRepository;
     private final AmazonS3Service amazonS3Service;
 
     public Collection getCollection(Long collectionId) {
@@ -144,5 +147,9 @@ public class CollectionService {
         Sort sort = Sort.by(Sort.Direction.DESC, "created_at");
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         return collectionRepository.findByMemberIdAndInterestType(memberId, InterestType.SCRAP.getString(), pageable);
+    }
+
+    public List<Pin> getPins(Long collectionId) {
+        return pinRepository.findByCollectionId(collectionId);
     }
 }
