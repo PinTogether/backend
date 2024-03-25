@@ -75,6 +75,7 @@ public class Pin extends BaseEntity {
         }
         return ShowPinResponseDTO.builder()
                 .id(this.id)
+                .placeId(this.getPlace().getId())
                 .collectionId(this.getCollection().getId())
                 .collectionTitle(this.getCollection().getTitle())
                 .writer(this.getCollection().getMember().getNickname())
