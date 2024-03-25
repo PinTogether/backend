@@ -94,6 +94,7 @@ public class CollectionService {
         if (!defaultImage.contains(collection.getThumbnail()) && !collection.getThumbnail().equals(updateCollectionRequestDTO.getThumbnail())) {
             amazonS3Service.deleteS3Image(collection.getThumbnail());
         }
+        collection.clearCollectionTags();
         List<CollectionTag> collectionTags = updateCollectionRequestDTO.getTags().stream()
                 .map(tag -> CollectionTag.builder()
                         .collection(collection)
@@ -103,7 +104,6 @@ public class CollectionService {
         collection.updateTitle(updateCollectionRequestDTO.getTitle());
         collection.updateDetails(updateCollectionRequestDTO.getDetails());
         collection.updateThumbnail(updateCollectionRequestDTO.getThumbnail());
-        collection.clearCollectionTags();
         collectionRepository.save(collection);
     }
 
