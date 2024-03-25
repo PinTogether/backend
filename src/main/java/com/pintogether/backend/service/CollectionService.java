@@ -40,6 +40,7 @@ public class CollectionService {
     private final CollectionCommentRepository collectionCommentRepository;
     private final PinRepository pinRepository;
     private final AmazonS3Service amazonS3Service;
+    private final PinService pinService;
 
     public Collection getCollection(Long collectionId) {
         return collectionRepository.findOneById(collectionId).orElse(null);
@@ -149,7 +150,20 @@ public class CollectionService {
         return collectionRepository.findByMemberIdAndInterestType(memberId, InterestType.SCRAP.getString(), pageable);
     }
 
+    public List<Collection> getCollectionsByMemberId(Long memberId) {
+        return collectionRepository.findByMemberId(memberId);
+    }
     public List<Pin> getPins(Long collectionId) {
         return pinRepository.findByCollectionId(collectionId);
+    }
+
+    public boolean hasPin(Collection collection, Long placeId) {
+        List<Pin> pins = getPins(collection.getId());
+        for (Pin pin : pins) {
+            if (pin.getPlace().getId().equals(placeId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

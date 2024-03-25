@@ -28,4 +28,7 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
     Page<Collection> findByMemberIdAndInterestType(@Param("memberId") Long memberId, @Param("interestType") String interestType, Pageable pageable);
 
     Page<Collection> findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(Pageable pageable, String query1, String query2);
+
+    List<Collection> findByMemberId(Long memberId);
+
 }

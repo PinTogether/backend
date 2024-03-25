@@ -3,6 +3,7 @@ package com.pintogether.backend.controller;
 import com.pintogether.backend.customAnnotations.CurrentMember;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
+import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
@@ -172,5 +173,23 @@ public class MemberController {
         Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         String contentType = s3MemberAvatarRequestDTO.getContentType();
         return ApiResponse.makeResponse(memberService.getPresignedUrl(contentType, DomainType.Member.AVATAR.getName(), memberId));
+    }
+
+    @GetMapping("/collections")
+    public ApiResponse getMyCollectionsForAddingPin(@ThisMember Member member, @RequestParam(value = "place-id", required = true) Long placeId) {
+        List<Collection> collections = collectionService.getCollectionsByMemberId(member.getId());
+
+        List<ShowCollectionsForAddingPinResponseDTO> showCollectionsForAddingPinResponseDTOs = collections.stream()
+                .map(c -> ShowCollectionsForAddingPinResponseDTO.builder()
+                        .id(c.getId())
+                        .title(c.getTitle())
+                        .thumbnail(c.getThumbnail())
+                        .likeCnt(collectionService.getLikeCnt(c.getId()))
+                        .pinCnt(collectionService.getPinCnt(c.getId()))
+                        .scrapCnt(collectionService.getScrappedCnt(c.getId()))
+                        .pinned(collectionService.hasPin(c, placeId))
+                        .build())
+                .collect(Collectors.toList());
+        return ApiResponse.makeResponse(showCollectionsForAddingPinResponseDTOs);
     }
 }
