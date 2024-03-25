@@ -45,7 +45,7 @@ public class PlaceService {
         return member != null && starRepository.findByPlaceIdAndMemberId(placeId, member.getId()).isPresent();
     }
 
-    public Long getPlacePinCnt(Long placeId) {
+    public int getPlacePinCnt(Long placeId) {
         return pinRepository.countByPlaceId(placeId);
     }
 

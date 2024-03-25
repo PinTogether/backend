@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShowPinResponseDTO {
-
     private Long id;
 
     private Long collectionId;
