@@ -1,0 +1,48 @@
+package com.pintogether.backend.controller;
+
+import com.pintogether.backend.customAnnotations.ThisMember;
+import com.pintogether.backend.dto.CreateComplaintRequestDTO;
+import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.ApiResponse;
+import com.pintogether.backend.model.StatusCode;
+import com.pintogether.backend.service.*;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/reports")
+public class ComplaintController {
+
+    private final ComplaintService complaintService;
+    private final MemberService memberService;
+    private final CollectionService collectionService;
+    private final PinService pinService;
+    private final CollectionCommentService collectionCommentService;
+
+    @PostMapping
+    public ApiResponse createComplaint(@ThisMember Member member, @RequestBody @Valid CreateComplaintRequestDTO dto, HttpServletResponse response) {
+        Member targetMember;
+        switch (dto.getPlatformType()) {
+            case COLLECTION -> targetMember = collectionService.getCollection(dto.getTargetId()).getMember();
+            case PIN -> targetMember = pinService.getPin(dto.getTargetId()).getCollection().getMember();
+            case COLLECTION_COMMENT -> targetMember = collectionCommentService.getCollectionComment(dto.getTargetId()).getMember();
+            default -> throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 요청입니다.");
+        }
+        complaintService.createComplaint(member, targetMember, dto);
+        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+    }
+
+    @GetMapping
+    public ApiResponse getComplaints(@ThisMember Member member,
+                                     @RequestParam(value = "page", defaultValue = "0") int page,
+                                     @RequestParam(value = "size", defaultValue = "4") int size
+    ) {
+        return ApiResponse.makeResponse(complaintService.getComplaintList(member, page, size));
+
+
+    }
+}
