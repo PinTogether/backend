@@ -7,7 +7,10 @@ import com.pintogether.backend.entity.Pin;
 import com.pintogether.backend.entity.Place;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.service.PlaceService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,11 +21,12 @@ import java.util.List;
 @RequestMapping("/places")
 public class PlaceController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PlaceController.class);
     private final PlaceService placeService;
-
 
     @GetMapping("/{placeId}")
     public ApiResponse loadPlaceById(@ThisMember Member member, @PathVariable Long placeId) {
+        logger.info("[GET] [/ㅔㅣ");
         Place place = placeService.getPlace(placeId);
         int pinCnt = placeService.getPlacePinCnt(placeId);
         boolean starred = placeService.getStarred(member, placeId);

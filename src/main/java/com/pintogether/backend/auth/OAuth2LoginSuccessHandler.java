@@ -12,6 +12,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
@@ -32,6 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2LoginSuccessHandler.class);
     private final MemberService memberService;
     @Value("${jwt.signing.key}")
     private String signingKey;
@@ -43,6 +47,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
+        logger.info(authentication.getName() + " is trying to login");
         String registrationId="";
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
@@ -54,15 +59,16 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             Map<String, Object> responseNaver = (Map<String, Object>) attributes.get("response");
             registrationId = responseNaver.getOrDefault("id", "").toString();
             String name = responseNaver.getOrDefault("name", "").toString();
-            System.out.println("registrationId : " + registrationId);
         } else if ("kakao".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
             registrationId = attributes.getOrDefault("id", "").toString();
         }
-
+        logger.info("Start to find entering member");
         Member foundUser = memberService.getMemberByRegistrationId(registrationId);
         if (foundUser != null) {
+            logger.info("{} + {} member found.", foundUser.getId(), foundUser.getNickname());
             sendJwtByCookie(foundUser, response);
         } else {
+            logger.info("Creating Member.");
             Member newMember = memberService.createMember(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()), registrationId);
             sendJwtByCookie(newMember, response);
         }
@@ -73,6 +79,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     }
 
     public void sendJwtByCookie(Member member, HttpServletResponse response) {
+        logger.info("Generating JWT.");
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
                 .setClaims(Map.of("id", member.getId(),  "role", "ROLE_MEMBER"))
@@ -89,7 +96,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
-        System.out.println("========Sended Cookie ==========");
+        logger.info("JWT token has been issued.");
     }
 }
 
