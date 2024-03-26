@@ -1,5 +1,6 @@
 package com.pintogether.backend.controller;
 
+import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.enums.SearchType;
@@ -7,6 +8,8 @@ import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.SearchService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/search")
 public class SearchController {
+    private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
     @Autowired
     private SearchService searchService;
@@ -26,6 +30,7 @@ public class SearchController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
+        logger.info("[GET /places] Someone searched {}.", query);
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }
@@ -43,6 +48,7 @@ public class SearchController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
+        logger.info("[GET /collections] Someone searched {}.", query);
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }
@@ -61,6 +67,7 @@ public class SearchController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
+        logger.info("[GET /pins] Someone searched {}.", query);
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }

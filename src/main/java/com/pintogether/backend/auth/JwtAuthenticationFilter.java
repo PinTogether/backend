@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +18,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,8 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     @Value("${jwt.signing.key}")
     private String signingKey;
 
@@ -35,19 +38,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
         Cookie[] cookies = request.getCookies();
+        logger.info("[{} {}] Authentication started. ", request.getMethod(), requestURI);
 
         String jwt="";
-        System.out.println("Executing REQUEST " + requestURI );
-        System.out.println("Method : " + request.getMethod());
         for (Cookie x : cookies) {
             if (x.getName().equals("Authorization")) {
                 jwt = x.getValue();
-                System.out.println("JWT " + jwt + " accepted.");
+                logger.info("JWT found.");
                 break;
             }
         }
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
         try {
+            logger.info("Validating access token...");
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
@@ -60,10 +63,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             GrantedAuthority a = new SimpleGrantedAuthority(role);
             var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
             SecurityContextHolder.getContext().setAuthentication(auth);
-
+            logger.info("id: {} member logged in.", id);
             filterChain.doFilter(request, response);
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException j) {
             makeResponse(401, "사용자 인증 실패", response);
+        } catch (IllegalArgumentException e) {
+            makeResponse(400, "요청 처리 중 에러가 발생하였습니다.", response);
         }
     }
 
@@ -74,6 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (cookies != null) {
             for (Cookie x : cookies) {
                 if (x.getName().equals("Authorization")) {
+                    logger.info("This request need to be authenticated in JwtFilter.");
                     return false;
                 }
             }
@@ -97,11 +103,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         for (String path : permitPaths) {
             if (antMatcher(path).matches(request)) {
-                System.out.println("filter dismiss");
+                logger.info("This request passes the JwtFilter.");
                 return true;
             }
         }
-        System.out.println("to filter");
+        logger.info("This request need to be authenticated in JwtFilter.");
         return false;
     }
 }

@@ -1,5 +1,6 @@
 package com.pintogether.backend.controller;
 
+import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
 import com.pintogether.backend.customAnnotations.CurrentCollection;
 import com.pintogether.backend.customAnnotations.CurrentCollectionComment;
 import com.pintogether.backend.customAnnotations.CurrentMember;
@@ -13,6 +14,8 @@ import com.pintogether.backend.util.DateConverter;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
