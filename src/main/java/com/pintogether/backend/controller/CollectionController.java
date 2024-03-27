@@ -10,6 +10,7 @@ import com.pintogether.backend.entity.*;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
+import com.pintogether.backend.util.CoordinateConverter;
 import com.pintogether.backend.util.DateConverter;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,8 +136,12 @@ public class CollectionController {
     @GetMapping("/{collectionId}/pins")
     public ApiResponse getPins(@ThisMember Member member, @CurrentCollection Collection collection) {
         List<Pin> pins = collectionService.getPins(collection.getId());
-        List<ShowPinsResponseDTO> showPinsResponseDTOs = pins.stream()
-                .map(p-> ShowPinsResponseDTO.builder()
+
+        List<ShowPinsResponseDTO> showPinsResponseDTOs = new ArrayList<>();
+        for (Pin p : pins) {
+            CoordinateDTO coordinate = CoordinateConverter.convert(p.getPlace().getAddress().getLongitude(), p.getPlace().getAddress().getLatitude());
+            showPinsResponseDTOs.add(
+                    ShowPinsResponseDTO.builder()
                         .id(p.getId())
                         .collectionId(collection.getId())
                         .collectionTitle(collection.getTitle())
@@ -154,12 +160,13 @@ public class CollectionController {
                         .placeName(p.getPlace().getName())
                         .category(p.getPlace().getCategory())
                         .address(p.getPlace().getAddress().getRoadNameAddress())
-                        .latitude(p.getPlace().getAddress().getLatitude())
-                        .longitude(p.getPlace().getAddress().getLongitude())
+                        .latitude(coordinate.getLatitude())
+                        .longitude(coordinate.getLongitude())
                         .saveCnt(placeService.getPlacePinCnt(p.getId()))
                         .starred(placeService.getStarred(member, p.getPlace().getId()))
-                        .build())
-                .collect(Collectors.toList());
+                        .build()
+            );
+        }
         return ApiResponse.makeResponse(showPinsResponseDTOs);
     }
 
