@@ -46,8 +46,8 @@ public class Place extends BaseUpdatedAtEntity {
                 .pinCnt(pinCnt)
                 .category(this.getCategory())
                 .starred(starred)
-                .latitude(convertedCoordinate.getLatitude())
                 .longitude(convertedCoordinate.getLongitude())
+                .latitude(convertedCoordinate.getLatitude())
                 .build();
     }
 }
