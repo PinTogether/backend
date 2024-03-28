@@ -4,6 +4,9 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.ApiResponse;
+import com.pintogether.backend.model.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,9 +53,13 @@ public class AmazonS3Service {
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(getPresignedUrlExpiration())
                 .withContentType(contentType);
-        String presignedUrl = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
-        String imageUrl = convertPresignedUrlToImageUrl(presignedUrl);
-        return new AmazonS3Response(id, presignedUrl, imageUrl);
+        try {
+            String presignedUrl = amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
+            String imageUrl = convertPresignedUrlToImageUrl(presignedUrl);
+            return new AmazonS3Response(id, presignedUrl, imageUrl);
+        } catch (Exception e) {
+            throw new CustomException(StatusCode.FORBIDDEN, "presigned url 발급 중 에러");
+        }
     }
 
     public void deleteS3Image(String objectKey) {

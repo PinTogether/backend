@@ -85,8 +85,8 @@ public class PinController {
     @PostMapping("/{id}/images/presigned-url")
     public ApiResponse getPresignedUrlForPinImage(@ThisMember Member member,
                                                   @PathVariable("id") Long id,
-                                                  @RequestBody @Valid S3PinImageRequestDTO dto) {
-        return ApiResponse.makeResponse(pinService.getPresignedUrlForPinImage(member.getId(), dto.getContentType(), DomainType.Pin.REVIEW_IMAGE.getName(), id));
+                                                  @RequestBody @Valid S3PinImageRequestDTO dtos) {
+        return ApiResponse.makeResponse(pinService.getPresignedUrlForPinImage(member.getId(), dtos, DomainType.Pin.REVIEW_IMAGE.getName(), id));
     }
 
 }

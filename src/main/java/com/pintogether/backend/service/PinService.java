@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -127,12 +130,16 @@ public class PinService {
         }
     }
 
-    public AmazonS3Service.AmazonS3Response getPresignedUrlForPinImage(Long memberId, String contentType, String domainType, Long id) {
+    public List<AmazonS3Service.AmazonS3Response> getPresignedUrlForPinImage(Long memberId, S3PinImageRequestDTO dtos, String domainType, Long id) {
         Pin pin = getPin(id);
         if (!memberId.equals(pin.getCollection().getMember().getId())) {
             throw new CustomException(StatusCode.FORBIDDEN, "핀 이미지 생성에 필요한 presigned url을 요청할 권한이 없습니다.");
         }
-        return amazonS3Service.getneratePresignedUrlAndImageUrl(contentType, domainType, id);
+        List<AmazonS3Service.AmazonS3Response> presignedURLs = new ArrayList<>();
+        for (String type : dtos.getContentType()) {
+            presignedURLs.add(amazonS3Service.getneratePresignedUrlAndImageUrl(type, domainType, id));
+        }
+        return presignedURLs;
     }
 
 }
