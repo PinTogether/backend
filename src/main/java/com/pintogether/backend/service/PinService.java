@@ -25,7 +25,7 @@ public class PinService {
     private final PlaceRepository placeRepository;
     private final AmazonS3Service amazonS3Service;
 
-    public void createPin(Member member, CreatePinRequestDTO createPinRequestDTO) {
+    public Long createPin(Member member, CreatePinRequestDTO createPinRequestDTO) {
         Place place = placeRepository.findById(createPinRequestDTO.getPlaceId()).orElseThrow(
                 ()-> new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.PLACE_NOT_FOUND.getMessage())
         );
@@ -60,26 +60,32 @@ public class PinService {
             }
         }
         pinRepository.save(pin);
+        return pin.getId();
     }
 
-    public void createSelectedPlaces(Member member, CreatePinSelectedPlacesRequestDTO dto) {
+    public List<Long> createSelectedPlaces(Member member, CreatePinSelectedPlacesRequestDTO dto) {
+        List<Long> ids = new ArrayList<>();
+
         for (Long placeId : dto.getPlaceId()) {
-            createPin(member, CreatePinRequestDTO.builder()
+            ids.add(createPin(member, CreatePinRequestDTO.builder()
                     .collectionId(dto.getCollectionId())
                     .placeId(placeId)
                     .review("")
-                    .build());
+                    .build()));
         }
+        return ids;
     }
 
-    public void createSelectedCollections(Member member, CreatePinsSelectedCollectionsRequestDTO dto) {
+    public List<Long> createSelectedCollections(Member member, CreatePinsSelectedCollectionsRequestDTO dto) {
+        List<Long> ids = new ArrayList<>();
         for (Long collectionId : dto.getCollectionId()) {
-            createPin(member, CreatePinRequestDTO.builder()
+            ids.add(createPin(member, CreatePinRequestDTO.builder()
                     .collectionId(collectionId)
                     .placeId(dto.getPlaceId())
                     .review("")
-                    .build());
+                    .build()));
         }
+        return ids;
     }
 
     public void updatePin(Member member, Long id, UpdatePinReqeustDTO updatePinReqeustDTO) {
