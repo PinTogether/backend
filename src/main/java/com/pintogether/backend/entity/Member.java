@@ -23,6 +23,9 @@ public class Member {
     @NotNull
     private String nickname;
 
+//    @NotNull
+    private String uniqueName;
+
     @NotNull
     private String avatar;
 
@@ -41,8 +44,9 @@ public class Member {
     private final List<Collection> collections = new ArrayList<>();
 
     @Builder
-    public Member(String nickname, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
+    public Member(String nickname, String uniqueName, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
         this.nickname = nickname;
+        this.uniqueName = uniqueName;
         this.avatar = avatar;
         this.registrationSource = registrationSource;
         this.registrationId = registrationId;
@@ -51,6 +55,7 @@ public class Member {
 
     public void updateMember(final UpdateMemberRequestDTO updateMemberRequestDTO) {
         this.nickname = updateMemberRequestDTO.getNickname();
+        this.uniqueName = updateMemberRequestDTO.getUniqueName();
         this.avatar = updateMemberRequestDTO.getAvatar();
     }
 }
