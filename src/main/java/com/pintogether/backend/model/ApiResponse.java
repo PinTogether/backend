@@ -26,6 +26,14 @@ public class ApiResponse<T> {
         this.metadata = new Metadata(results.size());
     }
 
+    // 200 외 코드 응답
+    public ApiResponse(List<T> results, StatusCode statusCode, HttpServletResponse response) {
+        this.status = new Status(statusCode.getCode(), statusCode.getMessage());
+        this.results = results;
+        response.setStatus(statusCode.getCode());
+        this.metadata = new Metadata(results.size());
+    }
+
     public ApiResponse(int code, String message, HttpServletResponse response) {
         response.setStatus(code);
         this.status = new Status(code, message);
@@ -61,5 +69,13 @@ public class ApiResponse<T> {
 
     public static ApiResponse makeResponse(int code, String message, HttpServletResponse response) {
         return new ApiResponse(code, message, response);
+    }
+
+    public static <T> ApiResponse makeResponse(T result, StatusCode statusCode, HttpServletResponse response) {
+        return new ApiResponse(Collections.singletonList(result), statusCode, response);
+    }
+
+    public static <T> ApiResponse makeResponse(List<T> result, StatusCode statusCode, HttpServletResponse response) {
+        return new ApiResponse(result, statusCode, response);
     }
 }

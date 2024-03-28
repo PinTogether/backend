@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/pins")
@@ -26,8 +27,8 @@ public class PinController {
     public ApiResponse createPin(@ThisMember Member member,
                                  @RequestBody @Valid CreatePinRequestDTO createPinRequestDTO,
                                  HttpServletResponse response) {
-        pinService.createPin(member, createPinRequestDTO);
-        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+        Long id = pinService.createPin(member, createPinRequestDTO);
+        return ApiResponse.makeResponse(CreatePinResponseDTO.builder().id(id).build(), StatusCode.CREATED, response);
     }
 
     @PostMapping("/selected-places")
@@ -42,8 +43,14 @@ public class PinController {
     public ApiResponse createPinsSelectedPlaces(@ThisMember Member member,
                                                 @RequestBody @Valid CreatePinsSelectedCollectionsRequestDTO dto,
                                                 HttpServletResponse response) {
-        pinService.createSelectedCollections(member, dto);
-        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+        List<Long> ids = pinService.createSelectedCollections(member, dto);
+        List<CreatePinResponseDTO> responseDTO = new ArrayList<>();
+        for (Long id : ids) {
+            responseDTO.add(CreatePinResponseDTO.builder().id(id).build());
+        }
+//        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+        return ApiResponse.makeResponse(responseDTO, StatusCode.CREATED, response);
+
     }
 
     @PutMapping("/{id}")
