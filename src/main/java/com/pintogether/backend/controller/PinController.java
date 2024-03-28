@@ -35,8 +35,12 @@ public class PinController {
     public ApiResponse createSelectedPins(@ThisMember Member member,
                                           @RequestBody @Valid CreatePinSelectedPlacesRequestDTO dto,
                                           HttpServletResponse response) {
-        pinService.createSelectedPlaces(member, dto);
-        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
+        List<Long> ids = pinService.createSelectedPlaces(member, dto);
+        List<CreatePinResponseDTO> responseDTO = new ArrayList<>();
+        for (Long id : ids) {
+            responseDTO.add(CreatePinResponseDTO.builder().id(id).build());
+        }
+        return ApiResponse.makeResponse(responseDTO, StatusCode.CREATED, response);
     }
 
     @PostMapping("/selected-collections")
@@ -48,7 +52,6 @@ public class PinController {
         for (Long id : ids) {
             responseDTO.add(CreatePinResponseDTO.builder().id(id).build());
         }
-//        return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
         return ApiResponse.makeResponse(responseDTO, StatusCode.CREATED, response);
 
     }

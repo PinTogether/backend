@@ -63,14 +63,17 @@ public class PinService {
         return pin.getId();
     }
 
-    public void createSelectedPlaces(Member member, CreatePinSelectedPlacesRequestDTO dto) {
+    public List<Long> createSelectedPlaces(Member member, CreatePinSelectedPlacesRequestDTO dto) {
+        List<Long> ids = new ArrayList<>();
+
         for (Long placeId : dto.getPlaceId()) {
-            createPin(member, CreatePinRequestDTO.builder()
+            ids.add(createPin(member, CreatePinRequestDTO.builder()
                     .collectionId(dto.getCollectionId())
                     .placeId(placeId)
                     .review("")
-                    .build());
+                    .build()));
         }
+        return ids;
     }
 
     public List<Long> createSelectedCollections(Member member, CreatePinsSelectedCollectionsRequestDTO dto) {
