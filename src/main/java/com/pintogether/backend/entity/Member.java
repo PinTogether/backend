@@ -21,7 +21,13 @@ public class Member {
     private Long id;
 
     @NotNull
-    private String nickname;
+    private String name;
+
+    @NotNull
+    private String membername;
+
+    @NotNull
+    private String bio;
 
     @NotNull
     private String avatar;
@@ -41,16 +47,20 @@ public class Member {
     private final List<Collection> collections = new ArrayList<>();
 
     @Builder
-    public Member(String nickname, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
-        this.nickname = nickname;
+    public Member(String name, String membername, String bio, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
+        this.name = name;
+        this.membername = membername;
         this.avatar = avatar;
+        this.bio = bio;
         this.registrationSource = registrationSource;
         this.registrationId = registrationId;
         this.roleType = roleType;
     }
 
     public void updateMember(final UpdateMemberRequestDTO updateMemberRequestDTO) {
-        this.nickname = updateMemberRequestDTO.getNickname();
+        this.name = updateMemberRequestDTO.getName();
+        this.membername = updateMemberRequestDTO.getMembername();
         this.avatar = updateMemberRequestDTO.getAvatar();
+        this.bio = updateMemberRequestDTO.getBio();
     }
 }
