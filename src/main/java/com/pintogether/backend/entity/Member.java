@@ -20,12 +20,13 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @NotNull
+    @NotNull
     private String name;
 
-//    @NotNull
+    @NotNull
     private String membername;
-//    @NotNull
+
+    @NotNull
     private String bio;
 
     @NotNull
