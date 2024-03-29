@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 public class ShowSimpleMemberResponseDTO {
     private Long id;
 
-    private String nickname;
+    private String name;
+
+    private String membername;
 
     private String avatar;
 

@@ -57,7 +57,7 @@ public class SqlPlaceSearchImpl implements SearchService {
                         .title(c.getTitle())
                         .writerId(c.getMember().getId())
                         .details(c.getDetails())
-                        .writer(c.getMember().getNickname())
+                        .writerMembername(c.getMember().getMembername())
                         .thumbnail(c.getThumbnail())
                         .likeCnt(collectionService.getLikeCnt(c.getId()))
                         .pinCnt(collectionService.getPinCnt(c.getId()))

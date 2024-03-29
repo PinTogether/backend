@@ -15,7 +15,7 @@ public class ShowPinsResponseDTO {
     private Long collectionId;
     private String collectionTitle;
     private Long writerId;
-    private String writer;
+    private String writerMembername;
     private String avatarImage;
     private String review;
     private List<String> tags;

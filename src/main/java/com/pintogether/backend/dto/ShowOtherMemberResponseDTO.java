@@ -10,9 +10,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 public class ShowOtherMemberResponseDTO {
-    private String nickname;
+    private String name;
+
+    private String membername;
 
     private String avatar;
+
+    private String bio;
 
     private int collectionCnt;
 

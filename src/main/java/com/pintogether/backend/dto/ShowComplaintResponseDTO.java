@@ -15,11 +15,11 @@ public class ShowComplaintResponseDTO {
 
     private Long reporterId;
 
-    private String reporterNickname;
+    private String reporterMembername;
 
     private Long targetMemberId;
 
-    private String targetMemberNickname;
+    private String targetMembername;
 
     private String createdAt;
 
