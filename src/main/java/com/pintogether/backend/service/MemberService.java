@@ -5,6 +5,8 @@ import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.FollowingRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
@@ -31,6 +33,9 @@ public class MemberService {
 
     public void update(Long id, UpdateMemberRequestDTO updateMemberRequestDTO) {
         Member foundMember = this.getMember(id);
+        if (memberRepository.existsOneByMembername(updateMemberRequestDTO.getMembername())) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "중복된 멤버이름 입니다.");
+        }
         Set<String> defaultImage = new HashSet<>(Arrays.asList(
                 "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png",
                 "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile2.png",
