@@ -13,12 +13,16 @@ import lombok.NoArgsConstructor;
 public class UpdateMemberRequestDTO {
     @NotNull
     @Size(min = 1, max = 16, message = "이름은 16자 이내로 작성해주세요.")
-    private String nickname;
+    private String name;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()\\-_=+\\[\\]{};:'\",.<>/?\\\\|]{3,30}$", message = "사용자 이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 일반 기호로 작성해주세요.")
-    private String uniqueName;
+    @Pattern(regexp = "^[a-zA-Z0-9_]{3,30}$", message = "사용자 이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 언더바('_')로 작성해주세요.")
+    private String membername;
 
     @NotNull
     private String avatar;
+
+    @NotNull
+    @Size(max=200, message = "소개는 200자 이내로 작성해주세요.")
+    private String bio;
 }
