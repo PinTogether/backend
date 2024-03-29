@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query(value = "SELECT m.* FROM member m INNER JOIN following f ON m.id = f.followee_id WHERE f.follower_id = ?1", nativeQuery = true)
     List<Member> findAllFollowings(Long memberId);
+
+    boolean existsOneByMembername(String membername);
 }
