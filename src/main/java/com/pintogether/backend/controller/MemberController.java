@@ -198,4 +198,9 @@ public class MemberController {
                 .collect(Collectors.toList());
         return ApiResponse.makeResponse(showCollectionsForAddingPinResponseDTOs);
     }
+
+    @GetMapping("/profile-setting/membername-valid")
+    public ApiResponse checkIfDuplicatedMembername(@RequestParam(value = "membername", required = true) String membername) {
+        return ApiResponse.makeResponse(ShowMembernameValidationResponseDTO.builder().valid(memberService.checkIfDuplicatedMembername(membername)).build());
+    }
 }

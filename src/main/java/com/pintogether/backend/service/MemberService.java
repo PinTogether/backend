@@ -82,4 +82,8 @@ public class MemberService {
     public Member getMemberByRegistrationId(String registrationId) {
         return memberRepository.findByRegistrationId(registrationId).orElse(null);
     }
+
+    public boolean checkIfDuplicatedMembername(String membername) {
+        return memberRepository.existsOneByMembername(membername);
+    }
 }
