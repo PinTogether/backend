@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class Member {
     @NotNull
     private String name;
 
+    @Setter
     @NotNull
     private String membername;
 
@@ -63,4 +65,5 @@ public class Member {
         this.avatar = updateMemberRequestDTO.getAvatar();
         this.bio = updateMemberRequestDTO.getBio();
     }
+
 }

@@ -5,6 +5,7 @@ import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import com.pintogether.backend.repository.MemberRepository;
 import com.pintogether.backend.service.MemberService;
+import com.pintogether.backend.util.RandomMembernameGenerator;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -23,6 +24,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -37,6 +39,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2LoginSuccessHandler.class);
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     @Value("${jwt.signing.key}")
     private String signingKey;
     @Value("${frontend.login.success.url}")
@@ -45,22 +48,26 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     private String cookieUrl;
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
         logger.info(authentication.getName() + " is trying to login");
         String registrationId="";
+        String name = "";
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = principal.getAttributes();
-
         if ("google".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
             registrationId = attributes.getOrDefault("email", "").toString();
+            name = attributes.getOrDefault("given_name", RandomNicknameGenerator.generateNickname()).toString();
         } else if ("naver".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
             Map<String, Object> responseNaver = (Map<String, Object>) attributes.get("response");
             registrationId = responseNaver.getOrDefault("id", "").toString();
-            String name = responseNaver.getOrDefault("name", "").toString();
+            name = responseNaver.getOrDefault("name", "").toString();
         } else if ("kakao".equals(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())) {
+            Map<String, Object> propertiesKakao = (Map<String, Object>) attributes.get("properties");
             registrationId = attributes.getOrDefault("id", "").toString();
+            name = propertiesKakao.getOrDefault("nickname", "").toString();
         }
         logger.info("Start to find entering member");
         Member foundUser = memberService.getMemberByRegistrationId(registrationId);
@@ -72,7 +79,14 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             Member newMember = Member.builder()
                     .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
                     .registrationId(registrationId)
-                    .build();
+                    .name(name)
+                    .roleType(RoleType.ROLE_MEMBER)
+                    .bio("")
+                    .avatar("https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png")
+                    .membername(RandomMembernameGenerator.generate()+"#").build();
+            memberRepository.save(newMember);
+            newMember.setMembername(
+                    newMember.getMembername() + newMember.getId());
             sendJwtByCookie(newMember, response);
         }
         this.setAlwaysUseDefaultTargetUrl(true);
