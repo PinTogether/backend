@@ -81,7 +81,7 @@ public class Pin extends BaseEntity {
                 .placeId(this.getPlace().getId())
                 .collectionId(this.getCollection().getId())
                 .collectionTitle(this.getCollection().getTitle())
-                .writer(this.getCollection().getMember().getNickname())
+                .writerMembername(this.getCollection().getMember().getMembername())
                 .avatarImage(this.getCollection().getMember().getAvatar())
                 .review(this.review)
                 .createdAt(DateConverter.convert(this.getCreatedAt()))

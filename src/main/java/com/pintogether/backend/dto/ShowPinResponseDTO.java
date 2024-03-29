@@ -20,7 +20,7 @@ public class ShowPinResponseDTO {
 
     private String collectionTitle;
 
-    private String writer;
+    private String writerMembername;
 
     private Long writerId;
 

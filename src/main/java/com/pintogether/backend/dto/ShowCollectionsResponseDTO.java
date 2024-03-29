@@ -13,7 +13,7 @@ public class ShowCollectionsResponseDTO {
     private Long id;
     private String title;
     private Long writerId;
-    private String writer;
+    private String writerMembername;
     private String thumbnail;
     private int likeCnt;
     private int pinCnt;

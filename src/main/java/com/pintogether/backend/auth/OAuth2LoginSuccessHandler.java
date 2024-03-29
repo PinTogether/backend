@@ -65,11 +65,14 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         logger.info("Start to find entering member");
         Member foundUser = memberService.getMemberByRegistrationId(registrationId);
         if (foundUser != null) {
-            logger.info("{} + {} member found.", foundUser.getId(), foundUser.getNickname());
+            logger.info("{} + {} member found.", foundUser.getId(), foundUser.getMembername());
             sendJwtByCookie(foundUser, response);
         } else {
             logger.info("Creating Member.");
-            Member newMember = memberService.createMember(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()), registrationId);
+            Member newMember = Member.builder()
+                    .registrationSource(RegistrationSource.valueOf(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().toUpperCase()))
+                    .registrationId(registrationId)
+                    .build();
             sendJwtByCookie(newMember, response);
         }
         this.setAlwaysUseDefaultTargetUrl(true);

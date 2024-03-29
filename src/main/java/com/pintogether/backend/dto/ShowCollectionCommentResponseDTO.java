@@ -16,9 +16,13 @@ public class ShowCollectionCommentResponseDTO {
 
     private Long writerId;
 
-    private String writer;
+    private String writerName;
+
+    private String writerMembername;
+
+    private String writerAvatar;
 
     private String contents;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 }

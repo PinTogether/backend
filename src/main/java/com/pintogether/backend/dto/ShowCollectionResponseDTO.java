@@ -20,7 +20,7 @@ public class ShowCollectionResponseDTO {
 
     private Long writerId;
 
-    private String writer;
+    private String writerMembername;
 
     private String thumbnail;
 
