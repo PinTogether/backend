@@ -16,10 +16,11 @@ public class UpdateMemberRequestDTO {
     private String name;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9_]{3,30}$", message = "사용자 이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 언더바('_')로 작성해주세요.")
+    @Pattern(regexp = "^[a-zA-Z0-9_]{3,30}$", message = "멤버이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 언더바('_')로 작성해주세요.")
     private String membername;
 
     @NotNull
+    @Size(max=1024, message = "이미지 경로는 1024 길이를 넘을 수 없습니다.")
     private String avatar;
 
     @NotNull
