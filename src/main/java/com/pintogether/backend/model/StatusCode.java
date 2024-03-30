@@ -13,7 +13,9 @@ public enum StatusCode {
 
     FORBIDDEN(403, "FORBIDDEN", HttpStatus.FORBIDDEN),
 
-    NOT_FOUND(404, "NOT_FOUND", HttpStatus.NOT_FOUND)
+    NOT_FOUND(404, "NOT_FOUND", HttpStatus.NOT_FOUND),
+
+    UNAUTHORIZED(401, "UNAUTHORIZED", HttpStatus.UNAUTHORIZED)
     ;
 
     @Getter
