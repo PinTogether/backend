@@ -10,12 +10,14 @@ import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
+import com.pintogether.backend.websocket.WebSocketHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +29,6 @@ public class MemberController {
     private final FollowingService followingService;
     private final CollectionService collectionService;
     private final InterestingCollectionService interestingCollectionService;
-    private final AmazonS3Service amazonS3Service;
-
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -201,6 +201,6 @@ public class MemberController {
 
     @GetMapping("/profile-setting/membername-valid")
     public ApiResponse checkIfDuplicatedMembername(@RequestParam(value = "membername", required = true) String membername) {
-        return ApiResponse.makeResponse(ShowMembernameValidationResponseDTO.builder().valid(memberService.checkIfDuplicatedMembername(membername)).build());
+        return ApiResponse.makeResponse(ShowMembernameValidationResponseDTO.builder().valid(!memberService.checkIfDuplicatedMembername(membername)).build());
     }
 }
