@@ -21,4 +21,6 @@ public interface SearchService {
 
     Page<SearchHistory> getSearchHistory(Member member, SearchType searchType);
 
+    void deleteSearchHistory(Member member, Long id);
+
 }
