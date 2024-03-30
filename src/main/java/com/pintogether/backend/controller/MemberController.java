@@ -29,8 +29,6 @@ public class MemberController {
     private final FollowingService followingService;
     private final CollectionService collectionService;
     private final InterestingCollectionService interestingCollectionService;
-    private final AmazonS3Service amazonS3Service;
-    private final WebSocketHandler webSocketHandler;
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -93,11 +91,6 @@ public class MemberController {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         followingService.follow(memberId, targetId);
-        try {
-            webSocketHandler.sendMessageToMember(memberId.toString(), "팔로우 당했습니다.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
