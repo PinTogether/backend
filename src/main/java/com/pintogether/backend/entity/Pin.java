@@ -74,14 +74,13 @@ public class Pin extends BaseEntity {
         for (int i = 0; i < this.pinTags.size(); i++) {
             tags[i] = this.pinTags.get(i).getTag();
         }
-        Collection c = this.getCollection();
-        Member m = c.getMember();
         return ShowPinResponseDTO.builder()
                 .id(this.id)
                 .placeId(this.getPlace().getId())
                 .collectionId(this.getCollection().getId())
                 .collectionTitle(this.getCollection().getTitle())
                 .writerMembername(this.getCollection().getMember().getMembername())
+                .writerId(this.getCollection().getMember().getId())
                 .avatarImage(this.getCollection().getMember().getAvatar())
                 .review(this.review)
                 .createdAt(DateConverter.convert(this.getCreatedAt()))
