@@ -10,10 +10,12 @@ import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class WebSocketService {
     private final WebSocketHandler webSocketHandler;
