@@ -63,6 +63,26 @@ public class MemberController {
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
+    @GetMapping("/{membername}")
+    public ApiResponse getOtherMemberInformation(@ThisMember Member member, @PathVariable String membername) {
+        Member targetMember = memberService.getMemberByMembername(membername);
+        if (targetMember == null) {
+            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
+        }
+        ShowOtherMemberResponseDTO showOtherMemberResponseDTO = ShowOtherMemberResponseDTO.builder()
+                .name(targetMember.getName())
+                .membername(targetMember.getMembername())
+                .avatar(targetMember.getAvatar())
+                .bio(targetMember.getBio())
+                .collectionCnt(memberService.getCollectionCnt(targetMember.getId()))
+                .scrappedCollectionCnt(memberService.getScrappedCollectionCnt(targetMember.getId()))
+                .isFollowed(member != null ? followingService.checkIfFollow(member.getId(), targetMember.getId()) : false)
+                .followerCnt(memberService.getFollowerCnt(targetMember.getId()))
+                .followingCnt(memberService.getFolloweeCnt(targetMember.getId()))
+                .build();
+        return ApiResponse.makeResponse(showOtherMemberResponseDTO);
+    }
+
     @GetMapping("/{targetId}")
     public ApiResponse getOtherMemberInformation(@ThisMember Member member, @PathVariable Long targetId) {
         Member targetMember = memberService.getMember(targetId);
