@@ -80,24 +80,25 @@ public class SqlPlaceSearchImpl implements SearchService {
                 .toList();
     }
 
-    public List<ShowSearchHistoryResponseDTO> getSearchHistory(@ThisMember Member member, SearchType searchType) {
+    public Page<SearchHistory> getSearchHistory(@ThisMember Member member, SearchType searchType) {
         Pageable pageable = PageRequest.of(0, 20);
-        Page<SearchHistory> foundHistories = searchHistoryRepository.findByMemberIdOrderByIdDesc(pageable, member.getId());
-        return foundHistories.stream()
-                .map(h -> ShowSearchHistoryResponseDTO.builder()
-                        .id(h.getId())
-                        .query(h.getQuery())
-                        .build())
-                .toList();
+        if (searchType.equals(SearchType.TOTAL)) {
+            return searchHistoryRepository.findByMemberIdOrderByIdDesc(pageable, member.getId());
+        }
+        return searchHistoryRepository.findByMemberIdAndSearchTypeOrderByIdDesc(pageable, member.getId(), searchType);
     }
 
     @Transactional
     public void saveHistory(Member member, String query, SearchType searchType) {
-        if (member != null) {
-            searchHistoryRepository.save(SearchHistory.builder()
-                    .searchType(SearchType.PLACE)
-                    .query(query)
-                    .member(member).build());
+        Page<SearchHistory> histories = this.getSearchHistory(member, SearchType.TOTAL);
+        for (SearchHistory x : histories) {
+            if (x.getQuery().equals(query)) {
+                return;
+            }
         }
+        searchHistoryRepository.save(SearchHistory.builder()
+                .searchType(searchType)
+                .query(query)
+                .member(member).build());
     }
 }
