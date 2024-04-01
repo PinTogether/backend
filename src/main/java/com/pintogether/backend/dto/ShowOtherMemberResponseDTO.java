@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 public class ShowOtherMemberResponseDTO {
+    private Long id;
+
     private String name;
 
     private String membername;

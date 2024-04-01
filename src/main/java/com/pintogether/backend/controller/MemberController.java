@@ -80,6 +80,7 @@ public class MemberController {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         ShowOtherMemberResponseDTO showOtherMemberResponseDTO = ShowOtherMemberResponseDTO.builder()
+                .id(targetMember.getId())
                 .name(targetMember.getName())
                 .membername(targetMember.getMembername())
                 .avatar(targetMember.getAvatar())
@@ -100,6 +101,7 @@ public class MemberController {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
         ShowOtherMemberResponseDTO showOtherMemberResponseDTO = ShowOtherMemberResponseDTO.builder()
+                .id(targetId)
                 .name(targetMember.getName())
                 .membername(targetMember.getMembername())
                 .avatar(targetMember.getAvatar())
