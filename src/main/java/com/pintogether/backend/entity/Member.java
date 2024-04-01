@@ -45,6 +45,8 @@ public class Member {
     @NotNull
     private RoleType roleType;
 
+    private int alertCnt;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private final List<Collection> collections = new ArrayList<>();
 
@@ -57,6 +59,7 @@ public class Member {
         this.registrationSource = registrationSource;
         this.registrationId = registrationId;
         this.roleType = roleType;
+        this.alertCnt = 0;
     }
 
     public void updateMember(final UpdateMemberRequestDTO updateMemberRequestDTO) {
@@ -66,4 +69,10 @@ public class Member {
         this.bio = updateMemberRequestDTO.getBio();
     }
 
+    public void increaseAlertCnt() {
+        this.alertCnt += 1;
+    }
+    public void clearAlertCnt() {
+        this.alertCnt = 0;
+    }
 }

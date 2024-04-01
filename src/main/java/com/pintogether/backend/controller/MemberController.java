@@ -5,6 +5,7 @@ import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.Notification;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
@@ -19,8 +20,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.time.LocalDate.now;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,6 +36,8 @@ public class MemberController {
     private final CollectionService collectionService;
     private final InterestingCollectionService interestingCollectionService;
     private final WebSocketService webSocketService;
+    private final NotificationService notificationService;
+
 
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
@@ -109,7 +116,8 @@ public class MemberController {
     @PostMapping("/{targetId}/follow")
     public ApiResponse followMember(@ThisMember Member member, @CurrentMember Member target, HttpServletResponse response) {
         followingService.follow(member.getId(), target.getId());
-        webSocketService.follow(member, target);
+        notificationService.follow(member, target);
+        webSocketService.sendNotificationCntToMember(target);
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
@@ -221,5 +229,51 @@ public class MemberController {
     @GetMapping("/profile-setting/membername-valid")
     public ApiResponse checkIfDuplicatedMembername(@RequestParam(value = "membername", required = true) String membername) {
         return ApiResponse.makeResponse(ShowMembernameValidationResponseDTO.builder().valid(!memberService.checkIfDuplicatedMembername(membername)).build());
+    }
+
+    @PostMapping("/me/notifications")
+    public ApiResponse getAllNotifications(@ThisMember Member member) {
+        List<Notification> notifications = notificationService.getAllNotification(member);
+
+        List<ShowNotificationResponseDTO> today = new ArrayList<>();
+        List<ShowNotificationResponseDTO> yesterday = new ArrayList<>();
+        List<ShowNotificationResponseDTO> aWeekAgo = new ArrayList<>();
+        List<ShowNotificationResponseDTO> withinAMonth = new ArrayList<>();
+
+        LocalDate now = LocalDate.now();
+
+        for (Notification notification : notifications) {
+            ShowNotificationResponseDTO dto = ShowNotificationResponseDTO.builder()
+                    .subjectId(notification.getSubject().getId())
+                    .subject(notification.getSubject().getMembername())
+                    .notificationType(notification.getNotificationType())
+                    .object(notification.getObject())
+                    .build();
+
+            LocalDate notificationDate = notification.getCreatedAt().toLocalDate();
+            if (notificationDate.equals(now)) {
+                today.add(dto);
+            } else if (notificationDate.equals(now.minusDays(1))) {
+                yesterday.add(dto);
+            } else if (notificationDate.isAfter(now.minusWeeks(1)) && !notificationDate.isEqual(now().minusDays(1))) {
+                aWeekAgo.add(dto);
+            } else if (notificationDate.isAfter(now.minusMonths(1)) && notificationDate.isBefore(now().minusWeeks(1))) {
+                withinAMonth.add(dto);
+            }
+        }
+        return ApiResponse.makeResponse(ShowNotificationsResponseDTO.builder()
+                .today(today)
+                .yesterday(yesterday)
+                .aWeekAgo(aWeekAgo)
+                .withinAMonth(withinAMonth)
+                .build());
+    }
+
+    @GetMapping("/me/alerts")
+    public ApiResponse getAlertCnt(@ThisMember Member member) {
+        return ApiResponse.makeResponse(
+                ShowAlertCntResponseDTO.builder()
+                        .alertCnt(member.getAlertCnt())
+                        .build());
     }
 }

@@ -95,4 +95,14 @@ public class MemberService {
     public Member getMemberByMembername(String membername) {
         return memberRepository.findOneByMembername(membername).orElse(null);
     }
+
+    public void increaeAlertCnt(Member member) {
+        member.increaseAlertCnt();
+        memberRepository.save(member);
+    }
+
+    public void clearAlertCnt(Member member) {
+        member.clearAlertCnt();
+        memberRepository.save(member);
+    }
 }
