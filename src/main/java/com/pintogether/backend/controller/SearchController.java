@@ -81,14 +81,18 @@ public class SearchController {
     @GetMapping("/history")
     public ApiResponse searchHistory(@ThisMember Member member,
                                      @RequestParam(value = "type", defaultValue = "TOTAL") SearchType searchType) {
-        if (member == null) {
-            return ApiResponse.makeResponse(new ArrayList<>());
-        }
         return ApiResponse.makeResponse(searchService.getSearchHistory(member, searchType).stream()
                 .map(h -> ShowSearchHistoryResponseDTO.builder()
                         .id(h.getId())
                         .query(h.getQuery())
                         .build())
                 .toList());
+    }
+
+    @DeleteMapping("/history/{id}")
+    public ApiResponse deleteHistory(@ThisMember Member member,
+                                     @PathVariable("id") Long id) {
+        searchService.deleteSearchHistory(member, id);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT);
     }
 }

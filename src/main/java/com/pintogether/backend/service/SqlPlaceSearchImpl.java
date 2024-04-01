@@ -4,6 +4,8 @@ import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.*;
 import com.pintogether.backend.entity.enums.SearchType;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -101,4 +103,21 @@ public class SqlPlaceSearchImpl implements SearchService {
                 .query(query)
                 .member(member).build());
     }
+
+    @Transactional
+    public void deleteSearchHistory(Member member, Long id) {
+        SearchHistory history = searchHistoryRepository.findById(id).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND, "해당 검색 기록을 찾을 수 없습니다.")
+        );
+        if (history.getMember().getId().equals(member.getId())) {
+            searchHistoryRepository.delete(history);
+        } else {
+            throw new CustomException(StatusCode.FORBIDDEN, "기록을 삭제할 권한이 없습니다.");
+        }
+        searchHistoryRepository.save(SearchHistory.builder()
+                .searchType(searchType)
+                .query(query)
+                .member(member).build());
+    }
+
 }
