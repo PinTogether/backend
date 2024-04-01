@@ -83,7 +83,7 @@ public class MemberController {
         return ApiResponse.makeResponse(showOtherMemberResponseDTO);
     }
 
-    @GetMapping("/{targetId}")
+    @GetMapping("id/{targetId}")
     public ApiResponse getOtherMemberInformation(@ThisMember Member member, @PathVariable Long targetId) {
         Member targetMember = memberService.getMember(targetId);
         if (targetMember == null) {
