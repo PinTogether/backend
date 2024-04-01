@@ -29,6 +29,7 @@ public class MemberController {
     private final FollowingService followingService;
     private final CollectionService collectionService;
     private final InterestingCollectionService interestingCollectionService;
+
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
         Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -84,13 +85,9 @@ public class MemberController {
     }
 
     @PostMapping("/{targetId}/follow")
-    public ApiResponse followMember(@PathVariable Long targetId, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Member targetMember = memberService.getMember(targetId);
-        if (targetMember == null) {
-            throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
-        }
-        followingService.follow(memberId, targetId);
+    public ApiResponse followMember(@ThisMember Member member, @CurrentMember Member target, HttpServletResponse response) {
+        followingService.follow(member.getId(), target.getId());
+        webSocketService.follow(member, target);
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 

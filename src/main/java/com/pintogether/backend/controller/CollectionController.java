@@ -1,9 +1,7 @@
 package com.pintogether.backend.controller;
 
-import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
 import com.pintogether.backend.customAnnotations.CurrentCollection;
 import com.pintogether.backend.customAnnotations.CurrentCollectionComment;
-import com.pintogether.backend.customAnnotations.CurrentMember;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.*;
@@ -12,14 +10,16 @@ import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
 import com.pintogether.backend.util.CoordinateConverter;
 import com.pintogether.backend.util.DateConverter;
+import com.pintogether.backend.websocket.NotificationType;
+import com.pintogether.backend.websocket.WebSocketHandler;
+import com.pintogether.backend.websocket.WebSocketService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,12 +32,12 @@ public class CollectionController {
     private final CollectionService collectionService;
     private final CollectionCommentService collectionCommentService;
     private final InterestingCollectionService interestingCollectionService;
-    private final PinService pinService;
     private final PlaceService placeService;
-
+    private final WebSocketService webSocketService;
     @PostMapping("")
     public ApiResponse createCollection(@ThisMember Member member, @RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO) {
         Collection newCollection = collectionService.createCollection(member.getId(), createCollectionRequestDTO);
+        webSocketService.createCollection(member, newCollection);
         if (createCollectionRequestDTO.getContentType() == null) {
             return ApiResponse.makeResponse(CreateCollectionResponseDTO.builder().id(newCollection.getId()).build());
         } else {
@@ -74,16 +74,16 @@ public class CollectionController {
     }
 
     @PostMapping("/{collectionId}/likes")
-    public ApiResponse likeOnCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        interestingCollectionService.likeOnCollection(memberId, collection.getId());
+    public ApiResponse likeOnCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
+        interestingCollectionService.likeOnCollection(member.getId(), collection.getId());
+        webSocketService.likeCollection(member, collection);
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @PostMapping("/{collectionId}/scraps")
-    public ApiResponse scrapTheCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        interestingCollectionService.scrapTheCollection(memberId, collection.getId());
+    public ApiResponse scrapTheCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
+        interestingCollectionService.scrapTheCollection(member.getId(), collection.getId());
+        webSocketService.scrapCollection(member, collection);
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
@@ -171,9 +171,9 @@ public class CollectionController {
     }
 
     @PostMapping("/{collectionId}/comments")
-    public ApiResponse leaveCollectionComment(HttpServletResponse response, @CurrentCollection Collection collection, @RequestBody CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        collectionService.leaveAComment(memberId, collection, createCollectionCommentRequestDTO);
+    public ApiResponse leaveCollectionComment(@ThisMember Member member, HttpServletResponse response, @CurrentCollection Collection collection, @RequestBody CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
+        collectionService.leaveAComment(member.getId(), collection, createCollectionCommentRequestDTO);
+        webSocketService.commentOnCollection(member, collection);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
