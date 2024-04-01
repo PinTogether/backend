@@ -114,10 +114,6 @@ public class SqlPlaceSearchImpl implements SearchService {
         } else {
             throw new CustomException(StatusCode.FORBIDDEN, "기록을 삭제할 권한이 없습니다.");
         }
-        searchHistoryRepository.save(SearchHistory.builder()
-                .searchType(searchType)
-                .query(query)
-                .member(member).build());
     }
 
 }

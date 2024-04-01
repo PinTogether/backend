@@ -11,6 +11,7 @@ import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
 import com.pintogether.backend.websocket.WebSocketHandler;
+import com.pintogether.backend.websocket.WebSocketService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class MemberController {
     private final FollowingService followingService;
     private final CollectionService collectionService;
     private final InterestingCollectionService interestingCollectionService;
+    private final WebSocketService webSocketService;
 
     @GetMapping("/me")
     public ApiResponse getMemberInformation() {
