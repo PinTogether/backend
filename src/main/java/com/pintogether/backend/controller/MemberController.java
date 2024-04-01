@@ -11,7 +11,6 @@ import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
-import com.pintogether.backend.websocket.WebSocketHandler;
 import com.pintogether.backend.websocket.WebSocketService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,13 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.time.LocalDate.now;
 
 @RequiredArgsConstructor
 @RestController
@@ -257,9 +253,9 @@ public class MemberController {
                 today.add(dto);
             } else if (notificationDate.equals(now.minusDays(1))) {
                 yesterday.add(dto);
-            } else if (notificationDate.isAfter(now.minusWeeks(1)) && !notificationDate.isEqual(now().minusDays(1))) {
+            } else if (notificationDate.isAfter(now.minusWeeks(1)) && !notificationDate.isEqual(now.minusDays(1))) {
                 aWeekAgo.add(dto);
-            } else if (notificationDate.isAfter(now.minusMonths(1)) && notificationDate.isBefore(now().minusWeeks(1))) {
+            } else if (notificationDate.isAfter(now.minusMonths(1)) && notificationDate.isBefore(now.minusWeeks(1))) {
                 withinAMonth.add(dto);
             }
         }
