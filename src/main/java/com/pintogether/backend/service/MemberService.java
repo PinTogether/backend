@@ -91,4 +91,8 @@ public class MemberService {
     public boolean checkIfDuplicatedMembername(String membername) {
         return memberRepository.existsOneByMembername(membername);
     }
+
+    public Member getMemberByMembername(String membername) {
+        return memberRepository.findOneByMembername(membername).orElse(null);
+    }
 }

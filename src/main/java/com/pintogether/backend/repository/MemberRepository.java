@@ -20,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findAllFollowings(Long memberId);
 
     boolean existsOneByMembername(String membername);
+
+    Optional<Member> findOneByMembername(String membername);
 }
