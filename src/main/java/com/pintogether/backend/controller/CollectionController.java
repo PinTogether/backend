@@ -10,8 +10,6 @@ import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
 import com.pintogether.backend.util.CoordinateConverter;
 import com.pintogether.backend.util.DateConverter;
-import com.pintogether.backend.websocket.NotificationType;
-import com.pintogether.backend.websocket.WebSocketHandler;
 import com.pintogether.backend.websocket.WebSocketService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,10 +31,12 @@ public class CollectionController {
     private final InterestingCollectionService interestingCollectionService;
     private final PlaceService placeService;
     private final WebSocketService webSocketService;
+    private final NotificationService notificationService;
     @PostMapping("")
     public ApiResponse createCollection(@ThisMember Member member, @RequestBody @Valid CreateCollectionRequestDTO createCollectionRequestDTO) {
         Collection newCollection = collectionService.createCollection(member.getId(), createCollectionRequestDTO);
-        webSocketService.createCollection(member, newCollection);
+        notificationService.createCollection(member, newCollection);
+        webSocketService.sendNotificationCntToFollower(member);
         if (createCollectionRequestDTO.getContentType() == null) {
             return ApiResponse.makeResponse(CreateCollectionResponseDTO.builder().id(newCollection.getId()).build());
         } else {
@@ -76,14 +75,16 @@ public class CollectionController {
     @PostMapping("/{collectionId}/likes")
     public ApiResponse likeOnCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
         interestingCollectionService.likeOnCollection(member.getId(), collection.getId());
-        webSocketService.likeCollection(member, collection);
+        notificationService.likeCollection(member, collection);
+        webSocketService.sendNotificationCntToMember(collection.getMember());
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
     @PostMapping("/{collectionId}/scraps")
     public ApiResponse scrapTheCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
         interestingCollectionService.scrapTheCollection(member.getId(), collection.getId());
-        webSocketService.scrapCollection(member, collection);
+        notificationService.scrapCollection(member, collection);
+        webSocketService.sendNotificationCntToMember(collection.getMember());
         return ApiResponse.makeResponse(StatusCode.CREATED.getCode(), StatusCode.CREATED.getMessage(), response);
     }
 
@@ -142,29 +143,29 @@ public class CollectionController {
             CoordinateDTO coordinate = CoordinateConverter.convert(p.getPlace().getAddress().getLongitude(), p.getPlace().getAddress().getLatitude());
             showPinsResponseDTOs.add(
                     ShowPinsResponseDTO.builder()
-                        .id(p.getId())
-                        .collectionId(collection.getId())
-                        .collectionTitle(collection.getTitle())
-                        .writerId(collection.getMember().getId())
-                        .writerMembername(collection.getMember().getMembername())
-                        .avatarImage(collection.getMember().getAvatar())
-                        .review(p.getReview())
-                        .imagePaths(p.getPinImages().stream()
-                                .map(PinImage::getImagePath)
-                                .collect(Collectors.toList()))
-                        .tags(p.getPinTags().stream()
-                                .map(PinTag::getTag)
-                                .collect(Collectors.toList()))
-                        .createdAt(DateConverter.convert(p.getCreatedAt()))
-                        .placeId(p.getPlace().getId())
-                        .placeName(p.getPlace().getName())
-                        .category(p.getPlace().getCategory())
-                        .address(p.getPlace().getAddress().getRoadNameAddress())
-                        .latitude(coordinate.getLatitude())
-                        .longitude(coordinate.getLongitude())
-                        .saveCnt(placeService.getPlacePinCnt(p.getId()))
-                        .starred(placeService.getStarred(member, p.getPlace().getId()))
-                        .build()
+                            .id(p.getId())
+                            .collectionId(collection.getId())
+                            .collectionTitle(collection.getTitle())
+                            .writerId(collection.getMember().getId())
+                            .writerMembername(collection.getMember().getMembername())
+                            .avatarImage(collection.getMember().getAvatar())
+                            .review(p.getReview())
+                            .imagePaths(p.getPinImages().stream()
+                                    .map(PinImage::getImagePath)
+                                    .collect(Collectors.toList()))
+                            .tags(p.getPinTags().stream()
+                                    .map(PinTag::getTag)
+                                    .collect(Collectors.toList()))
+                            .createdAt(DateConverter.convert(p.getCreatedAt()))
+                            .placeId(p.getPlace().getId())
+                            .placeName(p.getPlace().getName())
+                            .category(p.getPlace().getCategory())
+                            .address(p.getPlace().getAddress().getRoadNameAddress())
+                            .latitude(coordinate.getLatitude())
+                            .longitude(coordinate.getLongitude())
+                            .saveCnt(placeService.getPlacePinCnt(p.getId()))
+                            .starred(placeService.getStarred(member, p.getPlace().getId()))
+                            .build()
             );
         }
         return ApiResponse.makeResponse(showPinsResponseDTOs);
@@ -173,7 +174,8 @@ public class CollectionController {
     @PostMapping("/{collectionId}/comments")
     public ApiResponse leaveCollectionComment(@ThisMember Member member, HttpServletResponse response, @CurrentCollection Collection collection, @RequestBody CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
         collectionService.leaveAComment(member.getId(), collection, createCollectionCommentRequestDTO);
-        webSocketService.commentOnCollection(member, collection);
+        notificationService.commentOnCollection(member, collection);
+        webSocketService.sendNotificationCntToMember(collection.getMember());
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 

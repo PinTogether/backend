@@ -1,4 +1,4 @@
-package com.pintogether.backend.websocket;
+package com.pintogether.backend.entity.enums;
 
 import lombok.Getter;
 
