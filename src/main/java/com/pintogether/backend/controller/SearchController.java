@@ -2,6 +2,7 @@ package com.pintogether.backend.controller;
 
 import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
 import com.pintogether.backend.customAnnotations.ThisMember;
+import com.pintogether.backend.dto.ShowSearchHistoryResponseDTO;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.enums.SearchType;
 import com.pintogether.backend.exception.CustomException;
@@ -80,9 +81,18 @@ public class SearchController {
     @GetMapping("/history")
     public ApiResponse searchHistory(@ThisMember Member member,
                                      @RequestParam(value = "type", defaultValue = "TOTAL") SearchType searchType) {
-        if (member != null) {
-            return ApiResponse.makeResponse(searchService.getSearchHistory(member, searchType));
-        }
-        return ApiResponse.makeResponse(new ArrayList<>());
+        return ApiResponse.makeResponse(searchService.getSearchHistory(member, searchType).stream()
+                .map(h -> ShowSearchHistoryResponseDTO.builder()
+                        .id(h.getId())
+                        .query(h.getQuery())
+                        .build())
+                .toList());
+    }
+
+    @DeleteMapping("/history/{id}")
+    public ApiResponse deleteHistory(@ThisMember Member member,
+                                     @PathVariable("id") Long id) {
+        searchService.deleteSearchHistory(member, id);
+        return ApiResponse.makeResponse(StatusCode.NO_CONTENT);
     }
 }

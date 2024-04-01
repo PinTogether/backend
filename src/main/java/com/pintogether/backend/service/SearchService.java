@@ -5,7 +5,9 @@ import com.pintogether.backend.dto.ShowPinResponseDTO;
 import com.pintogether.backend.dto.ShowPlaceResponseDTO;
 import com.pintogether.backend.dto.ShowSearchHistoryResponseDTO;
 import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.SearchHistory;
 import com.pintogether.backend.entity.enums.SearchType;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public interface SearchService {
 
     List<ShowPinResponseDTO> searchPins(Member member, String query, int page, int size);
 
-    List<ShowSearchHistoryResponseDTO> getSearchHistory(Member member, SearchType searchType);
+    Page<SearchHistory> getSearchHistory(Member member, SearchType searchType);
+
+    void deleteSearchHistory(Member member, Long id);
 
 }

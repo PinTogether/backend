@@ -4,6 +4,8 @@ import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.*;
 import com.pintogether.backend.entity.enums.SearchType;
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -80,24 +82,42 @@ public class SqlPlaceSearchImpl implements SearchService {
                 .toList();
     }
 
-    public List<ShowSearchHistoryResponseDTO> getSearchHistory(@ThisMember Member member, SearchType searchType) {
+    public Page<SearchHistory> getSearchHistory(@ThisMember Member member, SearchType searchType) {
         Pageable pageable = PageRequest.of(0, 20);
-        Page<SearchHistory> foundHistories = searchHistoryRepository.findByMemberIdOrderByIdDesc(pageable, member.getId());
-        return foundHistories.stream()
-                .map(h -> ShowSearchHistoryResponseDTO.builder()
-                        .id(h.getId())
-                        .query(h.getQuery())
-                        .build())
-                .toList();
+        if (searchType.equals(SearchType.TOTAL)) {
+            return searchHistoryRepository.findByMemberIdOrderByIdDesc(pageable, member.getId());
+        }
+        return searchHistoryRepository.findByMemberIdAndSearchTypeOrderByIdDesc(pageable, member.getId(), searchType);
     }
 
     @Transactional
     public void saveHistory(Member member, String query, SearchType searchType) {
-        if (member != null) {
-            searchHistoryRepository.save(SearchHistory.builder()
-                    .searchType(SearchType.PLACE)
-                    .query(query)
-                    .member(member).build());
+        Page<SearchHistory> histories = this.getSearchHistory(member, SearchType.TOTAL);
+        for (SearchHistory x : histories) {
+            if (x.getQuery().equals(query)) {
+                return;
+            }
         }
+        searchHistoryRepository.save(SearchHistory.builder()
+                .searchType(searchType)
+                .query(query)
+                .member(member).build());
     }
+
+    @Transactional
+    public void deleteSearchHistory(Member member, Long id) {
+        SearchHistory history = searchHistoryRepository.findById(id).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND, "해당 검색 기록을 찾을 수 없습니다.")
+        );
+        if (history.getMember().getId().equals(member.getId())) {
+            searchHistoryRepository.delete(history);
+        } else {
+            throw new CustomException(StatusCode.FORBIDDEN, "기록을 삭제할 권한이 없습니다.");
+        }
+        searchHistoryRepository.save(SearchHistory.builder()
+                .searchType(searchType)
+                .query(query)
+                .member(member).build());
+    }
+
 }
