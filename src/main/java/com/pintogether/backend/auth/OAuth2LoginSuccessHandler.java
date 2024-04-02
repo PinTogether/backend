@@ -83,7 +83,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                     .roleType(RoleType.ROLE_MEMBER)
                     .bio("")
                     .avatar("https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png")
-                    .membername(RandomMembernameGenerator.generate()+"#").build();
+                    .membername(RandomMembernameGenerator.generate()+"$").build();
             memberRepository.save(newMember);
             newMember.setMembername(
                     newMember.getMembername() + newMember.getId());
