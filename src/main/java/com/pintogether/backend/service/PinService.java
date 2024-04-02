@@ -96,7 +96,7 @@ public class PinService {
             throw new CustomException(StatusCode.FORBIDDEN, "해당 핀을 수정할 권한이 없습니다.");
         }
         pin.clearPinTagsAndImages();
-
+        pin.updateReview(updatePinReqeustDTO.getReview());
         for (String x : updatePinReqeustDTO.getTags()) {
             pin.getPinTags().add(PinTag.builder()
                             .tag(x)
