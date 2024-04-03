@@ -66,8 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.info("id: {} member logged in.", id);
             filterChain.doFilter(request, response);
         } catch (JwtException j) {
+            logger.info("id: {} member occured error : {}", SecurityContextHolder.getContext().getAuthentication().getName(), j.getMessage());
             makeResponse(401, "사용자 인증 실패", response);
         } catch (IllegalArgumentException e) {
+            logger.info("id: {} member occured error : {}", SecurityContextHolder.getContext().getAuthentication().getName(), e.getMessage());
             makeResponse(400, "요청 처리 중 에러가 발생하였습니다.", response);
         }
     }
