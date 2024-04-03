@@ -109,6 +109,9 @@ public class SqlPlaceSearchImpl implements SearchService {
         SearchHistory history = searchHistoryRepository.findById(id).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND, "해당 검색 기록을 찾을 수 없습니다.")
         );
+        if (history.getMember() == null) {
+            throw new CustomException(StatusCode.NOT_FOUND, "탈퇴한 회원의 기록입니다.");
+        }
         if (history.getMember().getId().equals(member.getId())) {
             searchHistoryRepository.delete(history);
         } else {

@@ -16,11 +16,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.pintogether.backend.model.ApiResponse.makeResponse;
@@ -65,12 +67,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
             SecurityContextHolder.getContext().setAuthentication(auth);
             logger.info("id: {} member logged in.", id);
-        } catch (JwtException j) {
-            logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, j.getMessage());
-            makeResponse(401, "사용자 인증 실패", response);
-        } catch (IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, e.getMessage());
-            makeResponse(400, "요청 처리 중 에러가 발생하였습니다.", response);
+            makeResponse(401, "사용자 인증 실패", response);
         }
             filterChain.doFilter(request, response);
     }
@@ -87,25 +86,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
+        List<AntPathRequestMatcher> permitPaths = new ArrayList<>();
+        permitPaths.add(new AntPathRequestMatcher("/"));
+        permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}/collections/**", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}/scraps/**", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/collections/{\\d+}"));
+        permitPaths.add(new AntPathRequestMatcher("/collections/top"));
+        permitPaths.add(new AntPathRequestMatcher("/collections/{\\d+}/pins"));
+        permitPaths.add(new AntPathRequestMatcher("/collections/{\\d+}/comments"));
+        permitPaths.add(new AntPathRequestMatcher("/pins/{pin_id}/images"));
+        permitPaths.add(new AntPathRequestMatcher("/places"));
+        permitPaths.add(new AntPathRequestMatcher("/places/{\\d+}/pins"));
+        permitPaths.add(new AntPathRequestMatcher("/places/{place_id}"));
+        permitPaths.add(new AntPathRequestMatcher("/search/collections**"));
+        permitPaths.add(new AntPathRequestMatcher("/search/places**"));
 
-        String[] permitPaths = {
-                "/",
-                "/members/{member_id:\\d+}",
-                "/members/{member_id:\\d+}/collections/**",
-                "/members/{member_id:\\d+}/scraps/**",
-                "/collections/{\\d+}",
-                "/collections/top",
-                "/collections/{\\d+}/pins",
-                "/collections/{\\d+}/comments",
-                "/pins/{pin_id}/images",
-                "/places/{\\d+}/pins",
-                "/places/**",
-                "/places/{place_id}",
-                "/search/**"
-        };
-
-        for (String path : permitPaths) {
-            if (antMatcher(path).matches(request)) {
+        for (AntPathRequestMatcher path : permitPaths) {
+            if (path.matches(request)) {
                 logger.info("This request passes the JwtFilter.");
                 return true;
             }
