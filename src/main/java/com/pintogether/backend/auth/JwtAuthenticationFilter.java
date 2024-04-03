@@ -37,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
+        String requestMethod = request.getMethod();
         Cookie[] cookies = request.getCookies();
         logger.info("[{} {}] Authentication started. ", request.getMethod(), requestURI);
 
@@ -66,10 +67,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.info("id: {} member logged in.", id);
             filterChain.doFilter(request, response);
         } catch (JwtException j) {
-            logger.info("id: {} member occured error : {}", SecurityContextHolder.getContext().getAuthentication().getName(), j.getMessage());
+            logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, j.getMessage());
             makeResponse(401, "사용자 인증 실패", response);
         } catch (IllegalArgumentException e) {
-            logger.info("id: {} member occured error : {}", SecurityContextHolder.getContext().getAuthentication().getName(), e.getMessage());
+            logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, e.getMessage());
             makeResponse(400, "요청 처리 중 에러가 발생하였습니다.", response);
         }
     }
