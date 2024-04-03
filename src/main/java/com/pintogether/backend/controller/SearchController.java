@@ -31,7 +31,7 @@ public class SearchController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size
     ) {
-        logger.info("[GET /places] Someone searched {}.", query);
+        logger.info("[GET /search/places] Someone searched {}.", query);
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }
