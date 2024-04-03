@@ -26,7 +26,7 @@ public class PlaceController {
 
     @GetMapping("/{placeId}")
     public ApiResponse loadPlaceById(@ThisMember Member member, @PathVariable Long placeId) {
-        logger.info("[GET] [/ㅔㅣ");
+        logger.info("[GET] /places/{placeId}");
         Place place = placeService.getPlace(placeId);
         int pinCnt = placeService.getPlacePinCnt(placeId);
         boolean starred = placeService.getStarred(member, placeId);

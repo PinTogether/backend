@@ -35,9 +35,12 @@ public class SqlPlaceSearchImpl implements SearchService {
     private SearchHistoryRepository searchHistoryRepository;
     @Autowired
     private PlaceService placeService;
-    
-    public List<ShowPlaceResponseDTO> searchPlaces(@ThisMember Member member, String query, int page, int size) {
-        this.saveHistory(member, query, SearchType.PLACE);
+
+    @Transactional
+    public List<ShowPlaceResponseDTO> searchPlaces(Member member, String query, int page, int size) {
+        if (member != null) {
+            this.saveHistory(member, query, SearchType.PLACE);
+        }
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
         List<ShowPlaceResponseDTO> dtoList = foundPlace.stream()
@@ -50,7 +53,9 @@ public class SqlPlaceSearchImpl implements SearchService {
     }
 
     public List<ShowCollectionResponseDTO> searchCollections(@ThisMember Member member, String query, int page, int size) {
-        this.saveHistory(member, query, SearchType.COLLECTION);
+        if (member != null) {
+            this.saveHistory(member, query, SearchType.COLLECTION);
+        }
         Pageable pageable = PageRequest.of(page, size);
         Page<Collection> foundCollections = collectionRepository.findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(pageable, query, query);
         return foundCollections.stream()
@@ -74,7 +79,9 @@ public class SqlPlaceSearchImpl implements SearchService {
     }
 
     public List<ShowPinResponseDTO> searchPins(@ThisMember Member member, String query, int page, int size) {
-        this.saveHistory(member, query, SearchType.PIN);
+        if (member != null) {
+            this.saveHistory(member, query, SearchType.PIN);
+        }
         Pageable pageable = PageRequest.of(page, size);
         Page<Pin> foundPins = pinRepository.findPinsByReviewContainingOrPinTagsTagContainingOrderByIdDesc(pageable, query, query);
         return foundPins.stream()

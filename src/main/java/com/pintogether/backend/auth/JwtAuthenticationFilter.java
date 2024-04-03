@@ -91,14 +91,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}/collections/**", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}/scraps/**", "GET"));
-        permitPaths.add(new AntPathRequestMatcher("/collections/{\\d+}"));
-        permitPaths.add(new AntPathRequestMatcher("/collections/top"));
-        permitPaths.add(new AntPathRequestMatcher("/collections/{\\d+}/pins"));
-        permitPaths.add(new AntPathRequestMatcher("/collections/{\\d+}/comments"));
-        permitPaths.add(new AntPathRequestMatcher("/pins/{pin_id}/images"));
-        permitPaths.add(new AntPathRequestMatcher("/places"));
-        permitPaths.add(new AntPathRequestMatcher("/places/{\\d+}/pins"));
-        permitPaths.add(new AntPathRequestMatcher("/places/{place_id}"));
+        permitPaths.add(new AntPathRequestMatcher("/collections**", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/collections/**", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/pins/{pin_id:\\d+}/images", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/places/**"));
+        permitPaths.add(new AntPathRequestMatcher("/places**"));
         permitPaths.add(new AntPathRequestMatcher("/search/collections**"));
         permitPaths.add(new AntPathRequestMatcher("/search/places**"));
 
