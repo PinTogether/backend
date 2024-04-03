@@ -65,7 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
             SecurityContextHolder.getContext().setAuthentication(auth);
             logger.info("id: {} member logged in.", id);
-            filterChain.doFilter(request, response);
         } catch (JwtException j) {
             logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, j.getMessage());
             makeResponse(401, "사용자 인증 실패", response);
@@ -73,6 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, e.getMessage());
             makeResponse(400, "요청 처리 중 에러가 발생하였습니다.", response);
         }
+            filterChain.doFilter(request, response);
     }
 
     @Override
