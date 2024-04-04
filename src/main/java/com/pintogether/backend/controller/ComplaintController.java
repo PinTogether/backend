@@ -45,9 +45,7 @@ public class ComplaintController {
                                      @RequestParam(value = "page", defaultValue = "0") int page,
                                      @RequestParam(value = "size", defaultValue = "4") int size
     ) {
-        logger.info("[GET reports]");
+        logger.info("[GET /reports]");
         return ApiResponse.makeResponse(complaintService.getComplaintList(member, page, size));
-
-
     }
 }
