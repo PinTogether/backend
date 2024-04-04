@@ -24,9 +24,10 @@ public class ShowPinsResponseDTO {
     private Long placeId;
     private String placeName;
     private String category;
-    private String address;
+    private String roadNameAddress;
     private double latitude;
     private double longitude;
     private int saveCnt;
+    private int pinCnt;
     private boolean starred;
 }
