@@ -56,9 +56,8 @@ public class MemberController {
     }
 
     @PutMapping("/me")
-    public ApiResponse updateMemberInformation(@RequestBody @Valid UpdateMemberRequestDTO updateMemberRequestDTO, HttpServletResponse response) {
-        Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        memberService.update(id, updateMemberRequestDTO);
+    public ApiResponse updateMemberInformation(@ThisMember Member member, @RequestBody @Valid UpdateMemberRequestDTO updateMemberRequestDTO, HttpServletResponse response) {
+        memberService.update(member, updateMemberRequestDTO);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
