@@ -160,10 +160,11 @@ public class CollectionController {
                             .placeId(p.getPlace().getId())
                             .placeName(p.getPlace().getName())
                             .category(p.getPlace().getCategory())
-                            .address(p.getPlace().getAddress().getRoadNameAddress())
+                            .roadNameAddress(p.getPlace().getAddress().getRoadNameAddress())
                             .latitude(coordinate.getLatitude())
                             .longitude(coordinate.getLongitude())
                             .saveCnt(placeService.getPlacePinCnt(p.getId()))
+                            .pinCnt(placeService.getPlacePinCnt(p.getPlace().getId()))
                             .starred(placeService.getStarred(member, p.getPlace().getId()))
                             .build()
             );
