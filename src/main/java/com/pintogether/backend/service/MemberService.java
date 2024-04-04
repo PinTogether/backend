@@ -45,6 +45,7 @@ public class MemberService {
             amazonS3Service.deleteS3Image(member.getAvatar());
         }
         member.updateMember(updateMemberRequestDTO);
+        memberRepository.save(member);
     }
 
     public void delete(Long id) {
