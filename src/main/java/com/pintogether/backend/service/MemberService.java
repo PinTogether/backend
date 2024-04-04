@@ -31,9 +31,9 @@ public class MemberService {
         return memberRepository.findOneById(id).orElse(null);
     }
 
-    public void update(Long id, UpdateMemberRequestDTO updateMemberRequestDTO) {
-        Member foundMember = this.getMember(id);
-        if (memberRepository.existsOneByMembername(updateMemberRequestDTO.getMembername())) {
+    public void update(Member member, UpdateMemberRequestDTO updateMemberRequestDTO) {
+        if (!member.getMembername().equals(updateMemberRequestDTO.getMembername()) &&
+                memberRepository.existsOneByMembername(updateMemberRequestDTO.getMembername())) {
             throw new CustomException(StatusCode.BAD_REQUEST, "중복된 멤버이름 입니다.");
         }
         Set<String> defaultImage = new HashSet<>(Arrays.asList(
@@ -41,10 +41,10 @@ public class MemberService {
                 "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile2.png",
                 "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile3.png"
         ));
-        if (!defaultImage.contains(foundMember.getAvatar()) && !foundMember.getAvatar().equals(updateMemberRequestDTO.getAvatar())) {
-            amazonS3Service.deleteS3Image(foundMember.getAvatar());
+        if (!defaultImage.contains(member.getAvatar()) && !member.getAvatar().equals(updateMemberRequestDTO.getAvatar())) {
+            amazonS3Service.deleteS3Image(member.getAvatar());
         }
-        foundMember.updateMember(updateMemberRequestDTO);
+        member.updateMember(updateMemberRequestDTO);
     }
 
     public void delete(Long id) {
