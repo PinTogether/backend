@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,25 +37,21 @@ public class ComplaintService {
 
     public List<ShowComplaintResponseDTO> getComplaintList(Member member, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Complaint> complaintPage = complaintRepository.findByReporterId(pageable, member.getId());
-        return complaintPage.stream()
-                .map(c -> ShowComplaintResponseDTO.builder()
-                        .id(c.getId())
-                        .platformType(c.getPlatformType())
+        Page<Complaint> complaints = complaintRepository.findByReporterId(pageable, member.getId());
+
+        return complaints.stream().map(
+                complaint -> ShowComplaintResponseDTO.builder()
+                        .id(complaint.getId())
+                        .platformType(complaint.getPlatformType())
                         .reporterId(member.getId())
                         .reporterMembername(member.getMembername())
-                        .targetMemberId(c.getTargetMember().getId())
-                        .targetMembername(c.getTargetMember().getMembername())
-                        .createdAt(DateConverter.convert(c.getCreatedAt()))
-                        .progress(c.getProgress())
-                        .complaintCategory(c.getComplaintCategory())
-                        .reason(c.getReason())
-                        .targetId(c.getTargetId())
-                        .build())
-                .toList();
-
+                        .targetMemberId(complaint.getTargetMember() != null ? complaint.getTargetMember().getId() : -1)
+                        .targetMembername(complaint.getTargetMember() != null ? complaint.getTargetMember().getMembername() : "탈퇴한 회원")
+                        .createdAt(DateConverter.convert(complaint.getCreatedAt()))
+                        .progress(complaint.getProgress())
+                        .complaintCategory(complaint.getComplaintCategory())
+                        .reason(complaint.getReason())
+                        .targetId(complaint.getTargetId() != null ? complaint.getTargetId() : -1)
+                        .build()).toList();
     }
-
-
-
 }
