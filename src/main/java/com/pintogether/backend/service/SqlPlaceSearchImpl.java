@@ -7,6 +7,7 @@ import com.pintogether.backend.entity.enums.SearchType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.*;
+import com.pintogether.backend.util.CoordinateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,10 +38,37 @@ public class SqlPlaceSearchImpl implements SearchService {
     private PlaceService placeService;
 
     @Transactional
-    public List<ShowPlaceResponseDTO> searchPlaces(Member member, String query, int page, int size) {
+    public List<ShowPlaceResponseDTO> searchPlaces(Member member, String query, int page, int size, String filter) {
         if (member != null) {
             this.saveHistory(member, query, SearchType.PLACE);
         }
+        if (filter != null) {
+            double[] edgeL;
+            double[] edgeR;
+            CoordinateDTO CoordinateLeft;
+            CoordinateDTO CoordinateRight;
+            try {
+                String[] parsedFilter = filter.split(",");
+                edgeL = new double[2];
+                edgeR = new double[2];
+                edgeL[0] = Double.parseDouble(parsedFilter[0]);
+                edgeL[1] = Double.parseDouble(parsedFilter[1]);
+                edgeR[0] = Double.parseDouble(parsedFilter[2]);
+                edgeR[1] = Double.parseDouble(parsedFilter[3]);
+                CoordinateLeft = CoordinateConverter.convertReverse(edgeL[0], edgeL[1]);
+                CoordinateRight = CoordinateConverter.convertReverse(edgeR[0], edgeR[1]);
+
+            } catch (Exception e) {
+                throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 필터 인자입니다.");
+            }
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Place> foundPlace = placeRepository.findByQueryFilter(pageable, query,
+                    CoordinateLeft.getLongitude(), CoordinateLeft.getLatitude(), CoordinateRight.getLongitude(), CoordinateRight.getLatitude());
+            return foundPlace.stream()
+                    .map(p -> p.toShowPlaceReponseDto(placeService.getStarred(member, p.getId()), placeService.getPlacePinCnt(p.getId()))
+                    ).toList();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
         List<ShowPlaceResponseDTO> dtoList = foundPlace.stream()
@@ -78,9 +106,35 @@ public class SqlPlaceSearchImpl implements SearchService {
                 .toList();
     }
 
-    public List<ShowPinResponseDTO> searchPins(@ThisMember Member member, String query, int page, int size) {
+    public List<ShowPinResponseDTO> searchPins(@ThisMember Member member, String query, int page, int size, String filter) {
         if (member != null) {
             this.saveHistory(member, query, SearchType.PIN);
+        }
+        if (filter != null) {
+            double[] edgeL;
+            double[] edgeR;
+            CoordinateDTO CoordinateLeft;
+            CoordinateDTO CoordinateRight;
+            try {
+                String[] parsedFilter = filter.split(",");
+                edgeL = new double[2];
+                edgeR = new double[2];
+                edgeL[0] = Double.parseDouble(parsedFilter[0]);
+                edgeL[1] = Double.parseDouble(parsedFilter[1]);
+                edgeR[0] = Double.parseDouble(parsedFilter[2]);
+                edgeR[1] = Double.parseDouble(parsedFilter[3]);
+                CoordinateLeft = CoordinateConverter.convertReverse(edgeL[0], edgeL[1]);
+                CoordinateRight = CoordinateConverter.convertReverse(edgeR[0], edgeR[1]);
+
+            } catch (Exception e) {
+                throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 필터 인자입니다.");
+            }
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Pin> foundPins = pinRepository.findByQueryFilter(pageable, query, query,
+                    CoordinateLeft.getLongitude(), CoordinateLeft.getLatitude(), CoordinateRight.getLongitude(), CoordinateRight.getLatitude());
+            return foundPins.stream()
+                    .map(Pin::toShowPinResponseDTO)
+                    .toList();
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<Pin> foundPins = pinRepository.findPinsByReviewContainingOrPinTagsTagContainingOrderByIdDesc(pageable, query, query);

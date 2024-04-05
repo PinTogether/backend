@@ -1,6 +1,5 @@
 package com.pintogether.backend.controller;
 
-import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.ShowSearchHistoryResponseDTO;
 import com.pintogether.backend.entity.Member;
@@ -9,6 +8,7 @@ import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.SearchService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +29,19 @@ public class SearchController {
             @ThisMember Member member,
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "4") int size
+            @RequestParam(value = "size", defaultValue = "4") int size,
+            @RequestParam(value = "filter", required = false) String filter,
+            HttpServletRequest request
     ) {
-        logger.info("[GET /search/places] Someone searched {}.", query);
+        logger.info("{} {}", request.getMethod(), request.getRequestURI());
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
-            throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
+            throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 인자입니다.");
         }
         if (query.length() > 20) {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
         }
 
-        return new ApiResponse(searchService.searchPlaces(member, query, page, size));
+        return new ApiResponse(searchService.searchPlaces(member, query, page, size, filter));
     }
 
     @GetMapping("/collections")
@@ -47,9 +49,10 @@ public class SearchController {
             @ThisMember Member member,
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "4") int size
+            @RequestParam(value = "size", defaultValue = "4") int size,
+            HttpServletRequest request
     ) {
-        logger.info("[GET /collections] Someone searched {}.", query);
+        logger.info("{} {}", request.getMethod(), request.getRequestURI());
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }
@@ -66,21 +69,25 @@ public class SearchController {
             @ThisMember Member member,
             @RequestParam(value = "query", defaultValue = "") String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "4") int size
+            @RequestParam(value = "size", defaultValue = "4") int size,
+            @RequestParam(value = "filter", required = false) String filter,
+            HttpServletRequest request
     ) {
-        logger.info("[GET /pins] Someone searched {}.", query);
+        logger.info("{} {}", request.getMethod(), request.getRequestURI());
         if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
             throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
         }
         if (query.length() > 20) {
             throw new CustomException(StatusCode.BAD_REQUEST, "20자 이내로 검색해주세요.");
         }
-        return new ApiResponse(searchService.searchPins(member, query, page, size));
+        return new ApiResponse(searchService.searchPins(member, query, page, size, filter));
     }
 
     @GetMapping("/history")
     public ApiResponse searchHistory(@ThisMember Member member,
-                                     @RequestParam(value = "type", defaultValue = "TOTAL") SearchType searchType) {
+                                     @RequestParam(value = "type", defaultValue = "TOTAL") SearchType searchType,
+                                     HttpServletRequest request) {
+        logger.info("{} {}", request.getMethod(), request.getRequestURI());
         return ApiResponse.makeResponse(searchService.getSearchHistory(member, searchType).stream()
                 .map(h -> ShowSearchHistoryResponseDTO.builder()
                         .id(h.getId())
@@ -91,7 +98,9 @@ public class SearchController {
 
     @DeleteMapping("/history/{id}")
     public ApiResponse deleteHistory(@ThisMember Member member,
-                                     @PathVariable("id") Long id) {
+                                     @PathVariable("id") Long id,
+                                     HttpServletRequest request) {
+        logger.info("{} {}", request.getMethod(), request.getRequestURI());
         searchService.deleteSearchHistory(member, id);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT);
     }
