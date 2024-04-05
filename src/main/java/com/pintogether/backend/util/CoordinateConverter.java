@@ -6,6 +6,7 @@ import org.locationtech.proj4j.*;
 /**
  *
  * Coordinate Conversion EPSG:5174 to WGS84
+ * Coordinate Conversion WGS84 to sEPSG:5174
  */
 
 public final class CoordinateConverter {
@@ -28,6 +29,22 @@ public final class CoordinateConverter {
 
         CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
         CoordinateTransform coordinateTransform = ctFactory.createTransform(espg5174System, wgs84System);
+        ProjCoordinate projCoordinate = coordinateTransform.transform(p, p2);
+
+        return CoordinateDTO.builder()
+                .latitude(projCoordinate.y)
+                .longitude(projCoordinate.x)
+                .build();
+    }
+    public static CoordinateDTO convertReverse(double longitude, double latitude) {
+
+        ProjCoordinate p = new ProjCoordinate();
+        p.x = latitude;
+        p.y = longitude;
+        ProjCoordinate p2 = new ProjCoordinate();
+
+        CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
+        CoordinateTransform coordinateTransform = ctFactory.createTransform(wgs84System, espg5174System);
         ProjCoordinate projCoordinate = coordinateTransform.transform(p, p2);
 
         return CoordinateDTO.builder()
