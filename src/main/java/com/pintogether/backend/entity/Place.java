@@ -43,7 +43,7 @@ public class Place extends BaseUpdatedAtEntity {
                 .id(this.getId())
                 .name(this.getName())
                 .roadNameAddress(this.getAddress().getRoadNameAddress())
-                .pinCnt(pinCnt)
+                .placePinCnt(pinCnt)
                 .category(this.getCategory())
                 .starred(starred)
                 .longitude(convertedCoordinate.getLongitude())

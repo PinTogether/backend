@@ -16,7 +16,7 @@ public class ShowCollectionsResponseDTO {
     private String writerMembername;
     private String thumbnail;
     private int likeCnt;
-    private int pinCnt;
+    private int collectionPinCnt;
     private int scrapCnt;
     private boolean isScrapped;
     private boolean isLiked;

@@ -14,7 +14,7 @@ public class ShowCollectionsForAddingPinResponseDTO {
     private String title;
     private String thumbnail;
     private int likeCnt;
-    private int pinCnt;
+    private int collectionPinCnt;
     private int scrapCnt;
     private boolean pinned;
 }
