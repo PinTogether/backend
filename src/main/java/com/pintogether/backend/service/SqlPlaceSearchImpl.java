@@ -95,7 +95,7 @@ public class SqlPlaceSearchImpl implements SearchService {
                         .writerMembername(c.getMember().getMembername())
                         .thumbnail(c.getThumbnail())
                         .likeCnt(collectionService.getLikeCnt(c.getId()))
-                        .pinCnt(collectionService.getPinCnt(c.getId()))
+                        .collectionPinCnt(collectionService.getCollectionPinCnt(c.getId()))
                         .scrapCnt(collectionService.getScrappedCnt(c.getId()))
                         .isScrapped(member != null && interestingCollectionService.isScrappedByMember(member.getId(), c.getId()))
                         .isLiked(member != null && interestingCollectionService.isLikedByMember(member.getId(), c.getId()))

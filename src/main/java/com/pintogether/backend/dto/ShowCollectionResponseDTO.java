@@ -26,7 +26,7 @@ public class ShowCollectionResponseDTO {
 
     private int likeCnt;
 
-    private int pinCnt;
+    private int collectionPinCnt;
 
     private int scrapCnt;
 

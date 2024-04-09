@@ -14,13 +14,11 @@ import com.pintogether.backend.repository.CollectionCommentRepository;
 import com.pintogether.backend.repository.CollectionRepository;
 import com.pintogether.backend.repository.InterestingCollectionRepository;
 import com.pintogether.backend.repository.PinRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +52,8 @@ public class CollectionService {
         return interestingCollectionRepository.countByCollectionIdAndInterestType(collectionId, InterestType.SCRAP);
     }
 
-    public int getPinCnt(Long collectionId) {
-        return this.getCollection(collectionId).getPins().size();
+    public int getCollectionPinCnt(Long collectionId) {
+        return this.getPins(collectionId).size();
     }
 
     public void deleteCollection(Long memberId, Collection collection) {

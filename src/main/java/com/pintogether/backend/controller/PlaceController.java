@@ -28,9 +28,10 @@ public class PlaceController {
     public ApiResponse loadPlaceById(@ThisMember Member member, @PathVariable Long placeId) {
         logger.info("[GET] /places/{placeId}");
         Place place = placeService.getPlace(placeId);
-        int pinCnt = placeService.getPlacePinCnt(placeId);
+        int placePinCnt = placeService.getPlacePinCnt(placeId);
+
         boolean starred = placeService.getStarred(member, placeId);
-        return ApiResponse.makeResponse(place.toShowPlaceReponseDto(starred, pinCnt));
+        return ApiResponse.makeResponse(place.toShowPlaceReponseDto(starred, placePinCnt));
     }
 
     @GetMapping("/{placeId}/pins")
