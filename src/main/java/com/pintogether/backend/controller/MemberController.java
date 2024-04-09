@@ -241,8 +241,8 @@ public class MemberController {
 
         for (Notification notification : notifications) {
             ShowNotificationResponseDTO dto = ShowNotificationResponseDTO.builder()
-                    .subjectId(notification.getSubject().getId())
-                    .subject(notification.getSubject().getMembername())
+                    .subjectId(notification.getSubject() != null ? notification.getSubject().getId() : -1)
+                    .subject(notification.getSubject() != null ? notification.getSubject().getMembername() : "탈퇴한 회원")
                     .notificationType(notification.getNotificationType())
                     .object(notification.getObject())
                     .build();
@@ -258,6 +258,7 @@ public class MemberController {
                 withinAMonth.add(dto);
             }
         }
+        webSocketService.sendNotificationCntToMember(member);
         return ApiResponse.makeResponse(ShowNotificationsResponseDTO.builder()
                 .today(today)
                 .yesterday(yesterday)
