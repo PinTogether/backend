@@ -22,8 +22,6 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class SearchController {
     private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
-
-//    @Autowired
     private final SearchService searchService;
 
     @GetMapping("/places")
