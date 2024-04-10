@@ -19,6 +19,20 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
     @Query(value = "SELECT c.*, COUNT(ic.collection_id) AS interest_count FROM collection c INNER JOIN interesting_collection ic ON c.id = ic.collection_id WHERE ic.interest_type = :interestType GROUP BY c.id ORDER BY interest_count DESC LIMIT :cnt", nativeQuery = true)
     List<Collection> findTopCollectionsByInterestType(@Param("interestType") String interestType, @Param("cnt") int cnt);
 
+    @Query(value = "SELECT c.*, COUNT(ic.collection_id) AS interest_count " +
+            "FROM collection c " +
+            "INNER JOIN interesting_collection ic ON c.id = ic.collection_id " +
+            "WHERE ic.interest_type = :interestType " +
+            "AND c.id NOT IN :excludedIds " +
+            "GROUP BY c.id " +
+            "ORDER BY interest_count DESC " +
+            "LIMIT :cnt", nativeQuery = true)
+    List<Collection> findTopCollectionsByInterestTypeExcludingSpecificIds(
+            @Param("interestType") String interestType,
+            @Param("excludedIds") List<Long> excludedIds,
+            @Param("cnt") int cnt);
+
+
     @Query("SELECT c FROM Collection c WHERE c.member.id = :memberId")
     Page<Collection> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
