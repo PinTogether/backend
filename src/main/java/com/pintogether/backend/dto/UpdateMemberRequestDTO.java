@@ -16,7 +16,7 @@ public class UpdateMemberRequestDTO {
     private String name;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9_]{3,30}$", message = "멤버이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 언더바('_')로 작성해주세요.")
+    @Pattern(regexp = "^(?=(?:[^$]*\\$){0,1}[^$]*$)[a-zA-Z0-9_\\$]{3,30}$", message = "멤버이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 언더바('_')로 작성해주세요.")
     private String membername;
 
     @NotNull
