@@ -26,7 +26,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findOneByMembername(String membername);
 
-    @Query(value = "SELECT m.* FROM member m  WHERE (m.name LIKE %:query% OR m.membername LIKE %:query%)", nativeQuery = true)
+    @Query("SELECT m FROM Member m WHERE m.name LIKE CONCAT('%',:query,'%') OR m.membername LIKE CONCAT('%',:query,'%')")
     Page<Member> findMembersByMembernameContainingOrNameContaining(Pageable pageable, @Param("query") String query);
 
 }
