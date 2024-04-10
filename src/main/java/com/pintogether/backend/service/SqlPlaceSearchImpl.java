@@ -8,35 +8,31 @@ import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.repository.*;
 import com.pintogether.backend.util.CoordinateConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pintogether.backend.util.DateConverter;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Service
+@RequiredArgsConstructor
 public class SqlPlaceSearchImpl implements SearchService {
 
-    @Autowired
-    private PlaceRepository placeRepository;
-    @Autowired
-    private PinRepository pinRepository;
-    @Autowired
-    private StarRepository starRepository;
-    @Autowired
-    private CollectionRepository collectionRepository;
-    @Autowired
-    private CollectionService collectionService;
-    @Autowired
-    private InterestingCollectionService interestingCollectionService;
-    @Autowired
-    private SearchHistoryRepository searchHistoryRepository;
-    @Autowired
-    private PlaceService placeService;
-
+    private final PlaceRepository placeRepository;
+    private final PinRepository pinRepository;
+    private final CollectionRepository collectionRepository;
+    private final CollectionService collectionService;
+    private final InterestingCollectionService interestingCollectionService;
+    private final SearchHistoryRepository searchHistoryRepository;
+    private final PlaceService placeService;
+    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     @Transactional
     public List<ShowPlaceResponseDTO> searchPlaces(Member member, String query, int page, int size, String filter) {
         if (member != null) {
@@ -180,4 +176,22 @@ public class SqlPlaceSearchImpl implements SearchService {
         }
     }
 
+    @Transactional
+    public List<ShowSimpleMemberResponseDTO> searchMembers(Member member, String query, int page, int size) {
+        if (member != null) {
+            this.saveHistory(member, query, SearchType.MEMBER);
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Member> foundMembers = memberRepository.findMembersByMembernameContainingOrNameContaining(pageable, query);
+        List<ShowSimpleMemberResponseDTO> showSimpleMemberResponseDTOs = foundMembers.stream()
+                .map(m -> ShowSimpleMemberResponseDTO.builder()
+                        .id(m.getId())
+                        .membername(m.getMembername())
+                        .name(m.getName())
+                        .avatar(m.getAvatar())
+                        .collectionCnt(memberService.getCollectionCnt(m.getId()))
+                        .build())
+                .collect(Collectors.toList());
+        return showSimpleMemberResponseDTOs;
+    }
 }

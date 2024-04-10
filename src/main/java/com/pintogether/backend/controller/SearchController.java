@@ -9,6 +9,7 @@ import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.SearchService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,12 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/search")
+@RequiredArgsConstructor
 public class SearchController {
     private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
-    @Autowired
-    private SearchService searchService;
+//    @Autowired
+    private final SearchService searchService;
 
     @GetMapping("/places")
     public ApiResponse searchPlaces(
@@ -103,5 +105,23 @@ public class SearchController {
         logger.info("{} {}", request.getMethod(), request.getRequestURI());
         searchService.deleteSearchHistory(member, id);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT);
+    }
+
+    @GetMapping("/members")
+    public ApiResponse searchMembers(
+            @ThisMember Member member,
+            @RequestParam(value = "query", defaultValue = "") String query,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "4") int size,
+            HttpServletRequest request
+    ) {
+        logger.info("{} {}", request.getMethod(), request.getRequestURI());
+        if (!(0 <= page && page <= 10000) || !(0 <= size && size <= 10000)) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 페이징 인자입니다.");
+        }
+        if (query.length() > 28) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "28자 이내로 검색해주세요.");
+        }
+        return new ApiResponse(searchService.searchMembers(member, query, page, size));
     }
 }

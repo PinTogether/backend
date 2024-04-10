@@ -10,4 +10,6 @@ public enum SearchType {
 
     COLLECTION,
 
+    MEMBER,
+
 }
