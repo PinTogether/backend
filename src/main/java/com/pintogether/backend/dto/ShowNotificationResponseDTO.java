@@ -14,5 +14,6 @@ public class ShowNotificationResponseDTO {
     private Long subjectId;
     private String subject;
     private NotificationType notificationType;
+    private Long objectId;
     private String object;
 }

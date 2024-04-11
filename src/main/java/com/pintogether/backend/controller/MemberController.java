@@ -244,6 +244,7 @@ public class MemberController {
                     .subjectId(notification.getSubject() != null ? notification.getSubject().getId() : -1)
                     .subject(notification.getSubject() != null ? notification.getSubject().getMembername() : "탈퇴한 회원")
                     .notificationType(notification.getNotificationType())
+                    .objectId(notification.getObjectId())
                     .object(notification.getObject())
                     .build();
 

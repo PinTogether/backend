@@ -33,5 +33,7 @@ public class Notification extends BaseEntity {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member subject;
 
+    private Long objectId;
+
     private String object;
 }

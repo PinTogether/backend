@@ -25,6 +25,7 @@ public class NotificationService {
                 .member(collection.getMember())
                 .subject(member)
                 .notificationType(NotificationType.SCRAP_COLLECTION)
+                .objectId(collection.getId())
                 .object(collection.getTitle())
                 .build();
         notificationRepository.save(notification);
@@ -37,6 +38,7 @@ public class NotificationService {
                 .member(collection.getMember())
                 .subject(member)
                 .notificationType(NotificationType.COMMENT_ON_COLLECTION)
+                .objectId(collection.getId())
                 .object(collection.getTitle())
                 .build();
         notificationRepository.save(notification);
@@ -49,6 +51,7 @@ public class NotificationService {
                 .member(collection.getMember())
                 .subject(member)
                 .notificationType(NotificationType.LIKE_COLLECTION)
+                .objectId(collection.getId())
                 .object(collection.getTitle())
                 .build();
         notificationRepository.save(notification);
@@ -61,6 +64,7 @@ public class NotificationService {
                 .member(followee)
                 .subject(member)
                 .notificationType(NotificationType.FOLLOW)
+                .objectId(null)
                 .object(null)
                 .build();
         notificationRepository.save(notification);
@@ -74,6 +78,7 @@ public class NotificationService {
                     .member(follower)
                     .subject(member)
                     .notificationType(NotificationType.CREATE_COLLECTION)
+                    .objectId(collection.getId())
                     .object(collection.getTitle())
                     .build();
             notificationRepository.save(notification);
