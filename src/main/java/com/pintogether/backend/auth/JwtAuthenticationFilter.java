@@ -88,9 +88,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         List<AntPathRequestMatcher> permitPaths = new ArrayList<>();
         permitPaths.add(new AntPathRequestMatcher("/"));
-        permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/members/id/{member_id:\\d+}", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}/collections/**", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/members/{member_id:\\d+}/scraps/**", "GET"));
+        permitPaths.add(new AntPathRequestMatcher("/members/{membername:[a-zA-Z0-9_\\$]+}", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/collections**", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/collections/**", "GET"));
         permitPaths.add(new AntPathRequestMatcher("/pins/{pin_id:\\d+}/images", "GET"));
