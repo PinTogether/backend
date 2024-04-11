@@ -3,6 +3,7 @@ package com.pintogether.backend.service;
 import com.pintogether.backend.dto.ShowCollectionResponseDTO;
 import com.pintogether.backend.dto.ShowPinResponseDTO;
 import com.pintogether.backend.dto.ShowPlaceResponseDTO;
+import com.pintogether.backend.dto.ShowSimpleMemberResponseDTO;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.entity.SearchHistory;
 import com.pintogether.backend.entity.enums.SearchType;
@@ -21,5 +22,7 @@ public interface SearchService {
     Page<SearchHistory> getSearchHistory(Member member, SearchType searchType);
 
     void deleteSearchHistory(Member member, Long id);
+
+    List<ShowSimpleMemberResponseDTO> searchMembers(Member member, String query, int page, int size);
 
 }

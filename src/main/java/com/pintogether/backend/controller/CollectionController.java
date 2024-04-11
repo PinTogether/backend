@@ -5,6 +5,7 @@ import com.pintogether.backend.customAnnotations.CurrentCollectionComment;
 import com.pintogether.backend.customAnnotations.ThisMember;
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.*;
+import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.ApiResponse;
 import com.pintogether.backend.model.StatusCode;
 import com.pintogether.backend.service.*;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,8 +112,18 @@ public class CollectionController {
     }
 
     @GetMapping("/top")
-    public ApiResponse getTopLikeCollections(@ThisMember Member member, @RequestParam(value = "cnt", defaultValue = "10") int cnt) {
-        List<Collection> collections = collectionService.getTopLikeCollections(cnt);
+    public ApiResponse getTopLikeCollections(@ThisMember Member member, @RequestParam(value = "cnt", defaultValue = "10") int cnt, @RequestParam(value = "exclude-ids", required = false) String ids) {
+        List<Long> idsList = null;
+        if (ids != null) {
+            if (!ids.matches("^\\d+(,\\d+)*$")) {
+                throw new CustomException(StatusCode.BAD_REQUEST, "exclude-ids 쿼리 파라미터 형식이 잘못되었습니다.");
+            }
+            idsList = Arrays.asList(ids.split(","))
+                    .stream()
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+        }
+        List<Collection> collections = collectionService.getTopLikeCollections(cnt, idsList);
 
         List<ShowCollectionResponseDTO> showCollectionResponseDTOs = collections.stream()
                 .map(c -> ShowCollectionResponseDTO.builder()

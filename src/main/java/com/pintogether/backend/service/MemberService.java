@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +34,17 @@ public class MemberService {
     }
 
     public void update(Member member, UpdateMemberRequestDTO updateMemberRequestDTO) {
-        if (!member.getMembername().equals(updateMemberRequestDTO.getMembername()) &&
-                memberRepository.existsOneByMembername(updateMemberRequestDTO.getMembername())) {
-            throw new CustomException(StatusCode.BAD_REQUEST, "중복된 멤버이름 입니다.");
+        if (!member.getMembername().equals(updateMemberRequestDTO.getMembername())) {
+            String regex = "^[a-zA-Z0-9_]{3,30}$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(updateMemberRequestDTO.getMembername());
+            if (!matcher.matches()) {
+                throw new CustomException(StatusCode.BAD_REQUEST, "멤버이름은 3에서 30자 이내의 길이로, 영문자, 숫자, 언더바('_')만 포함해야 합니다.");
+            }
+            if (memberRepository.existsOneByMembername(updateMemberRequestDTO.getMembername())) {
+                throw new CustomException(StatusCode.BAD_REQUEST, "중복된 멤버이름 입니다.");
+
+            }
         }
         Set<String> defaultImage = new HashSet<>(Arrays.asList(
                 "https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png",
@@ -89,7 +99,10 @@ public class MemberService {
         return memberRepository.findByRegistrationId(registrationId).orElse(null);
     }
 
-    public boolean checkIfDuplicatedMembername(String membername) {
+    public boolean checkIfDuplicatedMembername(Member member, String membername) {
+        if (member.getMembername().equals(membername)) {
+            return false;
+        }
         return memberRepository.existsOneByMembername(membername);
     }
 

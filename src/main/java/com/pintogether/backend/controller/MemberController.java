@@ -224,8 +224,8 @@ public class MemberController {
     }
 
     @GetMapping("/profile-setting/membername-valid")
-    public ApiResponse checkIfDuplicatedMembername(@RequestParam(value = "membername", required = true) String membername) {
-        return ApiResponse.makeResponse(ShowMembernameValidationResponseDTO.builder().valid(!memberService.checkIfDuplicatedMembername(membername)).build());
+    public ApiResponse checkIfDuplicatedMembername(@ThisMember Member member, @RequestParam(value = "membername", required = true) String membername) {
+        return ApiResponse.makeResponse(ShowMembernameValidationResponseDTO.builder().valid(!memberService.checkIfDuplicatedMembername(member, membername)).build());
     }
 
     @PostMapping("/me/notifications")

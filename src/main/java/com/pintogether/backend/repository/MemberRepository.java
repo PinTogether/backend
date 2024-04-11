@@ -1,8 +1,11 @@
 package com.pintogether.backend.repository;
 
 import com.pintogether.backend.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +25,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsOneByMembername(String membername);
 
     Optional<Member> findOneByMembername(String membername);
+
+    @Query("SELECT m FROM Member m WHERE m.name LIKE CONCAT('%',:query,'%') OR m.membername LIKE CONCAT('%',:query,'%')")
+    Page<Member> findMembersByMembernameContainingOrNameContaining(Pageable pageable, @Param("query") String query);
+
 }

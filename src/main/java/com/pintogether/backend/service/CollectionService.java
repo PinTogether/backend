@@ -38,7 +38,6 @@ public class CollectionService {
     private final CollectionCommentRepository collectionCommentRepository;
     private final PinRepository pinRepository;
     private final AmazonS3Service amazonS3Service;
-    private final PinService pinService;
 
     public Collection getCollection(Long collectionId) {
         return collectionRepository.findOneById(collectionId).orElse(null);
@@ -105,8 +104,12 @@ public class CollectionService {
         collectionRepository.save(collection);
     }
 
-    public List<Collection> getTopLikeCollections(int cnt) {
-        return collectionRepository.findTopCollectionsByInterestType(InterestType.LIKES.getString(), cnt);
+    public List<Collection> getTopLikeCollections(int cnt, List<Long> excludeIds) {
+        if (excludeIds == null) {
+            return collectionRepository.findTopCollectionsByInterestType(InterestType.LIKES.getString(), cnt);
+        } else {
+            return collectionRepository.findTopCollectionsByInterestTypeExcludingSpecificIds(InterestType.LIKES.getString(), excludeIds, cnt);
+        }
     }
 
     public void leaveAComment(Long memberId, Collection collection, CreateCollectionCommentRequestDTO createCollectionCommentRequestDTO) {
