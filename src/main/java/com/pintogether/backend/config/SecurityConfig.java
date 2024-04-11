@@ -43,9 +43,10 @@ public class SecurityConfig {
                     auth
                             .requestMatchers(
                                     new AntPathRequestMatcher("/"),
-                                    new AntPathRequestMatcher("/members/{member_id:\\d+}", "GET"),
+                                    new AntPathRequestMatcher("/members/id/{member_id:\\d+}", "GET"),
                                     new AntPathRequestMatcher("/members/{member_id:\\d+}/collections/**", "GET"),
                                     new AntPathRequestMatcher("/members/{member_id:\\d+}/scraps/**", "GET"),
+                                    new AntPathRequestMatcher("/members/{membername:[a-zA-Z0-9_\\$]+}", "GET"),
                                     new AntPathRequestMatcher("/collections**", "GET"),
                                     new AntPathRequestMatcher("/collections/**", "GET"),
                                     new AntPathRequestMatcher("/pins/{pin_id:\\d+}/images"),
