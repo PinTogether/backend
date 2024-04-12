@@ -12,9 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShowPinResponseDTO {
+
     private Long id;
 
     private Long placeId;
+
+    private String placeName;
 
     private Long collectionId;
 
