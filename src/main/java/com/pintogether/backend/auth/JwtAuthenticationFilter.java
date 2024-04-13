@@ -99,6 +99,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         permitPaths.add(new AntPathRequestMatcher("/places**"));
         permitPaths.add(new AntPathRequestMatcher("/search/collections**"));
         permitPaths.add(new AntPathRequestMatcher("/search/places**"));
+        permitPaths.add(new AntPathRequestMatcher("/search/pins**"));
 
         for (AntPathRequestMatcher path : permitPaths) {
             if (path.matches(request)) {

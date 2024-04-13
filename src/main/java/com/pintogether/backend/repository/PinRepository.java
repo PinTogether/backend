@@ -14,7 +14,23 @@ public interface PinRepository extends JpaRepository<Pin, Long> {
 
     Page<Pin> findByPlaceId(Long placeId, Pageable pageable);
 
-    Page<Pin> findPinsByReviewContainingOrPinTagsTagContainingOrderByIdDesc(Pageable pageable, String query1, String query2);
+    @Query(value = "SELECT p.* FROM pin p " +
+            "LEFT JOIN pin_tag t " +
+            "ON p.id = t.pin_id " +
+            "LEFT JOIN place pl " +
+            "ON p.place_id = pl.id " +
+            "WHERE (p.review LIKE %:query1% OR t.tag LIKE %:query2%) " +
+            "GROUP BY p.id"
+            , nativeQuery = true,
+            countQuery =
+                        "SELECT COUNT(p.*) FROM pin p " +
+                        "LEFT JOIN pin_tag t " +
+                        "ON p.id = t.pin_id " +
+                        "LEFT JOIN place pl " +
+                        "ON p.place_id = pl.id " +
+                        "WHERE (p.review LIKE %:query1% OR t.tag LIKE %:query2%) " +
+                        "GROUP BY p.id")
+    Page<Pin> findByQuery(Pageable pageable, String query1, String query2);
 
     @Query(value = "SELECT p.* FROM pin p " +
             "LEFT JOIN pin_tag t " +
@@ -25,7 +41,16 @@ public interface PinRepository extends JpaRepository<Pin, Long> {
             "AND pl.latitude > :edgeLlatitude AND pl.latitude < :edgeRlatitude " +
             "AND pl.longitude > :edgeLlongitude AND pl.longitude < :edgeRlongitude " +
             "GROUP BY p.id"
-            , nativeQuery = true)
+            , nativeQuery = true,
+            countQuery = "SELECT COUNT(p.*) FROM pin p " +
+                        "LEFT JOIN pin_tag t " +
+                        "ON p.id = t.pin_id " +
+                        "LEFT JOIN place pl " +
+                        "ON p.place_id = pl.id " +
+                        "WHERE (p.review LIKE %:query1% OR t.tag LIKE %:query2%) " +
+                        "AND pl.latitude > :edgeLlatitude AND pl.latitude < :edgeRlatitude " +
+                        "AND pl.longitude > :edgeLlongitude AND pl.longitude < :edgeRlongitude " +
+                        "GROUP BY p.id")
     Page<Pin> findByQueryFilter(Pageable pageable, String query1, String query2,
             double edgeLlatitude, double edgeLlongitude, double edgeRlatitude, double edgeRlongitude);
 
