@@ -33,6 +33,7 @@ public class SqlPlaceSearchImpl implements SearchService {
     private final PlaceService placeService;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final FollowingService followingService;
     @Transactional
     public List<ShowPlaceResponseDTO> searchPlaces(Member member, String query, int page, int size, String filter) {
         if (member != null) {
@@ -177,21 +178,22 @@ public class SqlPlaceSearchImpl implements SearchService {
     }
 
     @Transactional
-    public List<ShowSimpleMemberResponseDTO> searchMembers(Member member, String query, int page, int size) {
+    public List<ShowSearchMemberResponseDTO> searchMembers(Member member, String query, int page, int size) {
         if (member != null) {
             this.saveHistory(member, query, SearchType.MEMBER);
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<Member> foundMembers = memberRepository.findMembersByMembernameContainingOrNameContaining(pageable, query);
-        List<ShowSimpleMemberResponseDTO> showSimpleMemberResponseDTOs = foundMembers.stream()
-                .map(m -> ShowSimpleMemberResponseDTO.builder()
+        List<ShowSearchMemberResponseDTO> showSearchMemberResponseDTOs = foundMembers.stream()
+                .map(m -> ShowSearchMemberResponseDTO.builder()
                         .id(m.getId())
                         .membername(m.getMembername())
                         .name(m.getName())
                         .avatar(m.getAvatar())
+                        .isFollowed(member != null ? followingService.checkIfFollow(member.getId(), m.getId()) : false)
                         .collectionCnt(memberService.getCollectionCnt(m.getId()))
                         .build())
                 .collect(Collectors.toList());
-        return showSimpleMemberResponseDTOs;
+        return showSearchMemberResponseDTOs;
     }
 }
