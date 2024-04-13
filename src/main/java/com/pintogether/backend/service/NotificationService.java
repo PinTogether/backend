@@ -88,6 +88,6 @@ public class NotificationService {
 
     public List<Notification> getAllNotification(Member member) {
         memberService.clearAlertCnt(member);
-        return notificationRepository.findAllByMemberId(member.getId());
+        return notificationRepository.findAllByMemberIdOrderByIdDesc(member.getId());
     }
 }

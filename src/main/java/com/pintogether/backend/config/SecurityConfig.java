@@ -54,7 +54,8 @@ public class SecurityConfig {
                                     new AntPathRequestMatcher("/places/**"),
                                     new AntPathRequestMatcher("/search/collections**"),
                                     new AntPathRequestMatcher("/search/places**"),
-                                    new AntPathRequestMatcher("/search/pins**")
+                                    new AntPathRequestMatcher("/search/pins**"),
+                                    new AntPathRequestMatcher("/search/members**")
                             )
                                 .permitAll()
                             .anyRequest()
