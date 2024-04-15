@@ -36,21 +36,19 @@ public class MemberController {
 
 
     @GetMapping("/me")
-    public ApiResponse getMemberInformation() {
-        Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        Member foundMember = memberService.getMember(id);
+    public ApiResponse getMemberInformation(@ThisMember Member member) {
         ShowMemberResponseDTO showMemberResponseDTO = ShowMemberResponseDTO.builder()
-                .id(foundMember.getId())
-                .name(foundMember.getName())
-                .membername(foundMember.getMembername())
-                .bio(foundMember.getBio())
-                .registrationSource(foundMember.getRegistrationSource())
-                .role(foundMember.getRoleType())
-                .avatar(foundMember.getAvatar())
-                .collectionCnt(memberService.getCollectionCnt(id))
-                .scrappedCollectionCnt(memberService.getScrappedCollectionCnt(id))
-                .followerCnt(memberService.getFollowerCnt(id))
-                .followingCnt(memberService.getFolloweeCnt(id))
+                .id(member.getId())
+                .name(member.getName())
+                .membername(member.getMembername())
+                .bio(member.getBio())
+                .registrationSource(member.getRegistrationSource())
+                .role(member.getRoleType())
+                .avatar(member.getAvatar())
+                .collectionCnt(memberService.getCollectionCnt(member.getId()))
+                .scrappedCollectionCnt(memberService.getScrappedCollectionCnt(member.getId()))
+                .followerCnt(memberService.getFollowerCnt(member.getId()))
+                .followingCnt(memberService.getFolloweeCnt(member.getId()))
                 .build();
         return ApiResponse.makeResponse(showMemberResponseDTO);
     }
@@ -62,9 +60,8 @@ public class MemberController {
     }
 
     @DeleteMapping("/me")
-    public ApiResponse deleteMemberAccount(HttpServletResponse response) {
-        Long id = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        memberService.delete(id);
+    public ApiResponse deleteMemberAccount(@ThisMember Member member, HttpServletResponse response) {
+        memberService.delete(member.getId());
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
@@ -119,20 +116,18 @@ public class MemberController {
     }
 
     @DeleteMapping("/{targetId}/follow")
-    public ApiResponse unfollowMember(@PathVariable Long targetId, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ApiResponse unfollowMember(@ThisMember Member member, @PathVariable Long targetId, HttpServletResponse response) {
         Member targetMember = memberService.getMember(targetId);
         if (targetMember == null) {
             throw new CustomException(StatusCode.NOT_FOUND, CustomStatusMessage.MEMBER_NOT_FOUND.getMessage());
         }
-        followingService.unfollow(memberId, targetId);
+        followingService.unfollow(member.getId(), targetId);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @GetMapping("/me/followers")
-    public ApiResponse getFollowers() {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        List<Member> followers = memberService.getFollowers(memberId);
+    public ApiResponse getFollowers(@ThisMember Member member) {
+        List<Member> followers = memberService.getFollowers(member.getId());
         List<ShowSimpleMemberResponseDTO> showSimpleMemberResponseDTOs = followers.stream()
                 .map(f -> ShowSimpleMemberResponseDTO.builder()
                         .id(f.getId())
@@ -146,9 +141,8 @@ public class MemberController {
     }
 
     @GetMapping("/me/followings")
-    public ApiResponse getFollowings() {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        List<Member> followings = memberService.getFollowings(memberId);
+    public ApiResponse getFollowings(@ThisMember Member member) {
+        List<Member> followings = memberService.getFollowings(member.getId());
         List<ShowSimpleMemberResponseDTO> showSimpleMemberResponseDTOs = followings.stream()
                 .map(f -> ShowSimpleMemberResponseDTO.builder()
                         .id(f.getId())
@@ -199,10 +193,9 @@ public class MemberController {
     }
 
     @PostMapping("/me/avatar/presigned-url")
-    public ApiResponse getPresignedUrlForAvatar(@RequestBody @Valid S3MemberAvatarRequestDTO s3MemberAvatarRequestDTO) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ApiResponse getPresignedUrlForAvatar(@ThisMember Member member, @RequestBody @Valid S3MemberAvatarRequestDTO s3MemberAvatarRequestDTO) {
         String contentType = s3MemberAvatarRequestDTO.getContentType();
-        return ApiResponse.makeResponse(memberService.getPresignedUrl(contentType, DomainType.Member.AVATAR.getName(), memberId));
+        return ApiResponse.makeResponse(memberService.getPresignedUrl(contentType, DomainType.Member.AVATAR.getName(), member.getId()));
     }
 
     @GetMapping("/collections")
