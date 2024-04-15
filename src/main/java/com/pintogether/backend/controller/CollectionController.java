@@ -68,9 +68,8 @@ public class CollectionController {
     }
 
     @DeleteMapping("/{collectionId}")
-    public ApiResponse deleteCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        collectionService.deleteCollection(memberId, collection);
+    public ApiResponse deleteCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
+        collectionService.deleteCollection(member.getId(), collection);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
@@ -91,23 +90,20 @@ public class CollectionController {
     }
 
     @DeleteMapping("/{collectionId}/likes")
-    public ApiResponse cancelLikeOnCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        interestingCollectionService.cancelLikeOnCollection(memberId, collection.getId());
+    public ApiResponse cancelLikeOnCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
+        interestingCollectionService.cancelLikeOnCollection(member.getId(), collection.getId());
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @DeleteMapping("/{collectionId}/scraps")
-    public ApiResponse cancelScrapOnCollection(@CurrentCollection Collection collection, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        interestingCollectionService.cancelScrapOnCollection(memberId, collection.getId());
+    public ApiResponse cancelScrapOnCollection(@ThisMember Member member, @CurrentCollection Collection collection, HttpServletResponse response) {
+        interestingCollectionService.cancelScrapOnCollection(member.getId(), collection.getId());
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
     @PutMapping("/{collectionId}")
-    public ApiResponse updateCollection(@CurrentCollection Collection collection, @RequestBody @Valid UpdateCollectionRequestDTO updateCollectionRequestDTO, HttpServletResponse response) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        collectionService.updateCollection(memberId, collection.getId(), updateCollectionRequestDTO);
+    public ApiResponse updateCollection(@ThisMember Member member, @CurrentCollection Collection collection, @RequestBody @Valid UpdateCollectionRequestDTO updateCollectionRequestDTO, HttpServletResponse response) {
+        collectionService.updateCollection(member.getId(), collection.getId(), updateCollectionRequestDTO);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
@@ -192,9 +188,8 @@ public class CollectionController {
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public ApiResponse deleteCollectionComment(HttpServletResponse response, @CurrentCollectionComment CollectionComment collectionComment) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        collectionService.deleteComment(memberId, collectionComment);
+    public ApiResponse deleteCollectionComment(@ThisMember Member member, HttpServletResponse response, @CurrentCollectionComment CollectionComment collectionComment) {
+        collectionService.deleteComment(member.getId(), collectionComment);
         return ApiResponse.makeResponse(StatusCode.NO_CONTENT.getCode(), StatusCode.NO_CONTENT.getMessage(), response);
     }
 
@@ -216,9 +211,7 @@ public class CollectionController {
     }
 
     @PostMapping("/{collectionId}/thumbnail/presigned-url")
-    public ApiResponse getPresignedUrlForThumbnail(@CurrentCollection Collection collection, @RequestBody @Valid S3CollectionThumbnailRequestDTO s3CollectionThumbnailRequestDTO) {
-        Long memberId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(memberId, s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
+    public ApiResponse getPresignedUrlForThumbnail(@ThisMember Member member, @CurrentCollection Collection collection, @RequestBody @Valid S3CollectionThumbnailRequestDTO s3CollectionThumbnailRequestDTO) {
+        return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(member.getId(), s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
     }
-
 }
