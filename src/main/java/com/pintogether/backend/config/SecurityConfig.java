@@ -26,6 +26,8 @@ public class SecurityConfig {
 
     @Value("${frontend.url}")
     private String frontendUrl;
+    @Value("${frontend.dev.url}")
+    private String frontendDevUrl;
 
     @Autowired
     private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
@@ -81,7 +83,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendUrl));
+        configuration.setAllowedOrigins(List.of(frontendUrl, frontendDevUrl));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
