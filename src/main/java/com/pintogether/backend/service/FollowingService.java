@@ -20,6 +20,9 @@ public class FollowingService {
     }
 
     public void follow(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new CustomException(StatusCode.BAD_REQUEST, "자기자신은 팔로우할 수 없습니다.");
+        }
         Following foundFollowing = followingRepository.findByFollowerIdAndFolloweeId(followerId, followeeId).orElse(null);
         if (foundFollowing != null) {
             throw new CustomException(StatusCode.BAD_REQUEST, "이미 팔로우 되어 있습니다.");
