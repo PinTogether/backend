@@ -57,18 +57,20 @@ public class SearchServiceSqlImpl implements SearchService {
                 throw new CustomException(StatusCode.BAD_REQUEST, "잘못된 필터 인자입니다.");
             }
             Pageable pageable = PageRequest.of(page, size);
+            System.out.println("query = " + query);
+//            System.out.println("pageable = " + pageable);
             Page<Place> foundPlace = placeRepository.findByQueryFilter(pageable, query,
                     CoordinateLeft.getLongitude(), CoordinateLeft.getLatitude(), CoordinateRight.getLongitude(), CoordinateRight.getLatitude());
             return foundPlace.stream()
-                    .map(p -> p.toShowPlaceReponseDto(placeService.getStarred(member, p.getId()), placeService.getPlacePinCnt(p.getId()))
-                    ).toList();
+                    .map(p -> p.toShowPlaceReponseDto(placeService.getStarred(member, p.getId()), placeService.getPlacePinCnt(p.getId())))
+                    .toList();
         }
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Place> foundPlace = placeRepository.findByQuery(pageable, query);
         List<ShowPlaceResponseDTO> dtoList = foundPlace.stream()
-                .map(p -> p.toShowPlaceReponseDto(placeService.getStarred(member, p.getId()), placeService.getPlacePinCnt(p.getId()))
-                ).toList();
+                .map(p -> p.toShowPlaceReponseDto(placeService.getStarred(member, p.getId()), placeService.getPlacePinCnt(p.getId())))
+                .toList();
         if (dtoList.isEmpty()) {
             return new ArrayList<>();
         }

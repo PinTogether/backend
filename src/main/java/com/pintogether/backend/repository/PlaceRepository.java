@@ -21,7 +21,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "AND p.latitude > :edgeLlatitude AND p.latitude < :edgeRlatitude " +
             "AND p.longitude > :edgeLlongitude AND p.longitude < :edgeRlongitude " +
             "GROUP BY p.id ORDER BY pinCount DESC", nativeQuery = true,
-            countQuery = "SELECT COUNT(p.*) FROM place p LEFT JOIN pin pin ON p.id = pin.place_id " +
+            countQuery = "SELECT COUNT(*) FROM place p LEFT JOIN pin pin ON p.id = pin.place_id " +
                     "WHERE p.name LIKE %:query% " +
                     "AND p.latitude > :edgeLlatitude AND p.latitude < :edgeRlatitude " +
                     "AND p.longitude > :edgeLlongitude AND p.longitude < :edgeRlongitude " +
