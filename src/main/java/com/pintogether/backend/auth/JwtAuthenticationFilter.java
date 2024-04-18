@@ -1,5 +1,8 @@
 package com.pintogether.backend.auth;
 
+import com.pintogether.backend.exception.CustomException;
+import com.pintogether.backend.model.StatusCode;
+import com.pintogether.backend.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +33,14 @@ import static com.pintogether.backend.model.ApiResponse.makeResponse;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Value("${jwt.signing.key}")
     private String signingKey;
+    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -62,7 +68,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String id = String.valueOf(claims.get("id"));
             String role = String.valueOf(claims.get("role"));
-
+            memberRepository.findById(Long.parseLong(id)).orElseThrow(
+                    () -> new IllegalArgumentException("")
+            );
             GrantedAuthority a = new SimpleGrantedAuthority(role);
             var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
             SecurityContextHolder.getContext().setAuthentication(auth);
