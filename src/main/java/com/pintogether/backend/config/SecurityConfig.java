@@ -1,8 +1,10 @@
 package com.pintogether.backend.config;
 
+import com.pintogether.backend.auth.CustomAuthenticationFailureHandler;
 import com.pintogether.backend.auth.JwtAuthenticationFilter;
 import com.pintogether.backend.auth.OAuth2LoginSuccessHandler;
 import com.pintogether.backend.auth.RestAuthenticationEntryPoint;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Value("${frontend.url}")
@@ -31,10 +34,10 @@ public class SecurityConfig {
 
     @Autowired
     private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -72,6 +75,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth -> {
                     oauth
+                            .failureHandler(customAuthenticationFailureHandler)
                             .successHandler(oAuth2LoginSuccessHandler);
                 });
 
