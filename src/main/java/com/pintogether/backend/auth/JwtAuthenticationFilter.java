@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -58,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         SecretKey key = Keys.hmacShaKeyFor(signingKey.getBytes(StandardCharsets.UTF_8));
-        try {
+//        try {
             logger.info("Validating access token...");
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -69,16 +70,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String id = String.valueOf(claims.get("id"));
             String role = String.valueOf(claims.get("role"));
             memberRepository.findById(Long.parseLong(id)).orElseThrow(
-                    () -> new IllegalArgumentException("")
+                    () -> new UsernameNotFoundException("")
             );
             GrantedAuthority a = new SimpleGrantedAuthority(role);
             var auth = new UsernamePasswordAuthenticationToken(id, null, List.of(a));
             SecurityContextHolder.getContext().setAuthentication(auth);
-            logger.info("id: {} member logged in.", id);
-        } catch (JwtException | IllegalArgumentException e) {
-            logger.debug("[{}] [{}] [{}]", requestMethod, requestURI, e.getMessage());
-            makeResponse(401, "사용자 인증 실패", response);
-        }
+            logger.info("id: {} member Validated access token.", id);
+
             filterChain.doFilter(request, response);
     }
 

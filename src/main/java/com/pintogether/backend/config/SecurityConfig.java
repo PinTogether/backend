@@ -32,12 +32,10 @@ public class SecurityConfig {
     @Value("${frontend.dev.url}")
     private String frontendDevUrl;
 
-    @Autowired
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -66,12 +64,12 @@ public class SecurityConfig {
                             .anyRequest()
                                 .authenticated();
                 })
+                .exceptionHandling(e ->
+                        e.authenticationEntryPoint(restAuthenticationEntryPoint)
+                )
                 .addFilterAfter(
                         jwtAuthenticationFilter,
                         BasicAuthenticationFilter.class
-                )
-                .exceptionHandling(e ->
-                        e.authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 )
                 .oauth2Login(oauth -> {
                     oauth
