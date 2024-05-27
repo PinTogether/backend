@@ -1,11 +1,14 @@
 package com.pintogether.backend.entity;
 
+import com.pintogether.backend.entity.enums.EntityStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
@@ -16,6 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Where(clause = "entity_status='ACTIVE'")
+@SQLDelete(sql = "UPDATE collection SET entity_status='DELETE' WHERE id=?")
 public class Collection extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +49,9 @@ public class Collection extends BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    private EntityStatus entityStatus;
 
     public void updateTitle(String title) {
         this.title = title;
