@@ -12,6 +12,6 @@ public interface StarRepository extends JpaRepository<Star, Long> {
 
     List<Star> findAllByMemberId(Long memberId);
 
-    Optional<Star> findByMemberId(Long MemberId);
+    List<Star> findAllByPlaceId(Long placeId);
 
 }

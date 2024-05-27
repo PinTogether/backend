@@ -7,10 +7,7 @@ import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
-import com.pintogether.backend.repository.CollectionRepository;
-import com.pintogether.backend.repository.FollowingRepository;
-import com.pintogether.backend.repository.InterestingCollectionRepository;
-import com.pintogether.backend.repository.MemberRepository;
+import com.pintogether.backend.repository.*;
 import com.pintogether.backend.util.RandomNicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +26,10 @@ public class MemberService {
     private final InterestingCollectionRepository interestingCollectionRepository;
     private final FollowingRepository followingRepository;
     private final AmazonS3Service amazonS3Service;
+    private final ComplaintRepository complaintRepository;
+    private final NotificationRepository notificationRepository;
+    private final StarRepository starRepository;
+    private final SearchHistoryRepository searchHistoryRepository;
     public Member getMember(Long id) {
         return memberRepository.findOneById(id).orElse(null);
     }
@@ -60,6 +61,15 @@ public class MemberService {
 
     public void delete(Long id) {
         Member foundMember = this.getMember(id);
+        interestingCollectionRepository.deleteAll(interestingCollectionRepository.findAllByMemberId(id));
+        followingRepository.deleteAll(followingRepository.findAllByFolloweeId(id));
+        followingRepository.deleteAll(followingRepository.findAllByFollowerId(id));
+        complaintRepository.updateReporterToNull(id);
+        complaintRepository.updateTargetMemberToNull(id);
+        notificationRepository.deleteAll(notificationRepository.findAllByMemberId(id));
+        notificationRepository.updateSubjectToNull(id);
+        starRepository.deleteAll(starRepository.findAllByMemberId(id));
+        searchHistoryRepository.deleteAll(searchHistoryRepository.findAllByMemberId(id));
         memberRepository.delete(foundMember);
     }
 

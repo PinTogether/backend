@@ -1,9 +1,12 @@
 package com.pintogether.backend.entity;
 
 import com.pintogether.backend.dto.ShowPinResponseDTO;
+import com.pintogether.backend.entity.enums.EntityStatus;
 import com.pintogether.backend.util.DateConverter;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Where(clause = "entity_status='ACTIVE'")
+@SQLDelete(sql = "UPDATE pin SET collection_status='DELETE' WHERE id=?")
 public class Pin extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +37,9 @@ public class Pin extends BaseEntity {
 
     @OneToMany(mappedBy = "pin", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PinImage> pinImages = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private EntityStatus entityStatus;
     public void updateReview(String review) {
         this.review = review;
     }

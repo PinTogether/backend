@@ -49,4 +49,13 @@ public class PlaceService {
         return pinRepository.countByPlaceId(placeId);
     }
 
+    public void delete(Long id) {
+        Place foundPlace = placeRepository.findById(id).orElse(null);
+        starRepository.deleteAll(starRepository.findAllByPlaceId(id));
+        if (foundPlace != null) {
+            placeRepository.delete(foundPlace);
+        }
+
+    }
+
 }

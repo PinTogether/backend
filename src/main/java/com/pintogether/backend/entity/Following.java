@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.Where;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,10 +19,8 @@ public class Following {
     private Long id;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member follower;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member followee;
 }

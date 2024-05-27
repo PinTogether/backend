@@ -22,7 +22,6 @@ public class Notification extends BaseEntity {
     private Long id;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @Enumerated(value = EnumType.STRING)
@@ -30,7 +29,6 @@ public class Notification extends BaseEntity {
     private NotificationType notificationType;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member subject;
 
     private Long objectId;

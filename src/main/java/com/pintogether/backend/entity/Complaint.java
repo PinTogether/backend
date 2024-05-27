@@ -24,12 +24,10 @@ public class Complaint extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "reporter_id")
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member reporter;
 
     @ManyToOne
     @JoinColumn(name = "target_member_id")
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member targetMember;
 
     @Enumerated(value = EnumType.STRING)

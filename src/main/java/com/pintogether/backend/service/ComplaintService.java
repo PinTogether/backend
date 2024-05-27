@@ -2,6 +2,7 @@ package com.pintogether.backend.service;
 
 import com.pintogether.backend.dto.CreateComplaintRequestDTO;
 import com.pintogether.backend.dto.ShowComplaintResponseDTO;
+import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.Complaint;
 import com.pintogether.backend.entity.Member;
 import com.pintogether.backend.repository.ComplaintRepository;
