@@ -23,11 +23,9 @@ public class InterestingCollection {
     private Long id;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne(optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Collection collection;
 
     @Enumerated(EnumType.STRING)

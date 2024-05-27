@@ -3,10 +3,7 @@ package com.pintogether.backend.service;
 import com.pintogether.backend.dto.CreateCollectionCommentRequestDTO;
 import com.pintogether.backend.dto.CreateCollectionRequestDTO;
 import com.pintogether.backend.dto.UpdateCollectionRequestDTO;
-import com.pintogether.backend.entity.Collection;
-import com.pintogether.backend.entity.CollectionComment;
-import com.pintogether.backend.entity.CollectionTag;
-import com.pintogether.backend.entity.Pin;
+import com.pintogether.backend.entity.*;
 import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
@@ -59,6 +56,7 @@ public class CollectionService {
         if (!memberId.equals(collection.getMember().getId())) {
             throw new CustomException(StatusCode.FORBIDDEN, "컬렉션을 삭제할 권한이 없습니다.");
         }
+        interestingCollectionRepository.deleteAll(interestingCollectionRepository.findAllByCollectionId(collection.getId()));
         this.collectionRepository.delete(collection);
     }
     public Collection createCollection(Long memberId, CreateCollectionRequestDTO createCollectionRequestDTO) {

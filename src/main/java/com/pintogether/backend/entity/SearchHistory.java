@@ -22,7 +22,6 @@ public class SearchHistory extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = true)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Member member;
 
     private String query;
