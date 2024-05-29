@@ -13,7 +13,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @Getter
 @Where(clause = "entity_status='ACTIVE'")
-@SQLDelete(sql = "UPDATE pin_tag SET collection_status='DELETE' WHERE id=?")
+@SQLDelete(sql = "UPDATE pin_tag SET entity_status='DELETE' WHERE id=?")
 public class PinTag {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

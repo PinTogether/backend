@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @Getter
 @Where(clause = "entity_status='ACTIVE'")
-@SQLDelete(sql = "UPDATE pin SET collection_status='DELETE' WHERE id=?")
+@SQLDelete(sql = "UPDATE pin SET entity_status='DELETE' WHERE id=?")
 public class Pin extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
