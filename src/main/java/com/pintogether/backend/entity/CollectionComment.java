@@ -31,7 +31,7 @@ public class CollectionComment extends BaseEntity {
     private String contents;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus;
+    private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
     CollectionComment(Collection collection, Member member, String contents) {
         this.collection = collection;

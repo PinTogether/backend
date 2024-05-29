@@ -25,7 +25,7 @@ public class CollectionTag {
     private String tag;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus;
+    private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
     @Builder
     public CollectionTag(Collection collection, String tag) {

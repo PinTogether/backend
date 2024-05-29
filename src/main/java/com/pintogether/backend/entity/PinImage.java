@@ -25,7 +25,7 @@ public class PinImage {
     private String imagePath;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus;
+    private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
     @Builder
     public PinImage(Pin pin, String imagePath) {
