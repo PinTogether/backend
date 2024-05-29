@@ -56,10 +56,10 @@ public class Member {
     private final List<Collection> collections = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus = EntityStatus.ACTIVE;
+    private EntityStatus entityStatus;
 
     @Builder
-    public Member(String name, String membername, String bio, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {
+    public Member(String name, String membername, String bio, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType, EntityStatus entityStatus) {
         this.name = name;
         this.membername = membername;
         this.avatar = avatar;
@@ -68,6 +68,7 @@ public class Member {
         this.registrationId = registrationId;
         this.roleType = roleType;
         this.alertCnt = 0;
+        this.entityStatus = entityStatus;
     }
 
     public void updateMember(final UpdateMemberRequestDTO updateMemberRequestDTO) {

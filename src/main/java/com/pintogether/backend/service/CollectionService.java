@@ -63,12 +63,14 @@ public class CollectionService {
                 .title(createCollectionRequestDTO.getTitle())
                 .thumbnail("https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/collection1.png")
                 .details(createCollectionRequestDTO.getDetails())
+                .entityStatus(EntityStatus.ACTIVE)
                 .build();
 
         List<CollectionTag> collectionTags = createCollectionRequestDTO.getTags().stream()
                 .map(tag -> CollectionTag.builder()
                         .collection(newCollection)
                         .tag(tag)
+                        .entityStatus(EntityStatus.ACTIVE)
                         .build())
                 .toList();
         collectionRepository.save(newCollection);
@@ -115,6 +117,7 @@ public class CollectionService {
                 .collection(collection)
                 .member(memberService.getMember(memberId))
                 .contents(createCollectionCommentRequestDTO.getContents())
+                .entityStatus(EntityStatus.ACTIVE)
                 .build();
         collectionCommentRepository.save(collectionComment);
     }

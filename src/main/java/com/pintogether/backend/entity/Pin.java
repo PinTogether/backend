@@ -4,6 +4,7 @@ import com.pintogether.backend.dto.ShowPinResponseDTO;
 import com.pintogether.backend.entity.enums.EntityStatus;
 import com.pintogether.backend.util.DateConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -39,7 +40,8 @@ public class Pin extends BaseEntity {
     private final List<PinImage> pinImages = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus = EntityStatus.ACTIVE;
+    @NotNull
+    private EntityStatus entityStatus;
     public void updateReview(String review) {
         this.review = review;
     }
@@ -65,12 +67,13 @@ public class Pin extends BaseEntity {
     public void deletePlace() { this.place = null; }
 
     @Builder
-    public Pin(Place place, Collection collection, String review, List<PinTag> pinTags, List<PinImage> pinImages) {
+    public Pin(Place place, Collection collection, String review, List<PinTag> pinTags, List<PinImage> pinImages, EntityStatus entityStatus) {
         this.place = place;
         this.collection = collection;
         this.review = review;
         this.pinTags.addAll(pinTags);
         this.pinImages.addAll(pinImages);
+        this.entityStatus = entityStatus;
     }
 
     public ShowPinResponseDTO toShowPinResponseDTO() {

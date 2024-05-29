@@ -1,6 +1,7 @@
 package com.pintogether.backend.auth;
 
 import com.pintogether.backend.entity.Member;
+import com.pintogether.backend.entity.enums.EntityStatus;
 import com.pintogether.backend.entity.enums.RegistrationSource;
 import com.pintogether.backend.entity.enums.RoleType;
 import com.pintogether.backend.repository.MemberRepository;
@@ -83,7 +84,8 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                     .roleType(RoleType.ROLE_MEMBER)
                     .bio("")
                     .avatar("https://pintogether-img.s3.ap-northeast-2.amazonaws.com/default/profile1.png")
-                    .membername(RandomMembernameGenerator.generate()+"$").build();
+                    .membername(RandomMembernameGenerator.generate()+"$")
+                    .entityStatus(EntityStatus.ACTIVE).build();
             memberRepository.save(newMember);
             newMember.setMembername(
                     newMember.getMembername() + newMember.getId());

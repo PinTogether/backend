@@ -2,6 +2,7 @@ package com.pintogether.backend.service;
 
 import com.pintogether.backend.dto.*;
 import com.pintogether.backend.entity.*;
+import com.pintogether.backend.entity.enums.EntityStatus;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.CustomStatusMessage;
 import com.pintogether.backend.model.StatusCode;
@@ -39,6 +40,7 @@ public class PinService {
                 .place(place)
                 .collection(collection)
                 .review(createPinRequestDTO.getReview())
+                .entityStatus(EntityStatus.ACTIVE)
                 .build();
         if (createPinRequestDTO.getTags() != null) {
             for (String x : createPinRequestDTO.getTags()) {
@@ -46,6 +48,7 @@ public class PinService {
                         PinTag.builder()
                                 .pin(pin)
                                 .tag(x)
+                                .entityStatus(EntityStatus.ACTIVE)
                                 .build());
             }
         }
@@ -55,6 +58,7 @@ public class PinService {
                         PinImage.builder()
                                 .pin(pin)
                                 .imagePath(x)
+                                .entityStatus(EntityStatus.ACTIVE)
                                 .build()
                 );
             }
@@ -101,12 +105,14 @@ public class PinService {
             pin.getPinTags().add(PinTag.builder()
                             .tag(x)
                             .pin(pin)
+                            .entityStatus(EntityStatus.ACTIVE)
                             .build());
         }
         for (String x : updatePinReqeustDTO.getImagePaths()) {
             pin.getPinImages().add(PinImage.builder()
                             .imagePath(x)
                             .pin(pin)
+                            .entityStatus(EntityStatus.ACTIVE)
                             .build());
         }
         pinRepository.save(pin);

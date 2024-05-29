@@ -31,12 +31,14 @@ public class CollectionComment extends BaseEntity {
     private String contents;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus = EntityStatus.ACTIVE;
+    @NotNull
+    private EntityStatus entityStatus;
 
-    CollectionComment(Collection collection, Member member, String contents) {
+    CollectionComment(Collection collection, Member member, String contents, EntityStatus entityStatus) {
         this.collection = collection;
         this.member = member;
         this.contents = contents;
+        this.entityStatus = entityStatus;
         this.collection.getCollectionComments().add(this);
     }
 }

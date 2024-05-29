@@ -51,6 +51,7 @@ public class Collection extends BaseEntity {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private EntityStatus entityStatus;
 
     public void updateTitle(String title) {
