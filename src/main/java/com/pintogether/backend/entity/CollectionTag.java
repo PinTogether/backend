@@ -25,12 +25,14 @@ public class CollectionTag {
     private String tag;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus = EntityStatus.ACTIVE;
+    @NotNull
+    private EntityStatus entityStatus;
 
     @Builder
-    public CollectionTag(Collection collection, String tag) {
+    public CollectionTag(Collection collection, String tag, EntityStatus entityStatus) {
         this.collection = collection;
         this.tag = tag;
+        this.entityStatus = entityStatus;
         this.collection.getCollectionTags().add(this);
     }
 }

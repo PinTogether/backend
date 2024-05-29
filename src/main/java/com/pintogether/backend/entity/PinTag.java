@@ -26,12 +26,14 @@ public class PinTag {
     private String tag;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus = EntityStatus.ACTIVE;
+    @NotNull
+    private EntityStatus entityStatus;
 
     @Builder
-    public PinTag(Pin pin, String tag) {
+    public PinTag(Pin pin, String tag, EntityStatus entityStatus) {
         this.pin = pin;
         this.tag = tag;
+        this.entityStatus = entityStatus;
         this.pin.getPinTags().add(this);
     }
 }

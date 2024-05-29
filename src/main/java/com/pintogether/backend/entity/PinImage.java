@@ -25,12 +25,14 @@ public class PinImage {
     private String imagePath;
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus = EntityStatus.ACTIVE;
+    @NotNull
+    private EntityStatus entityStatus;
 
     @Builder
-    public PinImage(Pin pin, String imagePath) {
+    public PinImage(Pin pin, String imagePath, EntityStatus entityStatus) {
         this.pin = pin;
         this.imagePath = imagePath;
+        this.entityStatus = entityStatus;
         this.pin.getPinImages().add(this);
     }
 }
