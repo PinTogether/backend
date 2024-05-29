@@ -4,13 +4,11 @@ import com.pintogether.backend.dto.CreateCollectionCommentRequestDTO;
 import com.pintogether.backend.dto.CreateCollectionRequestDTO;
 import com.pintogether.backend.dto.UpdateCollectionRequestDTO;
 import com.pintogether.backend.entity.*;
+import com.pintogether.backend.entity.Collection;
 import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;
-import com.pintogether.backend.repository.CollectionCommentRepository;
-import com.pintogether.backend.repository.CollectionRepository;
-import com.pintogether.backend.repository.InterestingCollectionRepository;
-import com.pintogether.backend.repository.PinRepository;
+import com.pintogether.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,10 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,9 +30,11 @@ public class CollectionService {
     private final CollectionCommentRepository collectionCommentRepository;
     private final PinRepository pinRepository;
     private final AmazonS3Service amazonS3Service;
+    private final CollectionRepositoryCustom collectionRepositoryCustom;
 
     public Collection getCollection(Long collectionId) {
-        return collectionRepository.findOneById(collectionId).orElse(null);
+        // return collectionRepository.findOneById(collectionId).orElse(null);
+        return collectionRepositoryCustom.findOneById(collectionId).orElse(null);
     }
 
     public int getLikeCnt(Long collectionId) {
@@ -72,7 +69,7 @@ public class CollectionService {
                         .collection(newCollection)
                         .tag(tag)
                         .build())
-                .collect(Collectors.toList());
+                .toList();
         collectionRepository.save(newCollection);
         return newCollection;
     }
@@ -104,9 +101,11 @@ public class CollectionService {
 
     public List<Collection> getTopLikeCollections(int cnt, List<Long> excludeIds) {
         if (excludeIds == null) {
-            return collectionRepository.findTopCollectionsByInterestType(InterestType.LIKES.getString(), cnt);
+//            return collectionRepository.findTopCollectionsByInterestType(InterestType.LIKES.getString(), cnt);
+            return collectionRepositoryCustom.findTopCollectionsByInterestType(InterestType.LIKES, cnt);
         } else {
-            return collectionRepository.findTopCollectionsByInterestTypeExcludingSpecificIds(InterestType.LIKES.getString(), excludeIds, cnt);
+//            return collectionRepository.findTopCollectionsByInterestTypeExcludingSpecificIds(InterestType.LIKES.getString(), excludeIds, cnt);
+            return collectionRepositoryCustom.findTopCollectionsByInterestTypeExcludingSpecificIds(InterestType.LIKES, excludeIds, cnt);
         }
     }
 
@@ -140,17 +139,20 @@ public class CollectionService {
     public Page<Collection> getCollectionsByMemberIdWithPageable(Long memberId, int pageNumber, int pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        return collectionRepository.findByMemberId(memberId, pageable);
+//        return collectionRepository.findByMemberId(memberId, pageable);
+        return collectionRepositoryCustom.findByMemberId(memberId, pageable);
     }
 
     public Page<Collection> getScrapCollectionsByMemberIdWithPageable(Long memberId, int pageNumber, int pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "created_at");
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        return collectionRepository.findByMemberIdAndInterestType(memberId, InterestType.SCRAP.getString(), pageable);
+//        return collectionRepository.findByMemberIdAndInterestType(memberId, InterestType.SCRAP.getString(), pageable);
+        return collectionRepositoryCustom.findByMemberIdAndInterestType(memberId, InterestType.SCRAP, pageable);
     }
 
     public List<Collection> getCollectionsByMemberId(Long memberId) {
-        return collectionRepository.findByMemberId(memberId);
+//        return collectionRepository.findByMemberId(memberId);
+        return collectionRepositoryCustom.findByMemberId(memberId);
     }
     public List<Pin> getPins(Long collectionId) {
         return pinRepository.findByCollectionId(collectionId);

@@ -15,9 +15,7 @@ import com.pintogether.backend.websocket.WebSocketService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,6 @@ public class MemberController {
     private final InterestingCollectionService interestingCollectionService;
     private final WebSocketService webSocketService;
     private final NotificationService notificationService;
-
 
     @GetMapping("/me")
     public ApiResponse getMemberInformation(@ThisMember Member member) {
@@ -197,11 +194,14 @@ public class MemberController {
         String contentType = s3MemberAvatarRequestDTO.getContentType();
         return ApiResponse.makeResponse(memberService.getPresignedUrl(contentType, DomainType.Member.AVATAR.getName(), member.getId()));
     }
-
+    @GetMapping("/abc")
+    public ApiResponse getCollections(@ThisMember Member member) {
+        List<Collection> collections = collectionService.getCollectionsByMemberId(member.getId());
+        return ApiResponse.makeResponse(collections);
+    }
     @GetMapping("/collections")
     public ApiResponse getMyCollectionsForAddingPin(@ThisMember Member member, @RequestParam(value = "place-id", required = true) Long placeId) {
         List<Collection> collections = collectionService.getCollectionsByMemberId(member.getId());
-
         List<ShowCollectionsForAddingPinResponseDTO> showCollectionsForAddingPinResponseDTOs = collections.stream()
                 .map(c -> ShowCollectionsForAddingPinResponseDTO.builder()
                         .id(c.getId())
