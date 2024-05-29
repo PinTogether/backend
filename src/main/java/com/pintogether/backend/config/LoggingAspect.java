@@ -1,25 +1,15 @@
-package com.pintogether.backend.aspect;
+package com.pintogether.backend.config;
 
-import com.pintogether.backend.customAnnotations.CurrentMember;
-import com.pintogether.backend.customAnnotations.ThisMember;
-import com.pintogether.backend.entity.Member;
-import com.pintogether.backend.handlerMethodArgumentResolver.MemberArgumentResolver;
-import jakarta.servlet.http.HttpServletRequest;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Component
 @Aspect
-public class LogginAspect {
+public class LoggingAspect {
 
     @Around("execution(* com.pintogether.backend.service.*.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
