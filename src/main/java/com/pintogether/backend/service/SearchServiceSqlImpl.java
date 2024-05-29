@@ -32,6 +32,8 @@ public class SearchServiceSqlImpl implements SearchService {
     private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final FollowingService followingService;
+    private final CollectionRepositoryCustom collectionRepositoryCustom;
+
     @Transactional
     public List<ShowPlaceResponseDTO> searchPlaces(Member member, String query, int page, int size, String filter) {
         if (member != null) {
@@ -82,7 +84,8 @@ public class SearchServiceSqlImpl implements SearchService {
             this.saveHistory(member, query, SearchType.COLLECTION);
         }
         Pageable pageable = PageRequest.of(page, size);
-        Page<Collection> foundCollections = collectionRepository.findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(pageable, query, query);
+//        Page<Collection> foundCollections = collectionRepository.findCollectionsByTitleContainingOrCollectionTagsTagContainingOrderByIdDesc(pageable, query, query);
+        Page<Collection> foundCollections = collectionRepositoryCustom.findCollectionsByQuery(pageable, query);
         return foundCollections.stream()
                 .map(c -> ShowCollectionResponseDTO.builder()
                         .id(c.getId())

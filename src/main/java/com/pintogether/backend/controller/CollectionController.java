@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -213,5 +214,11 @@ public class CollectionController {
     @PostMapping("/{collectionId}/thumbnail/presigned-url")
     public ApiResponse getPresignedUrlForThumbnail(@ThisMember Member member, @CurrentCollection Collection collection, @RequestBody @Valid S3CollectionThumbnailRequestDTO s3CollectionThumbnailRequestDTO) {
         return ApiResponse.makeResponse(collectionService.getPresignedUrlForThumbnail(member.getId(), s3CollectionThumbnailRequestDTO.getContentType(), DomainType.Collection.THUMBNAIL.getName(), collection));
+    }
+
+    @GetMapping("/test")
+    public ApiResponse test(@ThisMember Member member) {
+        Long id = 182L;
+        return ApiResponse.makeResponse(collectionService.getCollection(id));
     }
 }
