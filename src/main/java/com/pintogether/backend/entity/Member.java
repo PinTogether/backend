@@ -56,7 +56,7 @@ public class Member {
     private final List<Collection> collections = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus;
+    private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
     @Builder
     public Member(String name, String membername, String bio, String avatar, RegistrationSource registrationSource, String registrationId, RoleType roleType) {

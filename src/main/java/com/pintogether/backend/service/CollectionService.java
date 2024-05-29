@@ -5,6 +5,7 @@ import com.pintogether.backend.dto.CreateCollectionRequestDTO;
 import com.pintogether.backend.dto.UpdateCollectionRequestDTO;
 import com.pintogether.backend.entity.*;
 import com.pintogether.backend.entity.Collection;
+import com.pintogether.backend.entity.enums.EntityStatus;
 import com.pintogether.backend.entity.enums.InterestType;
 import com.pintogether.backend.exception.CustomException;
 import com.pintogether.backend.model.StatusCode;

@@ -39,7 +39,7 @@ public class Pin extends BaseEntity {
     private final List<PinImage> pinImages = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private EntityStatus entityStatus;
+    private EntityStatus entityStatus = EntityStatus.ACTIVE;
     public void updateReview(String review) {
         this.review = review;
     }
