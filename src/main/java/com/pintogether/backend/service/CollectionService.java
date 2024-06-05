@@ -94,6 +94,7 @@ public class CollectionService {
                 .map(tag -> CollectionTag.builder()
                         .collection(collection)
                         .tag(tag)
+                        .entityStatus(EntityStatus.ACTIVE)
                         .build())
                 .collect(Collectors.toList());
         collection.updateTitle(updateCollectionRequestDTO.getTitle());
